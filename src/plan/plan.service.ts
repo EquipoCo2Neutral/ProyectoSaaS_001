@@ -18,7 +18,7 @@ export class PlanService {
   }
 
   findAll() {
-    return `This action returns all plan`;
+    return this.planRepository.find();  
   }
 
   findOne(id: number) {

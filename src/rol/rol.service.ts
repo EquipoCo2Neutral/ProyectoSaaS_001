@@ -20,7 +20,7 @@ export class RolService {
   }
 
   findAll() {
-    return `This action returns all rol`;
+    return this.rolRepository.find();  
   }
 
   findOne(id: number) {

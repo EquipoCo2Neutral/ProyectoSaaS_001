@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { SaasAdminModule } from './saas-admin/saas-admin.module';
 import { typeOrmConfig } from './config/typeorm.config';
 import { PlanModule } from './plan/plan.module';
+import { PersonaModule } from './persona/persona.module';
+import { RolModule } from './rol/rol.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { PlanModule } from './plan/plan.module';
     }),
     SaasAdminModule,
     PlanModule,
+    PersonaModule,
+    RolModule,
   ],
   controllers: [AppController],
   providers: [AppService],
