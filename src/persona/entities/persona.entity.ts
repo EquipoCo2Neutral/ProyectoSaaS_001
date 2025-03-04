@@ -15,3 +15,5 @@ export class Persona {
   @Column()
   telefono: number;
 }
+
+console.log('test');
