@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SaasAdminModule } from './saas-admin/saas-admin.module';
 import { typeOrmConfig } from './config/typeorm.config';
+import { PlanModule } from './plan/plan.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { typeOrmConfig } from './config/typeorm.config';
       inject: [ConfigService],
     }),
     SaasAdminModule,
+    PlanModule,
   ],
   controllers: [AppController],
   providers: [AppService],
