@@ -10,7 +10,7 @@ export enum Role {
   ADMIN = 'admin',
   USUARIO = 'usuario',
 }
-
+//CAMBIAR A EQUIPO SAAS
 @Entity('saas_admins')
 export class SaasAdmin {
   @PrimaryGeneratedColumn('uuid')
