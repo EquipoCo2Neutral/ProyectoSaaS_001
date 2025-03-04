@@ -19,7 +19,7 @@ export class PlanController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.planService.findOne(+id);
+    return this.planService.findOne(id);
   }
 
   @Patch(':id')

@@ -21,8 +21,9 @@ export class PlanService {
     return this.planRepository.find();  
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plan`;
+  findOne(id: string) {
+    const plan = this.planRepository.findOneBy({id});
+    return plan;
   }
 
   update(id: number, updatePlanDto: UpdatePlanDto) {
