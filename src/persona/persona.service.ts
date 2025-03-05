@@ -22,8 +22,9 @@ export class PersonaService {
     return this.personaRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} persona`;
+  findOne(id: string) {
+    const persona = this.personaRepository.findOneBy({id});
+    return persona;
   }
 
   update(id: number, updatePersonaDto: UpdatePersonaDto) {

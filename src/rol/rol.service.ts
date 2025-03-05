@@ -23,8 +23,9 @@ export class RolService {
     return this.rolRepository.find();  
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rol`;
+  findOne(id: string) {
+    const rol = this.rolRepository.findOneBy({id});
+    return rol;
   }
 
   update(id: number, updateRolDto: UpdateRolDto) {
