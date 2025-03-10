@@ -10,6 +10,7 @@ import { PersonaModule } from './administracion/persona/persona.module';
 import { RolModule } from './administracion/rol/rol.module';
 import { SuscripcionModule } from './administracion/suscripcion/suscripcion.module';
 import { PaisesModule } from './complementos/paises/paises.module';
+import { RegionesModule } from './complementos/regiones/regiones.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PaisesModule } from './complementos/paises/paises.module';
     RolModule,
     SuscripcionModule,
     PaisesModule,
+    RegionesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
