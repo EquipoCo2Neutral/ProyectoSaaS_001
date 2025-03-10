@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Suscripcion } from 'src/administracion/suscripcion/entities/suscripcion.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity('plan')
 export class Plan {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    idPlan: number;
     @Column()
     nombrePlan: string;
     @Column()
@@ -16,4 +17,7 @@ export class Plan {
     cantidadUsuarios: number;
     @Column()
     estadoPlan: boolean;
+
+    @OneToMany(() => Suscripcion, (suscripcion) => suscripcion.plan, {cascade: true})
+    suscripciones: Suscripcion[];
 }

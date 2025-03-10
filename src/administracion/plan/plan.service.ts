@@ -21,8 +21,8 @@ export class PlanService {
     return this.planRepository.find();  
   }
 
-  findOne(id: string) {
-    const plan = this.planRepository.findOneBy({id});
+  findOne(idPlan: number) {
+    const plan = this.planRepository.findOneBy({idPlan});
     return plan;
   }
 

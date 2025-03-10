@@ -23,7 +23,7 @@ export class RolService {
     return this.rolRepository.find();  
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     const rol = this.rolRepository.findOneBy({id});
     return rol;
   }
