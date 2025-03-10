@@ -5,9 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SaasAdminModule } from './saas-admin/saas-admin.module';
 import { typeOrmConfig } from './config/typeorm.config';
-import { PlanModule } from './plan/plan.module';
-import { PersonaModule } from './persona/persona.module';
-import { RolModule } from './rol/rol.module';
+import { PlanModule } from './administracion/plan/plan.module';
+import { PersonaModule } from './administracion/persona/persona.module';
+import { RolModule } from './administracion/rol/rol.module';
+import { SuscripcionModule } from './administracion/suscripcion/suscripcion.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RolModule } from './rol/rol.module';
     PlanModule,
     PersonaModule,
     RolModule,
+    SuscripcionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
