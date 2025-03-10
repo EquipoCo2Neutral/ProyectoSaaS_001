@@ -9,6 +9,7 @@ import { PlanModule } from './administracion/plan/plan.module';
 import { PersonaModule } from './administracion/persona/persona.module';
 import { RolModule } from './administracion/rol/rol.module';
 import { SuscripcionModule } from './administracion/suscripcion/suscripcion.module';
+import { PaisesModule } from './complementos/paises/paises.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SuscripcionModule } from './administracion/suscripcion/suscripcion.modu
     PersonaModule,
     RolModule,
     SuscripcionModule,
+    PaisesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
