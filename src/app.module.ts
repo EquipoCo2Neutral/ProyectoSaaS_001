@@ -12,6 +12,10 @@ import { SuscripcionModule } from './administracion/suscripcion/suscripcion.modu
 import { PaisesModule } from './complementos/paises/paises.module';
 import { RegionesModule } from './complementos/regiones/regiones.module';
 import { ComunasModule } from './complementos/comunas/comunas.module';
+import { InquilinoModule } from './administracion/inquilino/inquilino.module';
+import { UsuarioModule } from './administracion/usuario/usuario.module';
+import { PlantaModule } from './administracion/planta/planta.module';
+import { EquipoSaassModule } from './administracion/equipo-saass/equipo-saass.module';
 
 @Module({
   imports: [
@@ -30,6 +34,10 @@ import { ComunasModule } from './complementos/comunas/comunas.module';
     PaisesModule,
     RegionesModule,
     ComunasModule,
+    InquilinoModule,
+    UsuarioModule,
+    PlantaModule,
+    EquipoSaassModule,
   ],
   controllers: [AppController],
   providers: [AppService],

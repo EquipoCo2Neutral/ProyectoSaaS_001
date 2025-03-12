@@ -14,4 +14,8 @@ export class CreatePersonaDto {
   segundoApellido: string;
   @IsNotEmpty({ message: 'El telefono es requerido' })
   telefono: number;
+
+  @IsNotEmpty({ message: 'El usuarioId es requerido' })
+  usuarioId: string;
+
 }
