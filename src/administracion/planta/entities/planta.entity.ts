@@ -1,5 +1,6 @@
 import { Inquilino } from "src/administracion/inquilino/entities/inquilino.entity";
 import { Usuario } from "src/administracion/usuario/entities/usuario.entity";
+import { Comuna } from "src/complementos/comunas/entities/comuna.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('planta')
@@ -23,5 +24,7 @@ export class Planta {
     @ManyToOne(() => Inquilino)
     inquilino: Inquilino;
 
-    //Pendiente una columna para comunas la cual debe ser una relacion con la tabla comunas
+    @ManyToOne(() => Comuna)
+    comuna: Comuna;
+
 }

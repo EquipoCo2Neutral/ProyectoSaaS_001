@@ -15,9 +15,15 @@ export class CreatePlantaDto {
 
     @IsUUID('4', { message: 'El usuario debe ser un UUID' })
     @IsNotEmpty({ message: 'El usuario es requerido' })
-    usuario: string;
+    usuarioId: string;
 
     @IsUUID('4', { message: 'El inquilino debe ser un UUID' })
     @IsNotEmpty({ message: 'El inquilino es requerido' })
-    inquilino: string;
+    inquilinoId: string;
+
+
+    @IsInt({ message: 'La comuna debe ser un número entero' })
+    @IsNotEmpty({ message: 'La comuna es requerida' })
+    comunaId: number;
+
 }
