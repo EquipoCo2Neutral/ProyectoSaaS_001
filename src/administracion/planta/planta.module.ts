@@ -1,0 +1,14 @@
+import { Module } from '@nestjs/common';
+import { PlantaService } from './planta.service';
+import { PlantaController } from './planta.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Planta } from './entities/planta.entity';
+import { Inquilino } from '../inquilino/entities/inquilino.entity';
+import { Usuario } from '../usuario/entities/usuario.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Planta, Inquilino, Usuario])],
+  controllers: [PlantaController],
+  providers: [PlantaService],
+})
+export class PlantaModule {}

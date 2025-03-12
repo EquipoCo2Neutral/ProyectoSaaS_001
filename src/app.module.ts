@@ -11,6 +11,12 @@ import { RolModule } from './administracion/rol/rol.module';
 import { SuscripcionModule } from './administracion/suscripcion/suscripcion.module';
 import { PaisesModule } from './complementos/paises/paises.module';
 import { RegionesModule } from './complementos/regiones/regiones.module';
+import { InquilinoModule } from './administracion/inquilino/inquilino.module';
+import { UsuarioModule } from './administracion/usuario/usuario.module';
+import { PlantaModule } from './administracion/planta/planta.module';
+import { EquipoSaassModule } from './administracion/equipo-saass/equipo-saass.module';
+
+
 
 @Module({
   imports: [
@@ -28,6 +34,11 @@ import { RegionesModule } from './complementos/regiones/regiones.module';
     SuscripcionModule,
     PaisesModule,
     RegionesModule,
+    InquilinoModule,
+    UsuarioModule,
+    PlantaModule,
+    EquipoSaassModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Usuario } from 'src/administracion/usuario/entities/usuario.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 @Entity('persona')
 export class Persona {
@@ -14,6 +15,10 @@ export class Persona {
   segundoApellido: string;
   @Column()
   telefono: number;
+
+  @ManyToOne(() => Usuario)
+  usuario: Usuario;
+
 }
 
-console.log('test');
+
