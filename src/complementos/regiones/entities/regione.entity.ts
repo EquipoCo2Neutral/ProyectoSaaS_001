@@ -21,6 +21,6 @@ export class Regiones {
   @ManyToOne(() => Pais)
   pais: Pais;
 
-  @OneToMany(() => Comuna, (comuna) => comuna.region)
+  @OneToMany(() => Comuna, (comuna) => comuna.region, { cascade: true })
   comunas: Comuna[];
 }

@@ -16,6 +16,6 @@ export class Pais {
   @Column({ type: 'varchar', length: 100 })
   nombre: string;
 
-  @OneToMany(() => Regiones, (regiones) => regiones.pais)
+  @OneToMany(() => Regiones, (regiones) => regiones, { cascade: true })
   regiones: Regiones[];
 }

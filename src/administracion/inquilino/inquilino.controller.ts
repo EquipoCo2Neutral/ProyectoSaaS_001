@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { InquilinoService } from './inquilino.service';
 import { CreateInquilinoDto } from './dto/create-inquilino.dto';
 import { UpdateInquilinoDto } from './dto/update-inquilino.dto';
@@ -19,11 +27,15 @@ export class InquilinoController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
+    console.log('id', id);
     return this.inquilinoService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInquilinoDto: UpdateInquilinoDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateInquilinoDto: UpdateInquilinoDto,
+  ) {
     return this.inquilinoService.update(+id, updateInquilinoDto);
   }
 

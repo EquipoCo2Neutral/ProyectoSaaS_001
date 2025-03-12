@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePaiseDto } from './dto/create-paise.dto';
 import { UpdatePaiseDto } from './dto/update-paise.dto';
 import { Pais } from './entities/paise.entity';
@@ -19,18 +19,26 @@ export class PaisesService {
   }
 
   findAll() {
-    return `This action returns all paises`;
+    return this.paisRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} paise`;
+  async findOne(id: number) {
+    const pais = await this.paisRepository.findOneBy({ idPais: id });
+    if (!pais) {
+      throw new NotFoundException('Pais no encontrado');
+    }
+    return pais;
   }
 
-  update(id: number, updatePaiseDto: UpdatePaiseDto) {
-    return `This action updates a #${id} paise`;
+  async update(id: number, updatePaiseDto: UpdatePaiseDto) {
+    const pais = await this.findOne(id); //hace referencia al findone de arriba para validar que el pais exista
+    pais.nombre = updatePaiseDto.nombre;
+    return await this.paisRepository.save(pais);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} paise`;
+  async remove(id: number) {
+    const pais = await this.findOne(id);
+    await this.paisRepository.delete(pais);
+    return 'Pais eliminado';
   }
 }
