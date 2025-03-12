@@ -1,4 +1,4 @@
-import {IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {IsEmail, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateEquipoSaassDto {
 
@@ -9,6 +9,10 @@ export class CreateEquipoSaassDto {
     @IsString({ message: 'El apellido debe ser un string' })
     @IsNotEmpty({ message: 'El apellido es requerido' })
     apellido: string;
+
+    @IsEmail({}, { message: 'El correo debe ser un email' })
+    @IsNotEmpty({ message: 'El correo es requerido' })
+    correo: string;
 
     @IsString({ message: 'La contraseña debe ser un string' })
     @IsNotEmpty({ message: 'La contraseña es requerida' })
