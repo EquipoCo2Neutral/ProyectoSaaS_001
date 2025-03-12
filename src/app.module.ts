@@ -11,6 +11,7 @@ import { RolModule } from './administracion/rol/rol.module';
 import { SuscripcionModule } from './administracion/suscripcion/suscripcion.module';
 import { PaisesModule } from './complementos/paises/paises.module';
 import { RegionesModule } from './complementos/regiones/regiones.module';
+import { ComunasModule } from './complementos/comunas/comunas.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RegionesModule } from './complementos/regiones/regiones.module';
     SuscripcionModule,
     PaisesModule,
     RegionesModule,
+    ComunasModule,
   ],
   controllers: [AppController],
   providers: [AppService],
