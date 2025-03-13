@@ -31,8 +31,27 @@ export class RegionesService {
     });
   }
 
-  findAll() {
-    return `This action returns all regiones`;
+  findAll(idPais: number) {
+    if (idPais) {
+      return this.regionesRepository.find({
+        where: {
+          pais: {
+            idPais,
+          },
+        },
+        relations: {
+          pais: true,
+        },
+        order: {
+          idRegion: 'ASC',
+        },
+      });
+    }
+    return this.regionesRepository.find({
+      relations: {
+        pais: true,
+      },
+    });
   }
 
   findOne(id: number) {

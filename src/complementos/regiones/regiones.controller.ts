@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { RegionesService } from './regiones.service';
 import { CreateRegioneDto } from './dto/create-regione.dto';
 import { UpdateRegioneDto } from './dto/update-regione.dto';
+import { GetRegioneQueryDto } from './dto/get-regione.dto';
 
 @Controller('regiones')
 export class RegionesController {
@@ -13,8 +23,9 @@ export class RegionesController {
   }
 
   @Get()
-  findAll() {
-    return this.regionesService.findAll();
+  findAll(@Query() query: GetRegioneQueryDto) {
+    const pais = query.pais_id ? +query.pais_id : 0;
+    return this.regionesService.findAll(pais);
   }
 
   @Get(':id')

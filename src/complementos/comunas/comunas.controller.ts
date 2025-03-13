@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ComunasService } from './comunas.service';
 import { CreateComunaDto } from './dto/create-comuna.dto';
 import { UpdateComunaDto } from './dto/update-comuna.dto';
+import { query } from 'express';
+import { GetComunaQueryDto } from './dto/get-comuna.dto';
 
 @Controller('comunas')
 export class ComunasController {
@@ -13,8 +24,9 @@ export class ComunasController {
   }
 
   @Get()
-  findAll() {
-    return this.comunasService.findAll();
+  findAll(@Query() query: GetComunaQueryDto) {
+    const region = query.region_id ? +query.region_id : 0;
+    return this.comunasService.findAll(region);
   }
 
   @Get(':id')

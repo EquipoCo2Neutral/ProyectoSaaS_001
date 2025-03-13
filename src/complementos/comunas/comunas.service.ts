@@ -30,8 +30,31 @@ export class ComunasService {
     });
   }
 
-  findAll() {
-    return `This action returns all comunas`;
+  findAll(idRegion: number) {
+    if (idRegion) {
+      return this.comunaRepository.find({
+        where: {
+          region: {
+            idRegion,
+          },
+        },
+        relations: {
+          region: true,
+        },
+        order: {
+          idComuna: 'ASC',
+        },
+      });
+    }
+
+    return this.comunaRepository.find({
+      relations: {
+        region: true,
+      },
+      order: {
+        idComuna: 'ASC',
+      },
+    });
   }
 
   findOne(id: number) {
