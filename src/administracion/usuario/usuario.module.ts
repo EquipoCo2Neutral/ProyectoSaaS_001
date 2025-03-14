@@ -11,5 +11,6 @@ import { Inquilino } from '../inquilino/entities/inquilino.entity';
   imports: [TypeOrmModule.forFeature([Usuario, Rol, Inquilino])],
   controllers: [UsuarioController],
   providers: [UsuarioService],
+  exports: [UsuarioService],
 })
 export class UsuarioModule {}

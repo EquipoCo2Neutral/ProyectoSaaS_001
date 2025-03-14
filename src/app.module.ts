@@ -16,6 +16,7 @@ import { InquilinoModule } from './administracion/inquilino/inquilino.module';
 import { UsuarioModule } from './administracion/usuario/usuario.module';
 import { PlantaModule } from './administracion/planta/planta.module';
 import { EquipoSaassModule } from './administracion/equipo-saass/equipo-saass.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { EquipoSaassModule } from './administracion/equipo-saass/equipo-saass.mo
     UsuarioModule,
     PlantaModule,
     EquipoSaassModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

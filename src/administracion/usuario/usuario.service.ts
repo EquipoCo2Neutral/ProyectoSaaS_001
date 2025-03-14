@@ -9,34 +9,40 @@ import { Inquilino } from '../inquilino/entities/inquilino.entity';
 
 @Injectable()
 export class UsuarioService {
-
   constructor(
-
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
     @InjectRepository(Rol)
     private readonly rolRepository: Repository<Rol>,
     @InjectRepository(Inquilino)
     private readonly inquilinoRepository: Repository<Inquilino>,
-
   ) {}
 
+  //para hacer el login
+
+  findOneByEmail(correoUsuario: string) {
+    return this.usuarioRepository.findOneBy({ correoUsuario });
+  }
 
   async create(createUsuarioDto: CreateUsuarioDto) {
-    const rol = await this.rolRepository.findOneBy({id: createUsuarioDto.rolId});
-    const inquilino = await this.inquilinoRepository.findOneBy({inquilinoId: createUsuarioDto.inquilinoId});
-    if(!rol){
-      let errors : string[] = []
+    const rol = await this.rolRepository.findOneBy({
+      id: createUsuarioDto.rolId,
+    });
+    const inquilino = await this.inquilinoRepository.findOneBy({
+      inquilinoId: createUsuarioDto.inquilinoId,
+    });
+    if (!rol) {
+      let errors: string[] = [];
       errors.push('El rol no existe');
       throw new NotFoundException(errors);
     }
-    if(!inquilino){
-      let errors : string[] = []
+    if (!inquilino) {
+      let errors: string[] = [];
       errors.push('El inquilino no existe');
       throw new NotFoundException(errors);
     }
 
-    return this.usuarioRepository.save({...createUsuarioDto, rol, inquilino});
+    return this.usuarioRepository.save({ ...createUsuarioDto, rol, inquilino });
   }
 
   findAll() {
