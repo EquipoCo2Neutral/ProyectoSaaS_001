@@ -8,9 +8,11 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  Unique,
 } from 'typeorm';
 
 @Entity('usuario')
+@Unique(['correoUsuario'])
 export class Usuario {
   @PrimaryGeneratedColumn('uuid')
   usuarioId: string;
@@ -18,7 +20,7 @@ export class Usuario {
   @Column({ unique: true, nullable: false })
   correoUsuario: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select: false })
   contrasenaUsuario: string;
 
   @ManyToOne(() => Rol)

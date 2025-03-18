@@ -27,6 +27,14 @@ export class UsuarioService {
     });
   }
 
+  findOneByEmailWithPassword(correoUsuario: string) {
+    return this.usuarioRepository.findOne({
+      where: { correoUsuario },
+      select: ['usuarioId', 'correoUsuario', 'contrasenaUsuario'],
+      relations: ['rol'],
+    });
+  }
+
   async create(createUsuarioDto: CreateUsuarioDto) {
     const rol = await this.rolRepository.findOneBy({
       id: createUsuarioDto.rolId,
@@ -49,7 +57,7 @@ export class UsuarioService {
   }
 
   findAll() {
-    return `This action returns all usuario`;
+    return this.usuarioRepository.find();
   }
 
   findOne(id: number) {

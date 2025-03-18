@@ -10,12 +10,16 @@ import {
 import { InquilinoService } from './inquilino.service';
 import { CreateInquilinoDto } from './dto/create-inquilino.dto';
 import { UpdateInquilinoDto } from './dto/update-inquilino.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+//para especificar el rol que puede acceder a este controlador y sus endpoints
+@Auth(Role.ADMIN_SAAS)
 @Controller('inquilino')
 export class InquilinoController {
   constructor(private readonly inquilinoService: InquilinoService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createInquilinoDto: CreateInquilinoDto) {
     return this.inquilinoService.create(createInquilinoDto);
   }

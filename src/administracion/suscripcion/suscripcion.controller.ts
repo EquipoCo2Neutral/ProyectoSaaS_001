@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SuscripcionService } from './suscripcion.service';
 import { CreateSuscripcionDto } from './dto/create-suscripcion.dto';
 import { UpdateSuscripcionDto } from './dto/update-suscripcion.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.ADMIN_SAAS)
 @Controller('suscripcion')
 export class SuscripcionController {
   constructor(private readonly suscripcionService: SuscripcionService) {}
@@ -23,7 +34,10 @@ export class SuscripcionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSuscripcionDto: UpdateSuscripcionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSuscripcionDto: UpdateSuscripcionDto,
+  ) {
     return this.suscripcionService.update(+id, updateSuscripcionDto);
   }
 

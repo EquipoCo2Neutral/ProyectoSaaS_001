@@ -9,34 +9,33 @@ import { Suscripcion } from '../suscripcion/entities/suscripcion.entity';
 
 @Injectable()
 export class InquilinoService {
-
   constructor(
-    
     @InjectRepository(Inquilino)
     private readonly inquilinoRepository: Repository<Inquilino>,
 
     @InjectRepository(Suscripcion)
     private readonly suscripcionRepository: Repository<Suscripcion>,
-
   ) {}
 
-
-
   async create(createInquilinoDto: CreateInquilinoDto) {
-    const suscripcion = await this.suscripcionRepository.findOneBy({id: createInquilinoDto.suscripcionId});
+    const suscripcion = await this.suscripcionRepository.findOneBy({
+      id: createInquilinoDto.suscripcionId,
+    });
 
-    if(!suscripcion){
-      let errors : string[] = []
+    if (!suscripcion) {
+      let errors: string[] = [];
       errors.push('La suscripcion no existe');
       throw new NotFoundException(errors);
     }
 
-
-    return this.inquilinoRepository.save({...createInquilinoDto, suscripcion});
+    return this.inquilinoRepository.save({
+      ...createInquilinoDto,
+      suscripcion,
+    });
   }
 
   findAll() {
-    return `This action returns all inquilino`;
+    return this.inquilinoRepository.find();
   }
 
   findOne(id: number) {

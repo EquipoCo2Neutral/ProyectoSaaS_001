@@ -42,7 +42,8 @@ export class AuthService {
   }
 
   async login({ correoUsuario, contrasenaUsuario }: LoginDto) {
-    const user = await this.usuarioService.findOneByEmail(correoUsuario);
+    const user =
+      await this.usuarioService.findOneByEmailWithPassword(correoUsuario);
     //verificar email
     if (!user) {
       throw new UnauthorizedException('email no es correcto');

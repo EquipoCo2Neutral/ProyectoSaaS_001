@@ -18,11 +18,11 @@ export class PlanService {
   }
 
   findAll() {
-    return this.planRepository.find();  
+    return this.planRepository.find();
   }
 
   findOne(idPlan: number) {
-    const plan = this.planRepository.findOneBy({idPlan});
+    const plan = this.planRepository.findOneBy({ idPlan });
     return plan;
   }
 
