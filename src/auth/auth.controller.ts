@@ -1,18 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  UseGuards,
-  Request,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from './guard/auth.guard';
-import { Roles } from './decorators/roles.decorator';
-import { RolesGuard } from './guard/roles.guard';
 import { Role } from './enums/rol.enum';
 import { Auth } from './decorators/auth.decorator';
 
