@@ -13,18 +13,17 @@ export class RolService {
   ) {}
 
   create(createRolDto: CreateRolDto) {
-    console.log(createRolDto);
     const rol = new Rol();
     rol.rol = createRolDto.rol;
     return this.rolRepository.save(rol);
   }
 
   findAll() {
-    return this.rolRepository.find();  
+    return this.rolRepository.find();
   }
 
   findOne(id: number) {
-    const rol = this.rolRepository.findOneBy({id});
+    const rol = this.rolRepository.findOneBy({ id });
     return rol;
   }
 

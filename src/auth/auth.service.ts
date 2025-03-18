@@ -29,12 +29,16 @@ export class AuthService {
       throw new BadRequestException('El usuario ya existe');
     }
 
-    return await this.usuarioService.create({
+    await this.usuarioService.create({
       correoUsuario,
       contrasenaUsuario: await bcrypt.hash(contrasenaUsuario, 10),
       rolId,
       inquilinoId,
     });
+
+    return {
+      correoUsuario,
+    };
   }
 
   async login({ correoUsuario, contrasenaUsuario }: LoginDto) {
@@ -52,10 +56,23 @@ export class AuthService {
       throw new UnauthorizedException('contraseña no es correcta');
     }
 
-    const payload = { correoUsuario: user.correoUsuario };
+    const payload = { correoUsuario: user.correoUsuario, rol: user.rol.rol };
 
     const token = await this.jwtService.signAsync(payload);
 
     return { token, correoUsuario };
+  }
+
+  async profile({
+    correoUsuario,
+    rol,
+  }: {
+    correoUsuario: string;
+    rol: number;
+  }) {
+    /*if (rol !== 2) {
+      throw new UnauthorizedException('No tienes permisos para acceder');
+    }*/
+    return await this.usuarioService.findOneByEmail(correoUsuario);
   }
 }

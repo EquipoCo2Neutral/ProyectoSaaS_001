@@ -21,7 +21,10 @@ export class UsuarioService {
   //para hacer el login
 
   findOneByEmail(correoUsuario: string) {
-    return this.usuarioRepository.findOneBy({ correoUsuario });
+    return this.usuarioRepository.findOne({
+      where: { correoUsuario },
+      relations: ['rol'],
+    });
   }
 
   async create(createUsuarioDto: CreateUsuarioDto) {
