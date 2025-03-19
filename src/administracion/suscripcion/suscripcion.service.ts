@@ -32,15 +32,42 @@ export class SuscripcionService {
     return this.suscripcionRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} suscripcion`;
+  async findOne(id: number) {
+    const suscripcion = await this.suscripcionRepository.findOne({
+      where : {id:id},
+      relations : {plan : true}
+    })
+    if(!suscripcion){
+      let errors : string[] = []
+      errors.push("La suscripcion no existe")
+      throw new NotFoundException(errors)
+    }
+
+
+    return suscripcion;
   }
 
-  update(id: number, updateSuscripcionDto: UpdateSuscripcionDto) {
-    return `This action updates a #${id} suscripcion`;
+  async update(id: number, updateSuscripcionDto: UpdateSuscripcionDto) {
+    const suscripcion = await this.findOne(id)
+    Object.assign(suscripcion, updateSuscripcionDto)
+
+    if(updateSuscripcionDto.planId){
+
+      const plan = await this.planRepository.findOneBy({idPlan: updateSuscripcionDto.planId})
+      if(!plan){
+        let errors : string[] = []
+        errors.push("El plan no existe")
+        throw new NotFoundException(errors)
+      }
+      suscripcion.plan = plan
+    }
+
+    return await this.suscripcionRepository.save(suscripcion);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} suscripcion`;
+  async remove(id: number) {
+    const suscripcion = await this.findOne(id)
+    await this.suscripcionRepository.remove(suscripcion)
+    return "La suscripcion ha sido eliminada";
   }
 }
