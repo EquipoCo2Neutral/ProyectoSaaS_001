@@ -40,11 +40,11 @@ export class InquilinoController {
     @Param('id') id: string,
     @Body() updateInquilinoDto: UpdateInquilinoDto,
   ) {
-    return this.inquilinoService.update(+id, updateInquilinoDto);
+    return this.inquilinoService.update(id, updateInquilinoDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.inquilinoService.remove(+id);
+    return this.inquilinoService.remove(id);
   }
 }
