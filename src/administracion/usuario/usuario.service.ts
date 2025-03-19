@@ -60,8 +60,14 @@ export class UsuarioService {
     return this.usuarioRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+  findOne(id: string) {
+    return this.usuarioRepository.findOne({
+      where: { usuarioId: id },
+      relations: {
+        rol: true,
+        inquilino: true,
+      }
+    });
   }
 
   update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
