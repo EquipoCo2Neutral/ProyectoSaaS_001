@@ -54,15 +54,65 @@ export class PlantaService {
     return this.plantaRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} planta`;
+  async findOne(id: string) {
+    const planta = await this.plantaRepository.findOne({
+      where : {idPlanta: id},
+      relations: {usuario: true, inquilino: true, comuna: true}
+    });
+
+    if(!planta){
+      let errors : string[]=[]
+      errors.push("La planta no existe")
+      throw new NotFoundException(errors);
+    }
+
+    return planta;
   }
 
-  update(id: number, updatePlantaDto: UpdatePlantaDto) {
-    return `This action updates a #${id} planta`;
+  async update(id: string, updatePlantaDto: UpdatePlantaDto) {
+    const planta = await this.findOne(id)
+    Object.assign(planta, updatePlantaDto)
+
+    if(updatePlantaDto.usuarioId){
+      const usuario = await this.usuarioRepository.findOneBy({usuarioId: updatePlantaDto.usuarioId})
+
+      if(!usuario){
+        let errors : string[] = []
+        errors.push("El usuario no existe")
+        throw new NotFoundException(errors);
+      }
+
+      planta.usuario = usuario
+    }
+    if(updatePlantaDto.inquilinoId){
+      const inquilino = await this.inquilinoRepository.findOneBy({inquilinoId: updatePlantaDto.inquilinoId})
+
+      if(!inquilino){
+        let errors : string[] = []
+        errors.push("El inquilino no existe")
+        throw new NotFoundException(errors);
+      }
+
+      planta.inquilino = inquilino
+    }
+    if(updatePlantaDto.comunaId){
+      const comuna = await this.comunaRepository.findOneBy({idComuna: updatePlantaDto.comunaId})
+
+      if(!comuna){
+        let errors : string[] = []
+        errors.push("La comuna no existe")
+        throw new NotFoundException(errors);
+      }
+
+      planta.comuna = comuna
+    }
+
+    return await this.plantaRepository.save(planta);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} planta`;
+  async remove(id: string) {
+    const planta = await this.findOne(id)
+    await this.plantaRepository.remove(planta)
+    return "La planta ha sido eliminada";
   }
 }

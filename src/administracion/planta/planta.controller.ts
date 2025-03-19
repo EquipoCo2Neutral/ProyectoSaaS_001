@@ -19,16 +19,16 @@ export class PlantaController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.plantaService.findOne(+id);
+    return this.plantaService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePlantaDto: UpdatePlantaDto) {
-    return this.plantaService.update(+id, updatePlantaDto);
+    return this.plantaService.update(id, updatePlantaDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.plantaService.remove(+id);
+    return this.plantaService.remove(id);
   }
 }
