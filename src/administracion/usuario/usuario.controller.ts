@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { GetUsuarioDto } from './dto/get-usuario.dto';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -13,8 +14,13 @@ export class UsuarioController {
   }
 
   @Get()
-  findAll() {
-    return this.usuarioService.findAll();
+  findAll(@Query() query: GetUsuarioDto) {
+
+    console.log(query);
+    const rol = query.rolId ? query.rolId : null;
+    const inquilino = query.inquilinoId ? query.inquilinoId : null;
+
+    return this.usuarioService.findAll(rol, inquilino);
   }
 
   @Get(':id')
