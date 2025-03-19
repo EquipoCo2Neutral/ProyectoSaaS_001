@@ -102,21 +102,48 @@ export class UsuarioService {
 
   }
 
-  findOne(id: string) {
-    return this.usuarioRepository.findOne({
+  async findOne(id: string) {
+    const usuario = await this.usuarioRepository.findOne({
       where: { usuarioId: id },
-      relations: {
-        rol: true,
-        inquilino: true,
-      }
+      relations: {rol: true, inquilino: true,}
     });
+    if(!usuario){
+      let errors : string[] = []
+      errors.push("No existe ese usuario")
+      throw new NotFoundException(errors);
+    }
+    return usuario;
+
   }
 
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+  async update(id: string, updateUsuarioDto: UpdateUsuarioDto) {
+    const usuario = await this.findOne(id)
+    Object.assign(usuario, updateUsuarioDto)
+
+    if(updateUsuarioDto.inquilinoId){
+      const inquilino = await this.inquilinoRepository.findOneBy({inquilinoId: updateUsuarioDto.inquilinoId})
+      if(!inquilino){
+        let errors : string[]=[]
+        errors.push("El inquilino no existe")
+        throw new NotFoundException(errors)
+      }
+      usuario.inquilino = inquilino
+    }
+    if(updateUsuarioDto.rolId){
+      const rol = await this.rolRepository.findOneBy({id: updateUsuarioDto.rolId})
+      if(!rol){
+        let errors : string[] = []
+        errors.push("El inquilino no existe")
+        throw new NotFoundException(errors)
+      }
+      usuario.rol = rol
+    }
+    return this.usuarioRepository.save(usuario);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  async remove(id: string) {
+    const usuario = await this.findOne(id)
+    await this.usuarioRepository.remove(usuario)
+    return "El usuario ha sido eliminado";
   }
 }
