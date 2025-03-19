@@ -38,8 +38,14 @@ export class InquilinoService {
     return this.inquilinoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} inquilino`;
+  async findOne(id: string) {
+    const inquilino = await this.inquilinoRepository.findOne({where:{inquilinoId: id}, relations: {suscripcion: true}});
+    if (!inquilino) {
+      let errors: string[] = [];
+      errors.push('El inquilino no existe');
+      throw new NotFoundException(errors);
+    }
+    return inquilino;
   }
 
   update(id: number, updateInquilinoDto: UpdateInquilinoDto) {

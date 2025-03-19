@@ -32,7 +32,7 @@ export class InquilinoController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log('id', id);
-    return this.inquilinoService.findOne(+id);
+    return this.inquilinoService.findOne(id);
   }
 
   @Patch(':id')
