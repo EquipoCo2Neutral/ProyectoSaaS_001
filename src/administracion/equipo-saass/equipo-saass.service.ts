@@ -51,15 +51,41 @@ export class EquipoSaassService {
     return this.equipoSaassRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} equipoSaass`;
+  async findOne(id: string) {
+    const equipo = await this.equipoSaassRepository.findOne({
+      where: { idEquipo: id },
+      relations: {rol: true,},
+    });
+
+    if (!equipo) {
+      let errors: string[] = [];
+      errors.push('El equipo no existe');
+      throw new NotFoundException(errors);
+    }
+    console.log(equipo);
+    return equipo;
   }
 
-  update(id: number, updateEquipoSaassDto: UpdateEquipoSaassDto) {
-    return `This action updates a #${id} equipoSaass`;
+  async update(id: string, updateEquipoSaassDto: UpdateEquipoSaassDto) {
+    const equipo = await this.findOne(id);
+    Object.assign(equipo, updateEquipoSaassDto);
+
+    if(updateEquipoSaassDto.rolId){
+      const rol = await this.rolRepository.findOneBy({id: updateEquipoSaassDto.rolId});
+      if (!rol) {
+        let errors: string[] = [];
+        errors.push('El rol no existe');
+        throw new NotFoundException(errors);
+      }
+      equipo.rol = rol;
+    }
+
+    return await this.equipoSaassRepository.save(equipo);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} equipoSaass`;
+  async remove(id: string) {
+    const equipo = await this.findOne(id);
+    await this.equipoSaassRepository.remove(equipo);
+    return "Producto eliminado";
   }
 }

@@ -27,7 +27,7 @@ export class EquipoSaassController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.equipoSaassService.findOne(+id);
+    return this.equipoSaassService.findOne(id);
   }
 
   @Patch(':id')
@@ -35,11 +35,11 @@ export class EquipoSaassController {
     @Param('id') id: string,
     @Body() updateEquipoSaassDto: UpdateEquipoSaassDto,
   ) {
-    return this.equipoSaassService.update(+id, updateEquipoSaassDto);
+    return this.equipoSaassService.update(id, updateEquipoSaassDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.equipoSaassService.remove(+id);
+    return this.equipoSaassService.remove(id);
   }
 }
