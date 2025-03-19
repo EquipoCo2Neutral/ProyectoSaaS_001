@@ -30,16 +30,41 @@ export class PersonaService {
     return this.personaRepository.find();
   }
 
-  findOne(id: string) {
-    const persona = this.personaRepository.findOneBy({id});
+  async findOne(id: string) {
+    const persona = await this.personaRepository.findOne({
+      where: {id : id},
+      relations: {usuario : true}
+    });
+
+    if(!persona){
+      let errors : string[] = []
+      errors.push('La persona no existe')
+      throw new NotFoundException(errors);
+    }
     return persona;
   }
 
-  update(id: number, updatePersonaDto: UpdatePersonaDto) {
-    return `This action updates a #${id} persona`;
+  async update(id: string, updatePersonaDto: UpdatePersonaDto) {
+    const persona = await this.findOne(id);
+    Object.assign(persona, updatePersonaDto)
+
+    if(updatePersonaDto.usuarioId){
+      const usuario = await this.usuarioRepository.findOneBy({usuarioId : updatePersonaDto.usuarioId})
+
+      if(!usuario){
+        let errors : string[] = []
+        errors.push('El usuario no existe')
+        throw new NotFoundException(errors);
+      }
+      persona.usuario = usuario;
+    }
+
+    return await this.personaRepository.save(persona);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} persona`;
+  async remove(id: string) {
+    const persona = await this.findOne(id);
+    await this.personaRepository.remove(persona)
+    return "La persona ha sido eliminada";
   }
 }

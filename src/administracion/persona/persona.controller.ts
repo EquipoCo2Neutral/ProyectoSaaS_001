@@ -24,11 +24,11 @@ export class PersonaController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePersonaDto: UpdatePersonaDto) {
-    return this.personaService.update(+id, updatePersonaDto);
+    return this.personaService.update(id, updatePersonaDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.personaService.remove(+id);
+    return this.personaService.remove(id);
   }
 }
