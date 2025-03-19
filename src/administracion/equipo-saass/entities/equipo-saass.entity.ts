@@ -22,9 +22,9 @@ export class EquipoSaass {
   @Column()
   correo: string;
 
-  @Column()
+  @Column({ nullable: false, select: false })
   contrasena: string;
 
-  @ManyToOne(() => Rol)
+  @ManyToOne(() => Rol, (rol) => rol.equipoSaass)
   rol: Rol;
 }

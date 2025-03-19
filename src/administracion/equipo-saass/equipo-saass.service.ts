@@ -8,33 +8,47 @@ import { Rol } from '../rol/entities/rol.entity';
 
 @Injectable()
 export class EquipoSaassService {
-
   constructor(
-
     @InjectRepository(EquipoSaass)
     private readonly equipoSaassRepository: Repository<EquipoSaass>,
 
     @InjectRepository(Rol)
     private readonly rolRepository: Repository<Rol>,
-
   ) {}
 
+  //para hacer el login
+
+  findOneByEmail(correo: string) {
+    return this.equipoSaassRepository.findOne({
+      where: { correo },
+      relations: ['rol'],
+    });
+  }
+
+  findOneByEmailWithPassword(correo: string) {
+    return this.equipoSaassRepository.findOne({
+      where: { correo },
+      select: ['idEquipo', 'nombre', 'apellido', 'correo', 'contrasena'],
+      relations: ['rol'],
+    });
+  }
 
   async create(createEquipoSaassDto: CreateEquipoSaassDto) {
-    
-    const rol = await this.rolRepository.findOneBy({id: createEquipoSaassDto.rolId});
+    const rol = await this.rolRepository.findOneBy({
+      id: createEquipoSaassDto.rolId,
+    });
 
     if (!rol) {
-      let errors : string[] = []
+      let errors: string[] = [];
       errors.push('La suscripcion no existe');
       throw new NotFoundException(errors);
     }
 
-    return this.equipoSaassRepository.save({...createEquipoSaassDto, rol}); ;
+    return this.equipoSaassRepository.save({ ...createEquipoSaassDto, rol });
   }
 
   findAll() {
-    return `This action returns all equipoSaass`;
+    return this.equipoSaassRepository.find();
   }
 
   findOne(id: number) {

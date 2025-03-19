@@ -9,5 +9,6 @@ import { Rol } from '../rol/entities/rol.entity';
   imports: [TypeOrmModule.forFeature([EquipoSaass, Rol])],
   controllers: [EquipoSaassController],
   providers: [EquipoSaassService],
+  exports: [EquipoSaassService],
 })
 export class EquipoSaassModule {}
