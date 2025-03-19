@@ -51,7 +51,7 @@ export class PlantaService {
   }
 
   findAll() {
-    return `This action returns all planta`;
+    return this.plantaRepository.find();
   }
 
   findOne(id: number) {

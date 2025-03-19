@@ -29,7 +29,7 @@ export class SuscripcionService {
   }
 
   findAll() {
-    return `This action returns all suscripcion`;
+    return this.suscripcionRepository.find();
   }
 
   findOne(id: number) {
