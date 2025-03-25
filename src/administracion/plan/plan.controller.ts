@@ -13,7 +13,7 @@ import { UpdatePlanDto } from './dto/update-plan.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/rol.enum';
 
-@Auth(Role.ADMIN_SAAS)
+//@Auth(Role.ADMIN_SAAS)
 @Controller('plan')
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
