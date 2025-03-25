@@ -40,7 +40,7 @@ export class EquipoSaassService {
 
     if (!rol) {
       let errors: string[] = [];
-      errors.push('La suscripcion no existe');
+      errors.push('EL rol no existe');
       throw new NotFoundException(errors);
     }
 

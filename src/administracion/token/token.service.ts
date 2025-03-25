@@ -59,6 +59,7 @@ export class TokenService {
     console.log('usuario',usuario)
     console.log('tokenConf',tokenConf)
     usuario.confirmacionUsuario = true
+    await this.usuarioRespository.save(usuario)
     await this.tokenRespository.delete(tokenConf)
     /* Eliminar el Token luego de la confirmacion */
     return 'Token confirmado, usuario actualizado y token eliminado'
