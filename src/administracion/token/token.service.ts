@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateTokenDto } from './dto/create-token.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Token } from './entities/token.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { generateToken } from 'src/utilties/token';
 import { Usuario } from '../usuario/entities/usuario.entity';
+
 
 @Injectable()
 export class TokenService {
@@ -22,7 +23,7 @@ export class TokenService {
     if (!usuario) {
       let errors : string[] = []
       errors.push('Usuario no encontrado')
-      throw new Error('Usuario no encontrado')
+      throw new NotFoundException('Usuario no encontrado')
     }
 
 
@@ -41,7 +42,9 @@ export class TokenService {
       relations: ['usuario'], // Asegurar que la relación usuario se cargue
     });
     if (!tokenConf) {
-      throw new Error('Token no encontrado')
+      let errors : string[] = []
+      errors.push('Token no encontrado')
+      throw new NotFoundException('Token no encontrado')
     }
     if (tokenConf.expiresAt < new Date()) {
       await this.tokenRespository.delete(tokenConf)
@@ -51,7 +54,7 @@ export class TokenService {
     /*  Actualizar el estado de confirmado en el usuario  */
     const usuario = await this.usuarioRespository.findOneBy({usuarioId : tokenConf.usuario.usuarioId})
     if (!usuario) {
-      throw new Error('Usuario no encontrado')
+      throw new NotFoundException('Usuario no encontrado')
     }
     console.log('usuario',usuario)
     console.log('tokenConf',tokenConf)
