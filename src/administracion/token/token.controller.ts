@@ -12,6 +12,11 @@ export class TokenController {
     return this.tokenService.create(createTokenDto);
   }
 
+  @Post('confirm')
+  confirm(@Body('token') token: string) {
+    return this.tokenService.confirm(token);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tokenService.findOne(+id);

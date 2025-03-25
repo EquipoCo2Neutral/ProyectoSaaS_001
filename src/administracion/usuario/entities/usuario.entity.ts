@@ -24,6 +24,14 @@ export class Usuario {
   @Column({ nullable: false, select: false })
   contrasenaUsuario: string;
 
+  @Column({default: false})
+  estadoUsuario: boolean;
+
+  @Column({default: false})
+  confirmacionUsuario: boolean;
+
+
+
   @ManyToOne(() => Rol)
   rol: Rol;
 

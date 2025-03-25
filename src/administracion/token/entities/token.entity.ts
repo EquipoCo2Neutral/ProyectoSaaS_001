@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 import { Usuario } from "src/administracion/usuario/entities/usuario.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity('token')
 @Unique(['token'])
@@ -15,7 +15,8 @@ export class Token {
     @ManyToOne (() => Usuario ) 
     usuario: Usuario;
 
-    @CreateDateColumn()
-    createdAt: Date;
+    @Column({type: 'timestamp'})
+    @Index()
+    expiresAt: Date;
     
 }
