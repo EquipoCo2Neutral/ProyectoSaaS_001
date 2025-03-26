@@ -18,6 +18,7 @@ import { PlantaModule } from './administracion/planta/planta.module';
 import { EquipoSaassModule } from './administracion/equipo-saass/equipo-saass.module';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './administracion/token/token.module';
+import { MailsModule } from './mails/mails.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { TokenModule } from './administracion/token/token.module';
     EquipoSaassModule,
     AuthModule,
     TokenModule,
+    MailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

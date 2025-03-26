@@ -8,6 +8,8 @@ import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { UserActiveInterface } from 'src/common/interface/user-active.interface';
 import { LoginEquipoDto } from './dto/loginEquipo.dto';
 import { RegisterEquipoDto } from './dto/registerEquipo.dto';
+import { User } from 'src/interfaces/user';
+import { MailsService } from 'src/mails/mails.service';
 
 interface RequestWithUser extends Request {
   user: {
@@ -20,7 +22,20 @@ interface RequestWithUser extends Request {
 export class AuthController {
   //inyectar el servicio de autenticación
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly mailsService: MailsService,
+  ) {}
+
+  @Post('invitation')
+  create(@Body() user: User) {
+    return this.mailsService.sendInvitation(
+      user.nombre,
+      user.email,
+      user.rol,
+      user.inquilinoId,
+    );
+  }
 
   @Post('register')
   register(
