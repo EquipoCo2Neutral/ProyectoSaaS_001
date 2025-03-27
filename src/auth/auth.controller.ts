@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -11,13 +19,6 @@ import { RegisterEquipoDto } from './dto/registerEquipo.dto';
 import { User } from 'src/interfaces/user';
 import { MailsService } from 'src/mails/mails.service';
 
-interface RequestWithUser extends Request {
-  user: {
-    correoUsuario: string;
-    rol: number;
-  };
-}
-
 @Controller('auth')
 export class AuthController {
   //inyectar el servicio de autenticación
@@ -27,6 +28,7 @@ export class AuthController {
     private readonly mailsService: MailsService,
   ) {}
 
+  @Auth(Role.ADMIN_SAAS)
   @Post('invitation')
   create(@Body() user: User) {
     return this.mailsService.sendInvitation(
@@ -35,6 +37,11 @@ export class AuthController {
       user.rol,
       user.inquilinoId,
     );
+  }
+
+  @Get('validate-invitation')
+  async validateInvitation(@Query('token') token: string) {
+    return this.authService.validateInvitationToken(token);
   }
 
   @Post('register')

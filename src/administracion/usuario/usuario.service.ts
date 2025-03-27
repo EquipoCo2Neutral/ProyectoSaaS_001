@@ -30,8 +30,8 @@ export class UsuarioService {
   findOneByEmailWithPassword(correoUsuario: string) {
     return this.usuarioRepository.findOne({
       where: { correoUsuario },
-      select: ['usuarioId', 'correoUsuario', 'contrasenaUsuario'],
-      relations: ['rol'],
+      select: ['usuarioId', 'correoUsuario', 'contrasenaUsuario', 'inquilino'],
+      relations: ['rol', 'inquilino'],
     });
   }
 
@@ -56,17 +56,13 @@ export class UsuarioService {
     return this.usuarioRepository.save({ ...createUsuarioDto, rol, inquilino });
   }
 
-
-  
-
-  // para listar los usuarios y poder listarlos tambien por rol e inquilino si se requiere 
+  // para listar los usuarios y poder listarlos tambien por rol e inquilino si se requiere
   // (como en el caso de los administradores saas cuando seleccionen un inquilino y se
-  //  deban mostrar los adminstradores de ese inquilino; aca podemos obtener los usuariosId 
-  //  para buscar en tabla persona los datos de los usuarios con rol admin y mostrarlos) 
+  //  deban mostrar los adminstradores de ese inquilino; aca podemos obtener los usuariosId
+  //  para buscar en tabla persona los datos de los usuarios con rol admin y mostrarlos)
 
-  async findAll(rolId: number | null, inquilinoId: string |null ) {
-
-    const options : FindManyOptions<Usuario> = {
+  async findAll(rolId: number | null, inquilinoId: string | null) {
+    const options: FindManyOptions<Usuario> = {
       relations: {
         rol: true,
         inquilino: true,
@@ -75,16 +71,16 @@ export class UsuarioService {
         usuarioId: 'ASC',
       },
       where: {},
-    }
+    };
 
-    if (rolId ) {
+    if (rolId) {
       options.where = {
         ...options.where,
         rol: { id: rolId },
       };
       options.relations = {
         rol: false,
-      }
+      };
     }
 
     if (inquilinoId) {
@@ -94,56 +90,59 @@ export class UsuarioService {
       };
       options.relations = {
         inquilino: false,
-      }
+      };
     }
 
-    const [usuarios, total] = await this.usuarioRepository.findAndCount(options);
-    return {usuarios, total};
-
+    const [usuarios, total] =
+      await this.usuarioRepository.findAndCount(options);
+    return { usuarios, total };
   }
 
   async findOne(id: string) {
     const usuario = await this.usuarioRepository.findOne({
       where: { usuarioId: id },
-      relations: {rol: true, inquilino: true,}
+      relations: { rol: true, inquilino: true },
     });
-    if(!usuario){
-      let errors : string[] = []
-      errors.push("No existe ese usuario")
+    if (!usuario) {
+      let errors: string[] = [];
+      errors.push('No existe ese usuario');
       throw new NotFoundException(errors);
     }
     return usuario;
-
   }
 
   async update(id: string, updateUsuarioDto: UpdateUsuarioDto) {
-    const usuario = await this.findOne(id)
-    Object.assign(usuario, updateUsuarioDto)
+    const usuario = await this.findOne(id);
+    Object.assign(usuario, updateUsuarioDto);
 
-    if(updateUsuarioDto.inquilinoId){
-      const inquilino = await this.inquilinoRepository.findOneBy({inquilinoId: updateUsuarioDto.inquilinoId})
-      if(!inquilino){
-        let errors : string[]=[]
-        errors.push("El inquilino no existe")
-        throw new NotFoundException(errors)
+    if (updateUsuarioDto.inquilinoId) {
+      const inquilino = await this.inquilinoRepository.findOneBy({
+        inquilinoId: updateUsuarioDto.inquilinoId,
+      });
+      if (!inquilino) {
+        let errors: string[] = [];
+        errors.push('El inquilino no existe');
+        throw new NotFoundException(errors);
       }
-      usuario.inquilino = inquilino
+      usuario.inquilino = inquilino;
     }
-    if(updateUsuarioDto.rolId){
-      const rol = await this.rolRepository.findOneBy({id: updateUsuarioDto.rolId})
-      if(!rol){
-        let errors : string[] = []
-        errors.push("El inquilino no existe")
-        throw new NotFoundException(errors)
+    if (updateUsuarioDto.rolId) {
+      const rol = await this.rolRepository.findOneBy({
+        id: updateUsuarioDto.rolId,
+      });
+      if (!rol) {
+        let errors: string[] = [];
+        errors.push('El inquilino no existe');
+        throw new NotFoundException(errors);
       }
-      usuario.rol = rol
+      usuario.rol = rol;
     }
     return this.usuarioRepository.save(usuario);
   }
 
   async remove(id: string) {
-    const usuario = await this.findOne(id)
-    await this.usuarioRepository.remove(usuario)
-    return "El usuario ha sido eliminado";
+    const usuario = await this.findOne(id);
+    await this.usuarioRepository.remove(usuario);
+    return 'El usuario ha sido eliminado';
   }
 }

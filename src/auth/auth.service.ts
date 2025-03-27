@@ -13,6 +13,10 @@ import { EquipoSaassService } from 'src/administracion/equipo-saass/equipo-saass
 import { LoginEquipoDto } from './dto/loginEquipo.dto';
 import { RegisterEquipoDto } from './dto/registerEquipo.dto';
 
+import * as jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -20,6 +24,33 @@ export class AuthService {
     private readonly equipoSaassService: EquipoSaassService,
     private readonly jwtService: JwtService,
   ) {}
+
+  async validateInvitationToken(token: string) {
+    if (!token) {
+      throw new BadRequestException('Token no proporcionado.');
+    }
+
+    try {
+      // Decodificar el token
+      if (!process.env.JWT_SECRET) {
+        throw new Error('SECRET_KEY is not defined in environment variables.');
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as unknown as {
+        email: string;
+        rol: string;
+        inquilinoId: string;
+      };
+
+      return {
+        email: decoded.email,
+        rol: decoded.rol,
+        inquilinoId: decoded.inquilinoId,
+      };
+    } catch (error) {
+      throw new BadRequestException('Token inválido o expirado.');
+    }
+  }
 
   async register({
     correoUsuario,
@@ -88,7 +119,11 @@ export class AuthService {
       throw new UnauthorizedException('contraseña no es correcta');
     }
 
-    const payload = { correoUsuario: user.correoUsuario, rol: user.rol.rol };
+    const payload = {
+      correoUsuario: user.correoUsuario,
+      rol: user.rol.rol,
+      inquilinoId: user.inquilino.inquilinoId,
+    };
 
     const token = await this.jwtService.signAsync(payload);
 
