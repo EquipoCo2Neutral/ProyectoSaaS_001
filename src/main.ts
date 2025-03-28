@@ -12,6 +12,11 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.enableCors({
+    origin: 'http://localhost:5173', // Dirección del frontend en Vite
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
+  });
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

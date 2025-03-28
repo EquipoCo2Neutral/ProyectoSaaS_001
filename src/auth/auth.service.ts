@@ -37,14 +37,14 @@ export class AuthService {
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET) as unknown as {
-        email: string;
-        rol: string;
+        correoUsuario: string;
+        rolId: number;
         inquilinoId: string;
       };
 
       return {
-        email: decoded.email,
-        rol: decoded.rol,
+        correoUsuario: decoded.correoUsuario,
+        rolId: decoded.rolId,
         inquilinoId: decoded.inquilinoId,
       };
     } catch (error) {
@@ -71,9 +71,7 @@ export class AuthService {
       inquilinoId,
     });
 
-    return {
-      correoUsuario,
-    };
+    return this.usuarioService.findOneByEmail(correoUsuario);
   }
 
   async register_equipo({

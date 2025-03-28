@@ -9,19 +9,34 @@ export class MailsService {
 
   async sendInvitation(
     user: string,
-    email: string,
-    rol: string,
+    correoUsuario: string,
+    rolId: string,
     inquilinoId: string,
   ) {
-    const token = generateTokenInvitation(email, rol, inquilinoId);
-    const url = `http://localhost:3000/register?token=${token}`;
+    const token = generateTokenInvitation(correoUsuario, rolId, inquilinoId);
+    const url = `http://localhost:5173/registro?token=${token}`;
     await this.mailerService.sendMail({
-      to: email,
+      to: correoUsuario,
       subject: 'Invitacion Enerley',
       template: './invitation',
       context: {
         name: user,
-        rol,
+        rolId,
+        url,
+      },
+    });
+  }
+
+  //Arreglar campos
+  async sendConfirmation(token: string, correoUsuario: string) {
+    const url = `http://localhost:5173/confirmar-cuenta`;
+    console.log('Correo destinatario:', correoUsuario); // Verifica el valor de correoUsuario
+    await this.mailerService.sendMail({
+      to: correoUsuario,
+      subject: 'Confirmación Cuenta Enerley',
+      template: './confirmation',
+      context: {
+        token,
         url,
       },
     });

@@ -33,8 +33,8 @@ export class AuthController {
   create(@Body() user: User) {
     return this.mailsService.sendInvitation(
       user.nombre,
-      user.email,
-      user.rol,
+      user.correoUsuario,
+      user.rolId,
       user.inquilinoId,
     );
   }

@@ -10,11 +10,11 @@ if (!SECRET_KEY) {
   throw new Error('JWT_SECRET no está definido en las variables de entorno.');
 }
 export const generateTokenInvitation = (
-  email: string,
-  rol: string,
+  correoUsuario: string,
+  rolId: string,
   inquilinoId: string,
 ) => {
-  return jwt.sign({ email, rol, inquilinoId }, SECRET_KEY, {
+  return jwt.sign({ correoUsuario, rolId, inquilinoId }, SECRET_KEY, {
     expiresIn: '1d',
   }); // Token válido por 1 día
 };
