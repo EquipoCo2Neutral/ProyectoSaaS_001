@@ -39,5 +39,5 @@ export class CreateInquilinoDto {
   estadoInquilino: boolean = false; //por defecto se crea en false
 
   @IsInt({ message: 'El suscripcionId debe ser un número entero' })
-  suscripcionId: number = 2; //por defecto se crea en 0
+  suscripcionId: number = 1; //por defecto se crea en 0
 }

@@ -1,5 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cors from 'cors';
+import { corsConfig } from './config/cors';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -12,11 +14,12 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  app.enableCors({
+  app.enableCors(corsConfig);
+  /*app.enableCors({
     origin: 'http://localhost:5173', // Dirección del frontend en Vite
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
-  });
+  });*/
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

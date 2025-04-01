@@ -31,6 +31,7 @@ export class InquilinoService {
     return this.inquilinoRepository.save({
       ...createInquilinoDto,
       suscripcion,
+      message: 'Inquilino creado correctamente',
     });
   }
 
@@ -40,8 +41,8 @@ export class InquilinoService {
 
   async findOne(id: string) {
     const inquilino = await this.inquilinoRepository.findOne({
-      where:{inquilinoId: id},
-      relations: {suscripcion: true}
+      where: { inquilinoId: id },
+      relations: { suscripcion: true },
     });
 
     if (!inquilino) {
@@ -56,10 +57,12 @@ export class InquilinoService {
     const inquilino = await this.findOne(id);
     Object.assign(inquilino, updateInquilinoDto);
 
-    if (updateInquilinoDto.suscripcionId){
-      const suscripcion = await this.suscripcionRepository.findOneBy({id : updateInquilinoDto.suscripcionId});
+    if (updateInquilinoDto.suscripcionId) {
+      const suscripcion = await this.suscripcionRepository.findOneBy({
+        id: updateInquilinoDto.suscripcionId,
+      });
 
-      if (!suscripcion){
+      if (!suscripcion) {
         let errors: string[] = [];
         errors.push('La suscripcion no existe');
         throw new NotFoundException(errors);
@@ -73,6 +76,6 @@ export class InquilinoService {
   async remove(id: string) {
     const inquilino = await this.findOne(id);
     await this.inquilinoRepository.remove(inquilino);
-    return "Se elimino el inquilino";
+    return 'Se elimino el inquilino';
   }
 }
