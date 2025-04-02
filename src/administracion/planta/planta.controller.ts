@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, Query } from '@nestjs/common';
 import { PlantaService } from './planta.service';
 import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
@@ -13,8 +13,12 @@ export class PlantaController {
   }
 
   @Get()
-  findAll() {
-    return this.plantaService.findAll();
+  findAll(@Query('inquilinoId') inquilino: string) {
+    if (!inquilino) {
+      throw new BadRequestException('inquilinoId es requerido');
+    }
+    const inquilinoId = inquilino ? inquilino: null;
+    return this.plantaService.findAll(inquilinoId);
   }
 
   @Get(':id')

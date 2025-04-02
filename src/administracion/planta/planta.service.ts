@@ -50,8 +50,14 @@ export class PlantaService {
     return this.plantaRepository.save({...createPlantaDto, usuario, inquilino, comuna});
   }
 
-  findAll() {
-    return this.plantaRepository.find();
+  async findAll(inquilinoId: string| null) {
+    if(inquilinoId){
+      const [plantas,total] = await this.plantaRepository.findAndCount({
+        where: {inquilino : {inquilinoId: inquilinoId}}, 
+        relations: {inquilino : true, usuario : true, comuna : true}
+      });
+      return {plantas,total};
+    }
   }
 
   async findOne(id: string) {

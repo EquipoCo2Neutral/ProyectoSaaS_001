@@ -31,7 +31,7 @@ export class UsuarioService {
     return this.usuarioRepository.findOne({
       where: { correoUsuario },
       select: ['usuarioId', 'correoUsuario', 'contrasenaUsuario'],
-      relations: ['rol'],
+      relations: ['rol', 'inquilino'],
     });
   }
 

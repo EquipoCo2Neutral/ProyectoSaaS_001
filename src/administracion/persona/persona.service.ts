@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
 import { Persona } from './entities/persona.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from '../usuario/entities/usuario.entity';
 
@@ -42,6 +42,17 @@ export class PersonaService {
       throw new NotFoundException(errors);
     }
     return persona;
+  }
+
+
+  async findUsuarioId(usuarioId: string[]): Promise<Persona[]> {
+    if (!usuarioId || usuarioId.length === 0) {
+      return []; // Devuelve un array vacío si no hay IDs válidos
+    }
+    return this.personaRepository.find({
+      where: {usuario : {usuarioId: In(usuarioId)}}, // Filtra con un array de UUIDs
+      relations: {usuario : true}
+    });
   }
 
   async update(id: string, updatePersonaDto: UpdatePersonaDto) {
