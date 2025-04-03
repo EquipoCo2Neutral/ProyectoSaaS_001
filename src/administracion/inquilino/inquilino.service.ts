@@ -70,7 +70,16 @@ export class InquilinoService {
 
       inquilino.suscripcion = suscripcion;
     }
-    return await this.inquilinoRepository.save(inquilino);
+
+    try {
+      const updateTenant = await this.inquilinoRepository.save(inquilino);
+      return {
+        message: 'Inquilino actualizado correctamente',
+        data: updateTenant,
+      };
+    } catch (error) {
+      throw new Error('Error al actualizar el inquilino');
+    }
   }
 
   async remove(id: string) {
