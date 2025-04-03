@@ -84,7 +84,12 @@ export class InquilinoService {
 
   async remove(id: string) {
     const inquilino = await this.findOne(id);
-    await this.inquilinoRepository.remove(inquilino);
-    return 'Se elimino el inquilino';
+
+    try {
+      await this.inquilinoRepository.remove(inquilino);
+      return { message: 'Inquilino eliminado exitosamente' };
+    } catch (error) {
+      throw new Error('Error al eliminar el inquilino');
+    }
   }
 }

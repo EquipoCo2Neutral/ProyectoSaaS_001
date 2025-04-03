@@ -146,7 +146,7 @@ export class AuthService {
 
     const token = await this.jwtService.signAsync(payload);
 
-    return { token, correo };
+    return { token, correo, message: 'Inicio de sesión exitoso' };
   }
 
   async profile({ correoUsuario }: { correoUsuario: string; rol: number }) {

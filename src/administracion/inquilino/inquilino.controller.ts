@@ -14,7 +14,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/rol.enum';
 
 //para especificar el rol que puede acceder a este controlador y sus endpoints
-//@Auth(Role.ADMIN_SAAS)
+@Auth(Role.ADMIN_SAAS)
 @Controller('inquilino')
 export class InquilinoController {
   constructor(private readonly inquilinoService: InquilinoService) {}

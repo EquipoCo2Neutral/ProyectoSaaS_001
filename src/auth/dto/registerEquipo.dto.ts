@@ -27,5 +27,5 @@ export class RegisterEquipoDto {
   contrasena: string;
 
   @IsInt()
-  rolId: number;
+  rolId: number = 1;
 }
