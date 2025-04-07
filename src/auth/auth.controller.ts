@@ -28,15 +28,18 @@ export class AuthController {
     private readonly mailsService: MailsService,
   ) {}
 
-  @Auth(Role.ADMIN_SAAS)
+  @Auth(Role.ADMIN_INQUILINO)
   @Post('invitation')
   create(@Body() user: User) {
-    return this.mailsService.sendInvitation(
-      user.nombre,
-      user.correoUsuario,
-      user.rolId,
-      user.inquilinoId,
-    );
+    return {
+      result: this.mailsService.sendInvitation(
+        user.nombre,
+        user.correoUsuario,
+        user.rolId,
+        user.inquilinoId,
+      ),
+      message: 'Invitación enviada correctamente',
+    };
   }
 
   @Get('validate-invitation')

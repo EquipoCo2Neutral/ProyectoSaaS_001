@@ -14,7 +14,7 @@ export class MailsService {
     inquilinoId: string,
   ) {
     const token = generateTokenInvitation(correoUsuario, rolId, inquilinoId);
-    const url = `http://localhost:5173/registro?token=${token}`;
+    const url = `http://localhost:5173/auth/register-users?token=${token}`;
     await this.mailerService.sendMail({
       to: correoUsuario,
       subject: 'Invitacion Enerley',
@@ -29,8 +29,8 @@ export class MailsService {
 
   //Arreglar campos
   async sendConfirmation(token: string, correoUsuario: string) {
-    const url = `http://localhost:5173/confirmar-cuenta`;
-    console.log('Correo destinatario:', correoUsuario); // Verifica el valor de correoUsuario
+    const url = `http://localhost:5173/auth/confirm-account`;
+
     await this.mailerService.sendMail({
       to: correoUsuario,
       subject: 'Confirmación Cuenta Enerley',

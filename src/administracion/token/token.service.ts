@@ -32,7 +32,7 @@ export class TokenService {
     const token = new Token();
     token.token = generateToken();
     token.usuario = usuario;
-    token.expiresAt = new Date(Date.now() + 60 * 1000);
+    token.expiresAt = new Date(Date.now() + 10 * 60 * 1000); //expira en 10 minutos
     return this.tokenRespository.save(token);
   }
 
