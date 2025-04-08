@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common';
 import { PersonaService } from './persona.service';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
@@ -13,15 +13,20 @@ export class PersonaController {
   }
 
   @Get()
-  findAll() {
-    return this.personaService.findAll();
+  findUsuarioId(@Query('usuarioId') usuario: string | string[] | undefined) {
+    if (!usuario) {
+      throw new BadRequestException('usuarioId es requerido');
+    }
+    const usuarioId = Array.isArray(usuario) ? usuario : [usuario];
+
+    return this.personaService.findUsuarioId(usuarioId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.personaService.findOne(id);
   }
-
+  
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePersonaDto: UpdatePersonaDto) {
     return this.personaService.update(id, updatePersonaDto);
