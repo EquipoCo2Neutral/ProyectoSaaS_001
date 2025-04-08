@@ -30,7 +30,13 @@ export class UsuarioService {
   findOneByEmailWithPassword(correoUsuario: string) {
     return this.usuarioRepository.findOne({
       where: { correoUsuario },
-      select: ['usuarioId', 'correoUsuario', 'contrasenaUsuario', 'inquilino'],
+      select: [
+        'usuarioId',
+        'correoUsuario',
+        'contrasenaUsuario',
+        'inquilino',
+        'confirmacionUsuario',
+      ],
       relations: ['rol', 'inquilino'],
     });
   }

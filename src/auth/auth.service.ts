@@ -114,6 +114,11 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('email no es correcto');
     }
+
+    //verificar si el usuario esta confirmado
+    if (!user.confirmacionUsuario) {
+      throw new UnauthorizedException('el usuario no ha confirmado su cuenta');
+    }
     //verificar contraseña
     const isPasswordValid = await bcrypt.compare(
       contrasenaUsuario,
