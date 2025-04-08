@@ -58,8 +58,7 @@ export class TokenService {
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    console.log('usuario', usuario);
-    console.log('tokenConf', tokenConf);
+
     usuario.confirmacionUsuario = true;
     await this.usuarioRespository.save(usuario);
     await this.tokenRespository.delete(tokenConf);

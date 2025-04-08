@@ -18,6 +18,7 @@ import { LoginEquipoDto } from './dto/loginEquipo.dto';
 import { RegisterEquipoDto } from './dto/registerEquipo.dto';
 import { User } from 'src/interfaces/user';
 import { MailsService } from 'src/mails/mails.service';
+import { SendTokenDto } from './dto/sendtoken.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -77,6 +78,14 @@ export class AuthController {
     loginEquipoDto: LoginEquipoDto,
   ) {
     return this.authService.login_equipo(loginEquipoDto);
+  }
+
+  @Post('request-code')
+  reques(
+    @Body()
+    sendTokenDto: SendTokenDto,
+  ) {
+    return this.authService.requestConfirmationCode(sendTokenDto);
   }
 
   /*@Get('profile')

@@ -15,6 +15,10 @@ import { RegisterEquipoDto } from './dto/registerEquipo.dto';
 
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
+import { TokenService } from 'src/administracion/token/token.service';
+import { MailsService } from 'src/mails/mails.service';
+import { SendTokenDto } from './dto/sendtoken.dto';
+import { error } from 'console';
 dotenv.config();
 
 @Injectable()
@@ -23,6 +27,8 @@ export class AuthService {
     private readonly usuarioService: UsuarioService,
     private readonly equipoSaassService: EquipoSaassService,
     private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
+    private readonly mailsService: MailsService,
   ) {}
 
   async validateInvitationToken(token: string) {
@@ -160,5 +166,34 @@ export class AuthService {
     rol: number;
   }) {
     return await this.equipoSaassService.findOneByEmail(correoUsuario);
+  }
+
+  async requestConfirmationCode({ correoUsuario }: SendTokenDto) {
+    try {
+      const user = await this.usuarioService.findOneByEmail(correoUsuario);
+
+      if (!user) {
+        throw new BadRequestException('El usuario no existe');
+      }
+
+      if (user.confirmacionUsuario) {
+        throw new BadRequestException('El usuario ya ha confirmado su cuenta');
+      }
+
+      //obtener usuarioId
+      const usuarioId = user.usuarioId;
+
+      //generar token
+      const token = await this.tokenService.create({ usuarioId });
+
+      //enviar correo
+      await this.mailsService.sendConfirmation(token.token, correoUsuario);
+
+      return {
+        message: 'Correo de confirmación enviado',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
