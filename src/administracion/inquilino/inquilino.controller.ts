@@ -29,7 +29,7 @@ export class InquilinoController {
     return this.inquilinoService.findAll();
   }
   //ADMIN_INQUILINO
-  @Auth(Role.ADMIN_INQUILINO)
+  @Auth(Role.ADMIN_SAAS, Role.ADMIN_INQUILINO, Role.GESTOR)
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log('id', id);
