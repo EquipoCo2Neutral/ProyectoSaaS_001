@@ -28,7 +28,8 @@ export class InquilinoController {
   findAll() {
     return this.inquilinoService.findAll();
   }
-
+  //ADMIN_INQUILINO
+  @Auth(Role.ADMIN_INQUILINO)
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log('id', id);
