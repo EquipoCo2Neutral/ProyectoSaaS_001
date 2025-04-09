@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Req,
@@ -19,6 +20,9 @@ import { RegisterEquipoDto } from './dto/registerEquipo.dto';
 import { User } from 'src/interfaces/user';
 import { MailsService } from 'src/mails/mails.service';
 import { SendTokenDto } from './dto/sendtoken.dto';
+import { TokenService } from 'src/administracion/token/token.service';
+import { ValidateTokenDto } from './dto/validateToken.dto';
+import { UpdatePasswordDto } from './dto/updatePasswordDto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +31,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly mailsService: MailsService,
+    private readonly tokenService: TokenService,
   ) {}
 
   @Auth(Role.ADMIN_INQUILINO)
@@ -88,6 +93,32 @@ export class AuthController {
     return this.authService.requestConfirmationCode(sendTokenDto);
   }
 
+  @Post('forgot-password')
+  forgot(
+    @Body()
+    sendTokenDto: SendTokenDto,
+  ) {
+    return this.authService.forgotPassword(sendTokenDto);
+  }
+
+  @Post('validate-token')
+  validate(
+    @Body()
+    valiteToken: ValidateTokenDto,
+  ) {
+    return this.tokenService.validateToken(valiteToken.token);
+  }
+
+  @Post('update-password/:token')
+  updatePassword(
+    @Param('token') token: string,
+    @Body() updatePassword: UpdatePasswordDto,
+  ) {
+    return this.tokenService.updatePasswordWithToken(
+      token,
+      updatePassword.contrasenaUsuario,
+    );
+  }
   /*@Get('profile')
   @Roles(Role.ADMIN_SAAS)
   @UseGuards(AuthGuard, RolesGuard)

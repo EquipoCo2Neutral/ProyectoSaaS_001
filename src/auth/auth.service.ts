@@ -201,4 +201,32 @@ export class AuthService {
       throw error;
     }
   }
+
+  async forgotPassword({ correoUsuario }: SendTokenDto) {
+    try {
+      const user = await this.usuarioService.findOneByEmail(correoUsuario);
+
+      if (!user) {
+        throw new BadRequestException('El usuario no existe');
+      }
+
+      //obtener usuarioId
+      const usuarioId = user.usuarioId;
+
+      //generar token
+      const token = await this.tokenService.create({ usuarioId });
+
+      //enviar correo
+      await this.mailsService.sendPasswordResendToken(
+        token.token,
+        correoUsuario,
+      );
+
+      return {
+        message: 'Correo de confirmación enviado',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -41,4 +41,18 @@ export class MailsService {
       },
     });
   }
+
+  async sendPasswordResendToken(token: string, correoUsuario: string) {
+    const url = `http://localhost:5173/auth/new-password`;
+
+    await this.mailerService.sendMail({
+      to: correoUsuario,
+      subject: 'Reesetear Contraseña Enerley',
+      template: './reset-password',
+      context: {
+        token,
+        url,
+      },
+    });
+  }
 }

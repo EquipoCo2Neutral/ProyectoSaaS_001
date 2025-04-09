@@ -9,6 +9,7 @@ import { Token } from './entities/token.entity';
 import { Not, Repository } from 'typeorm';
 import { generateToken } from 'src/utilties/token';
 import { Usuario } from '../usuario/entities/usuario.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class TokenService {
@@ -68,5 +69,59 @@ export class TokenService {
 
   findOne(id: number) {
     return `This action returns a #${id} token`;
+  }
+
+  async validateToken(token: string): Promise<{ message: string }> {
+    try {
+      const tokenConf = await this.tokenRespository.findOne({
+        where: { token: token },
+        relations: ['usuario'], // Asegurar que la relación usuario se cargue
+      });
+      if (!tokenConf) {
+        let errors: string[] = [];
+        errors.push('Token no encontrado');
+        throw new NotFoundException('Token no encontrado');
+      }
+      if (tokenConf.expiresAt < new Date()) {
+        await this.tokenRespository.delete(tokenConf);
+        throw new UnauthorizedException('Token expirado');
+      }
+
+      return {
+        message: 'Token válido, Reestablece tu contraseña',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //funcion para recibir el token desde params verificar si existe y si no ha expirado hashear la password y guardar en la base de datos
+  async updatePasswordWithToken(token: string, contrasenaUsuario: string) {
+    const tokenConf = await this.tokenRespository.findOne({
+      where: { token: token },
+      relations: ['usuario'], // Asegurar que la relación usuario se cargue
+    });
+    if (!tokenConf) {
+      let errors: string[] = [];
+      errors.push('Token no encontrado');
+      throw new NotFoundException('Token no encontrado');
+    }
+    if (tokenConf.expiresAt < new Date()) {
+      await this.tokenRespository.delete(tokenConf);
+      throw new UnauthorizedException('Token expirado');
+    }
+
+    const usuario = await this.usuarioRespository.findOneBy({
+      usuarioId: tokenConf.usuario.usuarioId,
+    });
+    if (!usuario) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    usuario.contrasenaUsuario = await bcrypt.hash(contrasenaUsuario, 10);
+
+    await this.usuarioRespository.save(usuario);
+    await this.tokenRespository.delete(tokenConf); // Eliminar el Token luego de la confirmacion
+    return 'Token confirmado, usuario actualizado y token eliminado';
   }
 }
