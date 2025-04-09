@@ -34,7 +34,7 @@ export class AuthController {
     private readonly tokenService: TokenService,
   ) {}
 
-  @Auth(Role.ADMIN_INQUILINO)
+  @Auth(Role.ADMIN_INQUILINO, Role.ADMIN_SAAS)
   @Post('invitation')
   create(@Body() user: User) {
     return {
