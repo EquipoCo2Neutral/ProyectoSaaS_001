@@ -36,7 +36,12 @@ export class InquilinoService {
   }
 
   findAll() {
-    return this.inquilinoRepository.find();
+    return this.inquilinoRepository.find({
+      order: {
+        estadoInquilino: 'DESC',
+        inquilinoId: 'DESC', 
+      },
+    });
   }
 
   async findOne(id: string) {
