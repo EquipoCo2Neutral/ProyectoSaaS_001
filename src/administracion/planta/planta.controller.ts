@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PlantaService } from './planta.service';
 import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
@@ -30,5 +38,10 @@ export class PlantaController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.plantaService.remove(id);
+  }
+
+  @Get('inquilino/:inquilinoId')
+  findByInquilino(@Param('inquilinoId') inquilinoId: string) {
+    return this.plantaService.findByInquilino(inquilinoId);
   }
 }
