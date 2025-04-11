@@ -76,6 +76,7 @@ export class PlantaService {
       usuario,
       inquilino,
       comuna,
+      message: 'Planta creada correctamente',
     });
   }
 
