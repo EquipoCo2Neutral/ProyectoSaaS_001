@@ -117,6 +117,20 @@ export class UsuarioService {
     return usuario;
   }
 
+  //buscar usuario por correo
+  async findOnebyEmail(id: string) {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { correoUsuario: id },
+      relations: { rol: true, inquilino: true },
+    });
+    if (!usuario) {
+      let errors: string[] = [];
+      errors.push('No existe ese usuario');
+      throw new NotFoundException(errors);
+    }
+    return usuario;
+  }
+
   async update(id: string, updateUsuarioDto: UpdateUsuarioDto) {
     const usuario = await this.findOne(id);
     Object.assign(usuario, updateUsuarioDto);

@@ -38,6 +38,11 @@ export class UsuarioController {
     return this.usuarioService.findOne(id);
   }
 
+  @Get('/correo/:id')
+  findOnebyEmail(@Param('id') id: string) {
+    return this.usuarioService.findOnebyEmail(id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     return this.usuarioService.update(id, updateUsuarioDto);
