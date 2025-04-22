@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { PlantaService } from './planta.service';
 import { CreatePlantaDto } from './dto/create-planta.dto';
@@ -43,5 +44,14 @@ export class PlantaController {
   @Get('inquilino/:inquilinoId')
   findByInquilino(@Param('inquilinoId') inquilinoId: string) {
     return this.plantaService.findByInquilino(inquilinoId);
+  }
+  
+  @Get('usuario/:correo')
+  async obtenerPlantaPorUsuario(@Param('correo') correo: string) {
+    const planta = await this.plantaService.findByUsuario(correo);
+    if (!planta) {
+      throw new NotFoundException('No se encontró una planta para ese usuario');
+    }
+    return planta;
   }
 }

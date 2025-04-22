@@ -151,4 +151,18 @@ export class PlantaService {
     await this.plantaRepository.remove(planta);
     return 'La planta ha sido eliminada';
   }
+
+  async findByUsuario(correo: string){
+    const usuarioCorreo = await this.usuarioRepository.findOne({
+      where: { correoUsuario: correo },
+    })
+    if (usuarioCorreo) {
+      const planta = await this.plantaRepository.find({
+        where: { usuario: { usuarioId: usuarioCorreo.usuarioId } },
+        relations: { usuario: true, inquilino: true, comuna: true },
+      });
+      return planta;
+    }
+    return null;
+  }
 }
