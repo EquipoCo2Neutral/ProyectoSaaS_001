@@ -37,7 +37,9 @@ export class TokenService {
     return this.tokenRespository.save(token);
   }
 
-  async confirm(token: string): Promise<String> {
+  async confirm(
+    token: string,
+  ): Promise<{ usuarioId: string; message: string }> {
     const tokenConf = await this.tokenRespository.findOne({
       where: { token: token },
       relations: ['usuario'], // Asegurar que la relación usuario se cargue
@@ -60,11 +62,13 @@ export class TokenService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
+    const usuarioId = tokenConf.usuario.usuarioId;
+
     usuario.confirmacionUsuario = true;
     await this.usuarioRespository.save(usuario);
     await this.tokenRespository.delete(tokenConf);
     /* Eliminar el Token luego de la confirmacion */
-    return 'Token confirmado, usuario actualizado y token eliminado';
+    return { usuarioId, message: 'token confirmado y eliminado' };
   }
 
   findOne(id: number) {
