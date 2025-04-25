@@ -19,6 +19,9 @@ import { EquipoSaassModule } from './administracion/equipo-saass/equipo-saass.mo
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './administracion/token/token.module';
 import { MailsModule } from './mails/mails.module';
+import { MesesModule } from './complementos/meses/meses.module';
+import { ProcesoModule } from './gestor/proceso/proceso.module';
+import { MesProcesoModule } from './gestor/mes-proceso/mes-proceso.module';
 
 @Module({
   imports: [
@@ -44,6 +47,9 @@ import { MailsModule } from './mails/mails.module';
     AuthModule,
     TokenModule,
     MailsModule,
+    MesesModule,
+    ProcesoModule,
+    MesProcesoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

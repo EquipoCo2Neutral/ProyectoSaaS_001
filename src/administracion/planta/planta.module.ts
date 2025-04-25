@@ -11,5 +11,6 @@ import { Comuna } from 'src/complementos/comunas/entities/comuna.entity';
   imports: [TypeOrmModule.forFeature([Planta, Inquilino, Usuario, Comuna])],
   controllers: [PlantaController],
   providers: [PlantaService],
+  exports: [PlantaService],
 })
 export class PlantaModule {}
