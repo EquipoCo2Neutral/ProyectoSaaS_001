@@ -3,7 +3,7 @@ import { CreateMesProcesoDto } from './dto/create-mes-proceso.dto';
 import { UpdateMesProcesoDto } from './dto/update-mes-proceso.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MesProceso } from './entities/mes-proceso.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Proceso } from '../proceso/entities/proceso.entity';
 import { Mese } from 'src/complementos/meses/entities/mese.entity';
 
@@ -51,6 +51,20 @@ export class MesProcesoService {
     return this.mesProcesoRepository.find({
       where: { proceso: { idProceso } },
       relations: ['mes', 'proceso'],
+    });
+  }
+
+  async eliminarMensuales(idProceso: string): Promise<void> {
+    await this.mesProcesoRepository.delete({
+      proceso: { idProceso },
+      mes: { idMes: In([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) },
+    });
+  }
+
+  async eliminarRegistroAnual(idProceso: string): Promise<void> {
+    await this.mesProcesoRepository.delete({
+      proceso: { idProceso },
+      mes: { idMes: In([13]) },
     });
   }
 

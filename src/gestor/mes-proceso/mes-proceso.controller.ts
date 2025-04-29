@@ -47,4 +47,15 @@ export class MesProcesoController {
   remove(@Param('id') id: string) {
     return this.mesProcesoService.remove(+id);
   }
+
+  // Eliminar todos los meses descartados de un proceso
+  @Delete('meses-descartados/:idProceso')
+  async eliminarMensuales(@Param('idProceso') idProceso: string) {
+    return this.mesProcesoService.eliminarMensuales(idProceso);
+  }
+
+  @Delete('mes-anual-descartado/:idProceso')
+  async eliminarRegistroAnual(@Param('idProceso') idProceso: string) {
+    return this.mesProcesoService.eliminarRegistroAnual(idProceso);
+  }
 }
