@@ -25,4 +25,7 @@ export class Proceso {
 
   @Column()
   estado: boolean;
+
+  @Column({ default: false })
+  registroAnual: boolean;
 }

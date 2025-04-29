@@ -11,6 +11,7 @@ import {
 import { ProcesoService } from './proceso.service';
 import { CreateProcesoDto } from './dto/create-proceso.dto';
 import { UpdateProcesoDto } from './dto/update-proceso.dto';
+import { Proceso } from './entities/proceso.entity';
 
 @Controller('proceso')
 export class ProcesoController {
@@ -43,6 +44,11 @@ export class ProcesoController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.procesoService.remove(+id);
+  }
+
+  @Patch(':id/habilitar-registro-anual')
+  habilitarRegistroAnual(@Param('id') id: string): Promise<Proceso> {
+    return this.procesoService.habilitarRegistroAnual(id);
   }
 
   @Put(':idProceso/estado')

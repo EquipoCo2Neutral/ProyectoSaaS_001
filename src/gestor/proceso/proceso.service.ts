@@ -105,6 +105,15 @@ export class ProcesoService {
   remove(id: number) {
     return `This action removes a #${id} proceso`;
   }
+  async habilitarRegistroAnual(id: string): Promise<Proceso> {
+    const proceso = await this.procesoRepository.findOne({
+      where: { idProceso: id },
+    });
+    if (!proceso) throw new NotFoundException('Proceso no encontrado');
+
+    proceso.registroAnual = true;
+    return this.procesoRepository.save(proceso);
+  }
 
   async updateEstado(idProceso: string, estado: boolean) {
     const proceso = await this.procesoRepository.findOne({
