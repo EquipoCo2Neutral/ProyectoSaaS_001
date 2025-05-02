@@ -22,7 +22,12 @@ import { MailsModule } from './mails/mails.module';
 import { MesesModule } from './complementos/meses/meses.module';
 import { ProcesoModule } from './gestor/proceso/proceso.module';
 import { MesProcesoModule } from './gestor/mes-proceso/mes-proceso.module';
-
+import { TransaccionesModule } from './complementos/energia/transacciones/transacciones.module';
+import { GrupoEnergeticoModule } from './complementos/energia/grupo-energetico/grupo-energetico.module';
+import { EnergeticosModule } from './complementos/energia/energeticos/energeticos.module';
+import { UnidadesModule } from './complementos/energia/unidades/unidades.module';   
+import { AdquisicionesModule } from './registro/adquisiciones/adquisiciones.module';
+import { GeneracionModule } from './registro/generacion/generacion.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,6 +55,12 @@ import { MesProcesoModule } from './gestor/mes-proceso/mes-proceso.module';
     MesesModule,
     ProcesoModule,
     MesProcesoModule,
+    TransaccionesModule,
+    GrupoEnergeticoModule,
+    EnergeticosModule,
+    UnidadesModule,
+    AdquisicionesModule,
+    GeneracionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
