@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID, ValidateIf } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUUID, ValidateIf } from "class-validator";
 
 
 
@@ -46,7 +46,8 @@ export class CreateGeneracionDto {
     @IsNotEmpty({message:'La cantidad de energia no aprovechada es requerida'})
     cantidadEnergiaNoAprovechada?: number | null;
 
-    @IsString({message:'El campo Observaciones es un string'})
+    @IsOptional({message:'Las observaciones son un string'})
+    @IsString({message:'Las observaciones son un string'})
     Observaciones?: string | null;
 
 

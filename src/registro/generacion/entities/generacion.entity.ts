@@ -18,16 +18,16 @@ export class Generacion {
     idUnidad_Ci: number;
 
     @Column({ type: 'int', nullable:true} )
-    idUnidad_Cena: number | null;
+    idUnidad_Cena?: number | null;
 
     @Column({ type: 'int', nullable:true} )
-    idUnidad_Ce: number;
+    idUnidad_Ce?: number | null;
 
     @Column({ type: 'int', nullable:true})
-    idEnergetico: number;
+    idEnergetico?: number | null;
 
     @Column({ type: 'int', nullable:true})
-    consumoEnergetico: number;
+    consumoEnergetico?: number | null;
 
     @Column()
     cantidadGeneradaBruta: number;
@@ -36,13 +36,13 @@ export class Generacion {
     capacidadInstalada: number;
 
     @Column({ type: 'int', nullable:true})
-    cantidadEnergiaNoAprovechada: number | null;
+    cantidadEnergiaNoAprovechada?: number | null;
 
     @Column({ type: 'varchar', nullable:true})
-    Observaciones: string | null;
+    Observaciones?: string | null;
 
     @Column({ type: 'varchar', nullable:true})
-    Tipo: string | null;
+    Tipo?: string | null;
 
     @ManyToOne(() => MesProceso, {
       nullable: false,
