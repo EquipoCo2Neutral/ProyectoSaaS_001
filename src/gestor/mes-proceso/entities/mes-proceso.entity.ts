@@ -2,7 +2,15 @@ import { Mese } from 'src/complementos/meses/entities/mese.entity';
 import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
 import { Adquisicione } from 'src/registro/adquisiciones/entities/adquisicione.entity';
 import { Generacion } from 'src/registro/generacion/entities/generacion.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Transformacione } from 'src/registro/transformaciones/entities/transformacione.entity';
+import { UsosFinale } from 'src/registro/usos-finales/entities/usos-finale.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class MesProceso {
@@ -21,11 +29,27 @@ export class MesProceso {
   @Column()
   estado: boolean;
 
-  @OneToMany(() => Adquisicione, (adquisicione)=> adquisicione, { cascade: true })
-  adquisiciones: Adquisicione[]; 
-  
-  @OneToMany(() => Generacion, (generacion)=> generacion, { cascade: true })
+  @OneToMany(() => Adquisicione, (adquisicione) => adquisicione.mesProceso, {
+    cascade: true,
+  })
+  adquisiciones: Adquisicione[];
+
+  @OneToMany(() => Generacion, (generacion) => generacion.mesProceso, {
+    cascade: true,
+  })
   generacion: Generacion[];
 
+  @OneToMany(
+    () => Transformacione,
+    (transformacion) => transformacion.mesProceso,
+    {
+      cascade: true,
+    },
+  )
+  transformacion: Transformacione[];
 
+  @OneToMany(() => UsosFinale, (usoFinal) => usoFinal.mesProceso, {
+    cascade: true,
+  })
+  usoFinal: UsosFinale[];
 }

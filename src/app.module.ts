@@ -25,9 +25,14 @@ import { MesProcesoModule } from './gestor/mes-proceso/mes-proceso.module';
 import { TransaccionesModule } from './complementos/energia/transacciones/transacciones.module';
 import { GrupoEnergeticoModule } from './complementos/energia/grupo-energetico/grupo-energetico.module';
 import { EnergeticosModule } from './complementos/energia/energeticos/energeticos.module';
-import { UnidadesModule } from './complementos/energia/unidades/unidades.module';   
+import { UnidadesModule } from './complementos/energia/unidades/unidades.module';
 import { AdquisicionesModule } from './registro/adquisiciones/adquisiciones.module';
 import { GeneracionModule } from './registro/generacion/generacion.module';
+import { TransformacionesModule } from './registro/transformaciones/transformaciones.module';
+import { UsosFinalesModule } from './registro/usos-finales/usos-finales.module';
+import { CategoriaUfModule } from './complementos/energia/categoria-uf/categoria-uf.module';
+import { TipoUfModule } from './complementos/energia/tipo-uf/tipo-uf.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -61,6 +66,10 @@ import { GeneracionModule } from './registro/generacion/generacion.module';
     UnidadesModule,
     AdquisicionesModule,
     GeneracionModule,
+    TransformacionesModule,
+    UsosFinalesModule,
+    CategoriaUfModule,
+    TipoUfModule,
   ],
   controllers: [AppController],
   providers: [AppService],
