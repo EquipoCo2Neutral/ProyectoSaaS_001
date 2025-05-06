@@ -41,6 +41,8 @@ import { SubSectorEconomicoModule } from './complementos/energia/sub-sector-econ
 
 import { VentaEnergeticoModule } from './registro/venta-energetico/venta-energetico.module';
 
+import { ExportacionesModule } from './registro/exportaciones/exportaciones.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -82,6 +84,7 @@ import { VentaEnergeticoModule } from './registro/venta-energetico/venta-energet
     SectorEconomicoModule,
     SubSectorEconomicoModule,
     VentaEnergeticoModule,
+    ExportacionesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
