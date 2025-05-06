@@ -4,6 +4,7 @@ import { Adquisicione } from 'src/registro/adquisiciones/entities/adquisicione.e
 import { Generacion } from 'src/registro/generacion/entities/generacion.entity';
 import { Transformacione } from 'src/registro/transformaciones/entities/transformacione.entity';
 import { UsosFinale } from 'src/registro/usos-finales/entities/usos-finale.entity';
+import { VentaElectricidad } from 'src/registro/venta-electricidad/entities/venta-electricidad.entity';
 import {
   Column,
   Entity,
@@ -52,4 +53,13 @@ export class MesProceso {
     cascade: true,
   })
   usoFinal: UsosFinale[];
+
+  @OneToMany(
+    () => VentaElectricidad,
+    (ventaElectricidad) => ventaElectricidad.mesProceso,
+    {
+      cascade: true,
+    },
+  )
+  ventaElectricidad: VentaElectricidad[];
 }

@@ -1,0 +1,34 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { VentaElectricidadService } from './venta-electricidad.service';
+import { CreateVentaElectricidadDto } from './dto/create-venta-electricidad.dto';
+import { UpdateVentaElectricidadDto } from './dto/update-venta-electricidad.dto';
+
+@Controller('venta-electricidad')
+export class VentaElectricidadController {
+  constructor(private readonly ventaElectricidadService: VentaElectricidadService) {}
+
+  @Post()
+  create(@Body() createVentaElectricidadDto: CreateVentaElectricidadDto) {
+    return this.ventaElectricidadService.create(createVentaElectricidadDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.ventaElectricidadService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.ventaElectricidadService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateVentaElectricidadDto: UpdateVentaElectricidadDto) {
+    return this.ventaElectricidadService.update(+id, updateVentaElectricidadDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.ventaElectricidadService.remove(+id);
+  }
+}

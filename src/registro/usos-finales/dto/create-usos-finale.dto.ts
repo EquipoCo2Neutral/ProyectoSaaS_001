@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Min,
+  ValidateIf,
+} from 'class-validator';
 
 export class CreateUsosFinaleDto {
   @IsNotEmpty({ message: 'debes ingresar el energetico' })
@@ -25,6 +31,7 @@ export class CreateUsosFinaleDto {
 
   @IsNotEmpty({ message: 'debes ingresar la cantidad' })
   @IsNumber()
+  @Min(0, { message: 'La cantidad no puede ser menor que 0' })
   cantidad: number;
 
   @ValidateIf((o) => o.idCategoriaUF === 1)

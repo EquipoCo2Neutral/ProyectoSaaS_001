@@ -33,6 +33,12 @@ import { UsosFinalesModule } from './registro/usos-finales/usos-finales.module';
 import { CategoriaUfModule } from './complementos/energia/categoria-uf/categoria-uf.module';
 import { TipoUfModule } from './complementos/energia/tipo-uf/tipo-uf.module';
 
+import { VentaElectricidadModule } from './registro/venta-electricidad/venta-electricidad.module';
+
+import { SectorEconomicoModule } from './complementos/energia/sector-economico/sector-economico.module';
+
+import { SubSectorEconomicoModule } from './complementos/energia/sub-sector-economico/sub-sector-economico.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -70,6 +76,9 @@ import { TipoUfModule } from './complementos/energia/tipo-uf/tipo-uf.module';
     UsosFinalesModule,
     CategoriaUfModule,
     TipoUfModule,
+    VentaElectricidadModule,
+    SectorEconomicoModule,
+    SubSectorEconomicoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
