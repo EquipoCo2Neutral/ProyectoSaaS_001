@@ -75,16 +75,65 @@ export class TransformacionesService {
     return transformacion;
   }
 
-  findAll() {
-    return `This action returns all transformaciones`;
+  async findAll() {
+    return await this.transformacionRepository.find({
+      relations: {mesProceso: true}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transformacione`;
+  async findOne(id: number) {
+    const transformacion = await this.transformacionRepository.findOne({
+      where: { idTransformacion: id },
+      relations: { mesProceso: true },
+    });
+    return transformacion;
   }
 
-  update(id: number, updateTransformacioneDto: UpdateTransformacioneDto) {
-    return `This action updates a #${id} transformacione`;
+  async update(id: number, updateTransformacioneDto: UpdateTransformacioneDto) {
+    const transformacion = await this.transformacionRepository.findOne({where : {idTransformacion: id}});
+    if (!transformacion) {
+      throw new NotFoundException('Transformacion no encontrada');
+    }
+
+    Object.assign(transformacion, updateTransformacioneDto);
+
+    if (updateTransformacioneDto.idMesProceso) {
+      const mesProceso = await this.mesProcesoRepository.findOneBy({
+        idMesProceso: updateTransformacioneDto.idMesProceso,
+      });
+      if (!mesProceso) {
+        throw new NotFoundException('Mes Proceso no encontrado');
+      }
+      transformacion.mesProceso = mesProceso;
+    }
+
+    if (updateTransformacioneDto.idEnergetico) {
+      const energetico = await this.energeticoRepository.findOneBy({
+        idEnergetico: updateTransformacioneDto.idEnergetico,
+      });
+      if (!energetico) {
+        throw new NotFoundException('Energetico no encontrado');
+      }
+    }
+
+    if (updateTransformacioneDto.idEnergeticoProducido) {
+      const energeticoProducido = await this.energeticoRepository.findOneBy({
+        idEnergetico: updateTransformacioneDto.idEnergeticoProducido,
+      });
+      if (!energeticoProducido) {
+        throw new NotFoundException('Energetico Producido no encontrado');
+      }
+    }
+
+    if (updateTransformacioneDto.idUnidad) {
+      const unidad = await this.unidadRepository.findOneBy({
+        idUnidad: updateTransformacioneDto.idUnidad,
+      });
+      if (!unidad) {
+        throw new NotFoundException('Unidad no encontrada');
+      }
+    }
+
+    return this.transformacionRepository.save(transformacion);
   }
 
   remove(id: number) {
