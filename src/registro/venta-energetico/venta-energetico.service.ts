@@ -104,16 +104,81 @@ export class VentaEnergeticoService {
     return ventaEnergetico;
   }
 
-  findAll() {
-    return `This action returns all ventaEnergetico`;
+  async findAll() {
+    return await this.ventaEnergetico.find({relations: {mesProceso: true}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ventaEnergetico`;
+  async findOne(id: number) {
+    const ventaEnergetico = await this.ventaEnergetico.findOne({where:{idVentaEnergetico: id}, relations: {mesProceso: true}});
+    if (!ventaEnergetico) {
+      throw new NotFoundException('Venta energetico no encontrado');
+    }
+
+    return ventaEnergetico;
   }
 
-  update(id: number, updateVentaEnergeticoDto: UpdateVentaEnergeticoDto) {
-    return `This action updates a #${id} ventaEnergetico`;
+  async update(id: number, updateVentaEnergeticoDto: UpdateVentaEnergeticoDto) {
+    const ventaEnergetico = await this.ventaEnergetico.findOne({where:{idVentaEnergetico: id}});
+    if (!ventaEnergetico) {
+      throw new NotFoundException('Venta energetico no encontrado');
+    }
+    Object.assign(ventaEnergetico, updateVentaEnergeticoDto);
+
+    if (updateVentaEnergeticoDto.idMesProceso) {
+      const mesProceso = await this.mesProcesoRepository.findOneBy({
+        idMesProceso: updateVentaEnergeticoDto.idMesProceso,
+      });
+      if (!mesProceso) {
+        throw new NotFoundException('Mes proceso no encontrado');
+      }
+      ventaEnergetico.mesProceso = mesProceso;
+    }
+
+    if (updateVentaEnergeticoDto.idEnergetico) {
+      const energetico = await this.energeticoRepository.findOneBy({
+        idEnergetico: updateVentaEnergeticoDto.idEnergetico,
+      });
+      if (!energetico) {
+        throw new NotFoundException('energetico invalido');
+      }
+    }
+    if (updateVentaEnergeticoDto.idUnidad) {
+      const unidad = await this.unidadRepository.findOneBy({
+        idUnidad: updateVentaEnergeticoDto.idUnidad,
+      });
+      if (!unidad) {
+        throw new NotFoundException('unidad invalida');
+      }
+    }
+
+    if (updateVentaEnergeticoDto.idRegion) {
+      const region = await this.regionesRepository.findOneBy({
+        idRegion: updateVentaEnergeticoDto.idRegion,
+      });
+      if (!region) {
+        throw new NotFoundException('region invalida');
+      }
+    }
+
+    if (updateVentaEnergeticoDto.idSector) {
+      const sector = await this.sectorRepository.findOneBy({
+        idSector: updateVentaEnergeticoDto.idSector,
+      });
+      if (!sector) {
+        throw new NotFoundException('sector invalido');
+      }
+    }
+
+    if (updateVentaEnergeticoDto.idSubSector) {
+      const subSector = await this.subSectorRepository.findOneBy({
+        idSubSector: updateVentaEnergeticoDto.idSubSector,
+      });
+      if (!subSector) {
+        throw new NotFoundException('Sub Sector invalido');
+      }
+    }
+
+    return await this.ventaEnergetico.save(ventaEnergetico);
   }
 
   remove(id: number) {
