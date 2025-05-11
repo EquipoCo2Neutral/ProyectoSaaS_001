@@ -90,16 +90,76 @@ export class VentaElectricidadService {
     return ventaElectricidad;
   }
 
-  findAll() {
-    return `This action returns all ventaElectricidad`;
+  async findAll() {
+    return await this.ventaElectricidadRepository.find({relations: {mesProceso: true}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ventaElectricidad`;
+  async findOne(id: number) {
+    const ventaElectricidad = await this.ventaElectricidadRepository.findOne({where: { idVentaElectricidad: id }, relations: { mesProceso: true }});
+    if (!ventaElectricidad) {
+      throw new NotFoundException('Venta de electricidad no encontrada');
+    }
+    return ventaElectricidad;
   }
 
-  update(id: number, updateVentaElectricidadDto: UpdateVentaElectricidadDto) {
-    return `This action updates a #${id} ventaElectricidad`;
+  async update(id: number, updateVentaElectricidadDto: UpdateVentaElectricidadDto) {
+
+    const ventaElectricidad = await this.ventaElectricidadRepository.findOne({where: {idVentaElectricidad: id}})
+    if (!ventaElectricidad) {
+      throw new NotFoundException('Venta de electricidad no encontrada');
+    }
+
+    Object.assign(ventaElectricidad, updateVentaElectricidadDto);
+
+    if (updateVentaElectricidadDto.idMesProceso) {
+      const mesProceso = await this.mesProcesoRepository.findOneBy({
+        idMesProceso: updateVentaElectricidadDto.idMesProceso,
+      });
+      if (!mesProceso) {
+        throw new NotFoundException('Mes Proceso no encontrado');
+      }
+      ventaElectricidad.mesProceso = mesProceso;
+    }
+
+    if (updateVentaElectricidadDto.idUnidad) {
+      const unidad = await this.unidadRepository.findOneBy({
+        idUnidad: updateVentaElectricidadDto.idUnidad,
+      });
+      if (!unidad) {
+        throw new NotFoundException('Unidad no encontrada');
+      }
+    }
+
+    if (updateVentaElectricidadDto.idRegion) {
+      const region = await this.regionesRepository.findOneBy({
+        idRegion: updateVentaElectricidadDto.idRegion,
+      });
+      if (!region) {
+        throw new NotFoundException('Region no encontrada');
+      }
+    }
+
+    if (updateVentaElectricidadDto.idSectorEconomico) {
+      const sector = await this.sectorRepository.findOneBy({
+        idSector: updateVentaElectricidadDto.idSectorEconomico,
+      });
+      if (!sector) {
+        throw new NotFoundException('Sector no encontrado');
+      }
+    }
+    
+    if (updateVentaElectricidadDto.idSubSectorEconomico) {
+      const subSector = await this.subSectorRepository.findOneBy({
+        idSubSector: updateVentaElectricidadDto.idSubSectorEconomico,
+      });
+      if (!subSector) {
+        throw new NotFoundException('Subsector no encontrado');
+      }
+    }
+
+
+
+    return await this.ventaElectricidadRepository.save(ventaElectricidad);
   }
 
   remove(id: number) {
