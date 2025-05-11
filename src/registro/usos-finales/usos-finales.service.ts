@@ -95,16 +95,76 @@ export class UsosFinalesService {
     return usoFinal;
   }
 
-  findAll() {
-    return `This action returns all usosFinales`;
+  async findAll() {
+    return await this.usoFinaleRepository.find({relations: {mesProceso: true}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usosFinale`;
+  async findOne(id: number) {
+    const usoFinal = await this.usoFinaleRepository.findOne({
+      where: { idUsoFinal: id },
+      relations: { mesProceso: true },
+    });
+    if (!usoFinal) {
+      throw new NotFoundException('Uso Final no encontrado');
+    }
+
+    return usoFinal;
   }
 
-  update(id: number, updateUsosFinaleDto: UpdateUsosFinaleDto) {
-    return `This action updates a #${id} usosFinale`;
+  async update(id: number, updateUsosFinaleDto: UpdateUsosFinaleDto) {
+    const usoFinal = await this.usoFinaleRepository.findOne({where: {idUsoFinal: id}})
+    if (!usoFinal) {
+      throw new NotFoundException('Uso Final no encontrado');
+    }
+    Object.assign(usoFinal, updateUsosFinaleDto);
+
+    if (updateUsosFinaleDto.idMesProceso) {
+      const mesProceso = await this.mesProcesoRepository.findOneBy({
+        idMesProceso: updateUsosFinaleDto.idMesProceso,
+      });
+      if (!mesProceso) {
+        throw new NotFoundException('Mes Proceso no encontrado');
+      }
+      usoFinal.mesProceso = mesProceso;
+    }
+
+    if (updateUsosFinaleDto.idEnergetico) {
+      const energetico = await this.energeticoRepository.findOneBy({
+        idEnergetico: updateUsosFinaleDto.idEnergetico,
+      });
+      if (!energetico) {
+        throw new NotFoundException('Energetico no encontrado');
+      }
+    }
+
+    if (updateUsosFinaleDto.idCategoriaUF) {
+      const categoriaUf = await this.categoriaUfRepository.findOneBy({
+        idCategoriaUF: updateUsosFinaleDto.idCategoriaUF,
+      });
+      if (!categoriaUf) {
+        throw new NotFoundException('Categoria no encontrada');
+      }
+    }
+
+    if (updateUsosFinaleDto.idTipoUF) {
+      const tipoUf = await this.tipoUfRepository.findOneBy({
+        idTipoUF: updateUsosFinaleDto.idTipoUF,
+      });
+      if (!tipoUf) {
+        throw new NotFoundException('Tipo no encontrado');
+      }
+    }
+
+    if (updateUsosFinaleDto.idUnidad) {
+      const unidad = await this.unidadeRepository.findOneBy({
+        idUnidad: updateUsosFinaleDto.idUnidad,
+      });
+      if (!unidad) {
+        throw new NotFoundException('Unidad no encontrada');
+      }
+    }
+
+    return await this.usoFinaleRepository.save(usoFinal);
   }
 
   remove(id: number) {
