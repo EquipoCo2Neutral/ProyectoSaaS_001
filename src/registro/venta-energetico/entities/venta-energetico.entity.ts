@@ -6,8 +6,11 @@ export class VentaEnergetico {
   @PrimaryGeneratedColumn('increment')
   idVentaEnergetico: number;
 
-  @Column({ nullable: false })
+  @Column()
   idEnergetico: number;
+
+  @Column({ nullable: false })
+  idRegion: number;
 
   @Column({ nullable: false })
   idSector: number;

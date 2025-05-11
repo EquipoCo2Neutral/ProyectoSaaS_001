@@ -1,6 +1,7 @@
 import { Mese } from 'src/complementos/meses/entities/mese.entity';
 import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
 import { Adquisicione } from 'src/registro/adquisiciones/entities/adquisicione.entity';
+import { Exportacione } from 'src/registro/exportaciones/entities/exportacione.entity';
 import { Generacion } from 'src/registro/generacion/entities/generacion.entity';
 import { Transformacione } from 'src/registro/transformaciones/entities/transformacione.entity';
 import { UsosFinale } from 'src/registro/usos-finales/entities/usos-finale.entity';
@@ -72,4 +73,9 @@ export class MesProceso {
     },
   )
   ventaEnergetico: VentaEnergetico[];
+
+  @OneToMany(() => Exportacione, (exportacion) => exportacion.mesProceso, {
+    cascade: true,
+  })
+  exportacion: Exportacione[];
 }

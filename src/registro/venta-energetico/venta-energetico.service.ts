@@ -92,7 +92,7 @@ export class VentaEnergeticoService {
     }
 
     const ventaEnergetico = await this.ventaEnergetico.save({
-      ...CreateVentaEnergeticoDto,
+      ...createVentaEnergeticoDto,
       mesProceso,
       message: 'Venta Energetico registrada correctamente',
     });
@@ -105,11 +105,14 @@ export class VentaEnergeticoService {
   }
 
   async findAll() {
-    return await this.ventaEnergetico.find({relations: {mesProceso: true}});
+    return await this.ventaEnergetico.find({ relations: { mesProceso: true } });
   }
 
   async findOne(id: number) {
-    const ventaEnergetico = await this.ventaEnergetico.findOne({where:{idVentaEnergetico: id}, relations: {mesProceso: true}});
+    const ventaEnergetico = await this.ventaEnergetico.findOne({
+      where: { idVentaEnergetico: id },
+      relations: { mesProceso: true },
+    });
     if (!ventaEnergetico) {
       throw new NotFoundException('Venta energetico no encontrado');
     }
@@ -118,7 +121,9 @@ export class VentaEnergeticoService {
   }
 
   async update(id: number, updateVentaEnergeticoDto: UpdateVentaEnergeticoDto) {
-    const ventaEnergetico = await this.ventaEnergetico.findOne({where:{idVentaEnergetico: id}});
+    const ventaEnergetico = await this.ventaEnergetico.findOne({
+      where: { idVentaEnergetico: id },
+    });
     if (!ventaEnergetico) {
       throw new NotFoundException('Venta energetico no encontrado');
     }

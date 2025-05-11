@@ -1,11 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateExportacioneDto } from './dto/create-exportacione.dto';
 import { UpdateExportacioneDto } from './dto/update-exportacione.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Exportacione } from './entities/exportacione.entity';
+import { Repository } from 'typeorm';
+import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { Pais } from 'src/complementos/paises/entities/paise.entity';
+import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 
 @Injectable()
 export class ExportacionesService {
-  create(createExportacioneDto: CreateExportacioneDto) {
-    return 'This action adds a new exportacione';
+  constructor(
+    @InjectRepository(Exportacione)
+    private readonly exportacionRepository: Repository<Exportacione>,
+    @InjectRepository(MesProceso)
+    private readonly mesProcesoRepository: Repository<MesProceso>,
+    @InjectRepository(Pais) private readonly paisRepository: Repository<Pais>,
+    @InjectRepository(Unidade)
+    private readonly unidadRepository: Repository<Unidade>,
+    @InjectRepository(Energetico)
+    private readonly energeticoRepository: Repository<Energetico>,
+  ) {}
+
+  async create(createExportacioneDto: CreateExportacioneDto) {
+    const mesProceso = await this.mesProcesoRepository.findOneBy({
+      idMesProceso: createExportacioneDto.idMesProceso,
+    });
+
+    if (!mesProceso) {
+      throw new NotFoundException('Mes Proceso no encontrado');
+    }
+
+    if (createExportacioneDto.idEnergetico) {
+      const Energetico = await this.energeticoRepository.findOneBy({
+        idEnergetico: createExportacioneDto.idEnergetico,
+      });
+
+      if (!Energetico) {
+        throw new NotFoundException('Energetico no encontrado');
+      }
+    }
+
+    if (createExportacioneDto.idUnidad) {
+      const Unidad = await this.unidadRepository.findOneBy({
+        idUnidad: createExportacioneDto.idUnidad,
+      });
+
+      if (!Unidad) {
+        throw new NotFoundException('Unidad no encontrada');
+      }
+    }
+
+    if (createExportacioneDto.idPais) {
+      const Pais = await this.paisRepository.findOneBy({
+        idPais: createExportacioneDto.idPais,
+      });
+
+      if (!Pais) {
+        throw new NotFoundException('Pais no encontrado');
+      }
+    }
+
+    const exportacion = await this.exportacionRepository.save({
+      ...createExportacioneDto,
+      mesProceso,
+      message: 'Exportacion registrada correctamente',
+    });
+
+    return exportacion;
   }
 
   findAll() {
