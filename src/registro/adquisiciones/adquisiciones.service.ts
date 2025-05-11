@@ -91,17 +91,48 @@ export class AdquisicionesService {
     return adquisicion;
   }
 
-  findAll() {
-    return `This action returns all adquisiciones`;
+  async findAll() {
+    return await this.adquisicioneRepository.find({
+      relations: ['mesProceso'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} adquisicione`;
+  async findOne(id: number): Promise<Adquisicione> {
+    const adquisicion = await this.adquisicioneRepository.findOne({
+      where: { idAdquisicion:id },
+      relations: ['mesProceso'],
+    });
+  
+    if (!adquisicion) {
+      throw new NotFoundException(`Adquisición con ID ${id} no encontrada`);
+    }
+  
+    return adquisicion;
   }
 
-  update(id: number, updateAdquisicioneDto: UpdateAdquisicioneDto) {
-    return `This action updates a #${id} adquisicione`;
+  async update(id: number, updateAdquisicioneDto: UpdateAdquisicioneDto){
+    // Buscar la adquisición existente
+    const adquisicion = await this.adquisicioneRepository.findOne({ where: { idAdquisicion: id } });
+    if (!adquisicion) {
+      throw new NotFoundException(`Adquisición con ID ${id} no encontrada`);
+    }
+    // Asignar los cambios del DTO
+    Object.assign(adquisicion, updateAdquisicioneDto);
+    // Validar y asociar MesProceso si viene en el DTO
+    if (updateAdquisicioneDto.idMesProceso) {
+      const mesProceso = await this.mesProcesoRepository.findOne({
+        where: { idMesProceso: updateAdquisicioneDto.idMesProceso },
+      });
+
+      if (!mesProceso) {
+        throw new NotFoundException(`MesProceso con ID ${updateAdquisicioneDto.idMesProceso} no encontrado`);
+      }
+      adquisicion.mesProceso = mesProceso; 
+    }
+    
+    return await this.adquisicioneRepository.save(adquisicion);
   }
+
 
   remove(id: number) {
     return `This action removes a #${id} adquisicione`;
