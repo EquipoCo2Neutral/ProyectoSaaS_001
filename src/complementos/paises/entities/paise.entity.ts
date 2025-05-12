@@ -1,4 +1,6 @@
 import { Regiones } from 'src/complementos/regiones/entities/regione.entity';
+import { Adquisicione } from 'src/registro/adquisiciones/entities/adquisicione.entity';
+import { Exportacione } from 'src/registro/exportaciones/entities/exportacione.entity';
 import {
   Column,
   Entity,
@@ -18,4 +20,14 @@ export class Pais {
 
   @OneToMany(() => Regiones, (regiones) => regiones, { cascade: true })
   regiones: Regiones[];
+
+  @OneToMany(() => Exportacione, (exportacion) => exportacion.pais, {
+    cascade: true,
+  })
+  exportacion: Exportacione[];
+
+  @OneToMany(() => Adquisicione, (a) => a.paisOrigen, {
+    cascade: true,
+  })
+  adquisicion: Adquisicione[];
 }

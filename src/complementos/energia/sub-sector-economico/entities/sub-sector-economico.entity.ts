@@ -1,5 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SectorEconomico } from '../../sector-economico/entities/sector-economico.entity';
+import { VentaEnergetico } from 'src/registro/venta-energetico/entities/venta-energetico.entity';
+import { VentaElectricidad } from 'src/registro/venta-electricidad/entities/venta-electricidad.entity';
 
 @Entity()
 export class SubSectorEconomico {
@@ -17,4 +25,12 @@ export class SubSectorEconomico {
     },
   )
   sectorEconomico: SectorEconomico;
+
+  @OneToMany(() => VentaEnergetico, (venta) => venta.subSector)
+  ventas: VentaEnergetico[];
+
+  @OneToMany(() => VentaElectricidad, (ventaE) => ventaE.subSectorE, {
+    cascade: true,
+  })
+  ventaElectricidad: VentaElectricidad[];
 }

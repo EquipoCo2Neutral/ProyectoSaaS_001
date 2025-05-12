@@ -82,21 +82,43 @@ export class UsosFinalesService {
 
     //guardar en db
 
-    const usoFinal = await this.usoFinaleRepository.save({
-      ...createUsosFinaleDto,
+    const usoFinal = this.usoFinaleRepository.create({
+      cantidad: createUsosFinaleDto.cantidad,
+      detalle: createUsosFinaleDto.detalle,
+      tipo: createUsosFinaleDto.tipo,
       mesProceso,
-      message: 'Uso Final Registrado Correctamente',
+      energetico: {
+        idEnergetico: createUsosFinaleDto.idEnergetico,
+      } as Energetico,
+      categoriaUF: {
+        idCategoriaUF: createUsosFinaleDto.idCategoriaUF,
+      } as CategoriaUf,
+      unidad: { idUnidad: createUsosFinaleDto.idUnidad } as Unidade,
     });
 
-    if (!usoFinal) {
-      throw new NotFoundException('Error al registrar el uso final');
+    if (createUsosFinaleDto.idTipoUF) {
+      usoFinal.tipoUF = {
+        idTipoUF: createUsosFinaleDto.idTipoUF,
+      } as TipoUf;
     }
 
-    return usoFinal;
+    const resultado = await this.usoFinaleRepository.save(usoFinal);
+    return {
+      message: 'Uso final registrado correctamente',
+      data: resultado,
+    };
   }
 
   async findAll() {
-    return await this.usoFinaleRepository.find({relations: {mesProceso: true}});
+    return await this.usoFinaleRepository.find({
+      relations: {
+        mesProceso: true,
+        energetico: true,
+        categoriaUF: true,
+        tipoUF: true,
+        unidad: true,
+      },
+    });
   }
 
   async findOne(id: number) {
@@ -112,7 +134,9 @@ export class UsosFinalesService {
   }
 
   async update(id: number, updateUsosFinaleDto: UpdateUsosFinaleDto) {
-    const usoFinal = await this.usoFinaleRepository.findOne({where: {idUsoFinal: id}})
+    const usoFinal = await this.usoFinaleRepository.findOne({
+      where: { idUsoFinal: id },
+    });
     if (!usoFinal) {
       throw new NotFoundException('Uso Final no encontrado');
     }

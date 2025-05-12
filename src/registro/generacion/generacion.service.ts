@@ -12,87 +12,125 @@ import { Energetico } from 'src/complementos/energia/energeticos/entities/energe
 @Injectable()
 export class GeneracionService {
   constructor(
-      @InjectRepository(Generacion) private readonly generacionRepository: Repository<Generacion>,
+    @InjectRepository(Generacion)
+    private readonly generacionRepository: Repository<Generacion>,
 
-      @InjectRepository(MesProceso) private readonly mesProcesoRepository: Repository<MesProceso>,
-  
-      
-      @InjectRepository(Unidade) private readonly unidadRepository: Repository<Unidade>,
-      @InjectRepository(Energetico) private readonly energeticoRepository: Repository<Energetico>,
+    @InjectRepository(MesProceso)
+    private readonly mesProcesoRepository: Repository<MesProceso>,
 
-    ){}
+    @InjectRepository(Unidade)
+    private readonly unidadRepository: Repository<Unidade>,
+    @InjectRepository(Energetico)
+    private readonly energeticoRepository: Repository<Energetico>,
+  ) {}
 
   async create(createGeneracionDto: CreateGeneracionDto) {
     const mesProceso = await this.mesProcesoRepository.findOneBy({
       idMesProceso: createGeneracionDto.idMesProceso,
-    })
+    });
 
     if (!mesProceso) {
-      throw new NotFoundException("Mes Proceso no encontrado")
+      throw new NotFoundException('Mes Proceso no encontrado');
     }
 
-    if(createGeneracionDto.idUnidad_CGB){
+    if (createGeneracionDto.idUnidad_CGB) {
       const Unidad_CGB = await this.unidadRepository.findOneBy({
         idUnidad: createGeneracionDto.idUnidad_CGB,
-      })
+      });
       if (!Unidad_CGB) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(createGeneracionDto.idUnidad_Ci){
+    if (createGeneracionDto.idUnidad_Ci) {
       const Unidad_Ci = await this.unidadRepository.findOneBy({
         idUnidad: createGeneracionDto.idUnidad_Ci,
-      })
+      });
       if (!Unidad_Ci) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(createGeneracionDto.idUnidad_Cena){
+    if (createGeneracionDto.idUnidad_Cena) {
       const Unidad_Cena = await this.unidadRepository.findOneBy({
         idUnidad: createGeneracionDto.idUnidad_Cena,
-      })
+      });
       if (!Unidad_Cena) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(createGeneracionDto.idUnidad_Ce){
+    if (createGeneracionDto.idUnidad_Ce) {
       const Unidad_Ce = await this.unidadRepository.findOneBy({
         idUnidad: createGeneracionDto.idUnidad_Ce,
-      })
+      });
       if (!Unidad_Ce) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(createGeneracionDto.idEnergetico){
+    if (createGeneracionDto.idEnergetico) {
       const Unidad_Energetico = await this.energeticoRepository.findOneBy({
         idEnergetico: createGeneracionDto.idEnergetico,
-      })
+      });
       if (!Unidad_Energetico) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    
-    const generacion = await this.generacionRepository.save({
-      ...createGeneracionDto,
-      mesProceso
+
+    const generacion = this.generacionRepository.create({
+      idTecnologia: createGeneracionDto.idTecnologia,
+      mesProceso,
+      unidadCGB: { idUnidad: createGeneracionDto.idUnidad_CGB },
+      unidadCI: { idUnidad: createGeneracionDto.idUnidad_Ci },
+      cantidadGeneradaBruta: createGeneracionDto.cantidadGeneradaBruta,
+      capacidadInstalada: createGeneracionDto.capacidadInstalada,
+      cantidadEnergiaNoAprovechada:
+        createGeneracionDto.cantidadEnergiaNoAprovechada,
+      Observaciones: createGeneracionDto.Observaciones,
+      Tipo: createGeneracionDto.Tipo,
+      consumoEnergetico: createGeneracionDto.consumoEnergetico,
     });
-    
-      
-    if(!generacion) {
-      throw new NotFoundException("Error al crear la adquisicion")
+
+    if (createGeneracionDto.idUnidad_Cena) {
+      generacion.unidadCENA = {
+        idUnidad: createGeneracionDto.idUnidad_Cena,
+      } as Unidade;
     }
 
-    return generacion;
+    if (createGeneracionDto.idUnidad_Ce) {
+      generacion.unidadCE = {
+        idUnidad: createGeneracionDto.idUnidad_Ce,
+      } as Unidade;
+    }
+
+    if (createGeneracionDto.idEnergetico) {
+      generacion.energetico = {
+        idEnergetico: createGeneracionDto.idEnergetico,
+      } as Energetico;
+    }
+
+    const respuesta = await this.generacionRepository.save(generacion);
+
+    return {
+      message: 'Generacion registrada correctamente',
+      data: respuesta,
+    };
   }
 
   async findAll() {
-    return await this.generacionRepository.find({relations: {mesProceso: true}});
+    return await this.generacionRepository.find({
+      relations: {
+        mesProceso: true,
+        energetico: true,
+        unidadCE: true,
+        unidadCENA: true,
+        unidadCGB: true,
+        unidadCI: true,
+      },
+    });
   }
 
   async findOne(id: number) {
     const generacion = await this.generacionRepository.findOne({
-      where: { idGeneracion:id },
-      relations: {mesProceso: true},
+      where: { idGeneracion: id },
+      relations: { mesProceso: true },
     });
     if (!generacion) {
       throw new NotFoundException(`Generacion con ID ${id} no encontrada`);
@@ -101,59 +139,61 @@ export class GeneracionService {
   }
 
   async update(id: number, updateGeneracionDto: UpdateGeneracionDto) {
-    const generacion = await this.generacionRepository.findOne({where: {idGeneracion:id}})
-    if(!generacion){
+    const generacion = await this.generacionRepository.findOne({
+      where: { idGeneracion: id },
+    });
+    if (!generacion) {
       throw new NotFoundException(`Generacion con ID ${id} no encontrada`);
     }
     Object.assign(generacion, updateGeneracionDto);
 
-    if(updateGeneracionDto.idMesProceso){
+    if (updateGeneracionDto.idMesProceso) {
       const mesProceso = await this.mesProcesoRepository.findOneBy({
         idMesProceso: updateGeneracionDto.idMesProceso,
-      })
+      });
       if (!mesProceso) {
-        throw new NotFoundException("Mes Proceso no encontrado")
+        throw new NotFoundException('Mes Proceso no encontrado');
       }
       generacion.mesProceso = mesProceso;
     }
-    if(updateGeneracionDto.idUnidad_CGB){
+    if (updateGeneracionDto.idUnidad_CGB) {
       const Unidad_CGB = await this.unidadRepository.findOneBy({
         idUnidad: updateGeneracionDto.idUnidad_CGB,
-      })
+      });
       if (!Unidad_CGB) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(updateGeneracionDto.idUnidad_Ci){
+    if (updateGeneracionDto.idUnidad_Ci) {
       const Unidad_Ci = await this.unidadRepository.findOneBy({
         idUnidad: updateGeneracionDto.idUnidad_Ci,
-      })
+      });
       if (!Unidad_Ci) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(updateGeneracionDto.idUnidad_Cena){
+    if (updateGeneracionDto.idUnidad_Cena) {
       const Unidad_Cena = await this.unidadRepository.findOneBy({
         idUnidad: updateGeneracionDto.idUnidad_Cena,
-      })
+      });
       if (!Unidad_Cena) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(updateGeneracionDto.idUnidad_Ce){
+    if (updateGeneracionDto.idUnidad_Ce) {
       const Unidad_Ce = await this.unidadRepository.findOneBy({
         idUnidad: updateGeneracionDto.idUnidad_Ce,
-      })
+      });
       if (!Unidad_Ce) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
-    if(updateGeneracionDto.idEnergetico){
+    if (updateGeneracionDto.idEnergetico) {
       const Unidad_Energetico = await this.energeticoRepository.findOneBy({
         idEnergetico: updateGeneracionDto.idEnergetico,
-      })
+      });
       if (!Unidad_Energetico) {
-        throw new NotFoundException("Unidad CGB no encontrada")
+        throw new NotFoundException('Unidad CGB no encontrada');
       }
     }
 

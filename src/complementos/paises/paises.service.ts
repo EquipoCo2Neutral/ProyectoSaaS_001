@@ -38,7 +38,7 @@ export class PaisesService {
 
   async remove(id: number) {
     const pais = await this.findOne(id);
-    await this.paisRepository.delete(pais);
-    return 'Pais eliminado';
+    await this.paisRepository.delete(id);
+    return `Pais eliminado ${pais}`;
   }
 }

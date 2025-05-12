@@ -1,5 +1,16 @@
+import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
+import { GrupoEnergetico } from 'src/complementos/energia/grupo-energetico/entities/grupo-energetico.entity';
+import { Transaccione } from 'src/complementos/energia/transacciones/entities/transaccione.entity';
+import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { Pais } from 'src/complementos/paises/entities/paise.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Adquisicione {
@@ -7,22 +18,7 @@ export class Adquisicione {
   idAdquisicion: number;
 
   @Column()
-  idTransaccion: number;
-
-  @Column()
-  idGrupoEnergetico: number;
-
-  @Column()
-  idEnergetico: number;
-
-  @Column({ type: 'int', nullable: true })
-  idPaisOrigen: number | null;
-
-  @Column()
   Cantidad: number;
-
-  @Column({ type: 'int' })
-  idUnidad: number;
 
   @Column({ type: 'int', nullable: true })
   cantidadInicial?: number | null;
@@ -41,6 +37,36 @@ export class Adquisicione {
 
   @Column({ type: 'boolean', nullable: true })
   compraMercadoSpot: boolean = false;
+
+  @ManyToOne(() => Transaccione, (transaccion) => transaccion.adquisicion, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idTransaccion' })
+  transaccion: Transaccione;
+
+  @ManyToOne(() => GrupoEnergetico, (gE) => gE.adquisicion, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idGrupoEnergetico' })
+  grupoEnergetico: GrupoEnergetico;
+
+  @ManyToOne(() => Energetico, (e) => e.adquisicion, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idEnergetico' })
+  energetico: Energetico;
+
+  @ManyToOne(() => Pais, (pais) => pais.adquisicion, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'idPaisOrigen' })
+  paisOrigen: Pais;
+
+  @ManyToOne(() => Unidade, (unidad) => unidad.adquisicion, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idUnidad' })
+  unidad: Unidade;
 
   @ManyToOne(() => MesProceso, (mesProceso) => mesProceso.adquisiciones, {
     nullable: false,

@@ -1,25 +1,47 @@
+import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
+import { SectorEconomico } from 'src/complementos/energia/sector-economico/entities/sector-economico.entity';
+import { SubSectorEconomico } from 'src/complementos/energia/sub-sector-economico/entities/sub-sector-economico.entity';
+import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { Regiones } from 'src/complementos/regiones/entities/regione.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class VentaEnergetico {
   @PrimaryGeneratedColumn('increment')
   idVentaEnergetico: number;
 
-  @Column()
-  idEnergetico: number;
+  @ManyToOne(() => Energetico, (energetico) => energetico.ventas)
+  @JoinColumn({ name: 'idEnergetico' })
+  energetico: Energetico;
 
-  @Column({ nullable: false })
-  idRegion: number;
+  @ManyToOne(() => Regiones, (region) => region.ventas)
+  @JoinColumn({ name: 'idRegion' })
+  region: Regiones;
 
-  @Column({ nullable: false })
-  idSector: number;
+  @ManyToOne(() => SectorEconomico, (sector) => sector.ventas, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idSector' })
+  sector: SectorEconomico;
 
-  @Column({ nullable: false })
-  idSubSector: number;
+  @ManyToOne(() => SubSectorEconomico, (subSector) => subSector.ventas, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idSubSector' })
+  subSector: SubSectorEconomico;
 
-  @Column({ nullable: false })
-  idUnidad: number;
+  @ManyToOne(() => Unidade, (unidad) => unidad.ventas, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idUnidad' })
+  unidad: Unidade;
 
   @Column({ nullable: false })
   cantidad: number;

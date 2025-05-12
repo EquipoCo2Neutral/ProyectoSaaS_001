@@ -81,30 +81,76 @@ export class VentaElectricidadService {
       }
     }
 
-    const ventaElectricidad = await this.ventaElectricidadRepository.save({
-      ...createVentaElectricidadDto,
+    const ventaElectricidad = this.ventaElectricidadRepository.create({
+      idDestinoVenta: createVentaElectricidadDto.idDestinoVenta,
+      ventaMercadoSpot: createVentaElectricidadDto.ventaMercadoSpot,
+      cantidadVendida: createVentaElectricidadDto.cantidadVendida,
+      empresaDestino: createVentaElectricidadDto.empresaDestino,
       mesProceso,
-      message: 'Venta registrada correctamente',
+      unidad: { idUnidad: createVentaElectricidadDto.idUnidad } as Unidade,
     });
+    if (createVentaElectricidadDto.idRegion) {
+      ventaElectricidad.region = {
+        idRegion: createVentaElectricidadDto.idRegion,
+      } as Regiones;
+    }
 
-    return ventaElectricidad;
+    if (createVentaElectricidadDto.idSectorEconomico) {
+      ventaElectricidad.sectorE = {
+        idSector: createVentaElectricidadDto.idSectorEconomico,
+      } as SectorEconomico;
+    }
+
+    if (createVentaElectricidadDto.idSubSectorEconomico) {
+      ventaElectricidad.subSectorE = {
+        idSubSector: createVentaElectricidadDto.idSubSectorEconomico,
+      } as SubSectorEconomico;
+    }
+
+    const resultado =
+      await this.ventaElectricidadRepository.save(ventaElectricidad);
+    return {
+      message: 'Venta electricidad registrada correctamente',
+      data: resultado,
+    };
   }
 
   async findAll() {
-    return await this.ventaElectricidadRepository.find({relations: {mesProceso: true}});
+    return await this.ventaElectricidadRepository.find({
+      relations: {
+        mesProceso: true,
+        unidad: true,
+        region: true,
+        sectorE: true,
+        subSectorE: true,
+      },
+    });
   }
 
   async findOne(id: number) {
-    const ventaElectricidad = await this.ventaElectricidadRepository.findOne({where: { idVentaElectricidad: id }, relations: { mesProceso: true }});
+    const ventaElectricidad = await this.ventaElectricidadRepository.findOne({
+      where: { idVentaElectricidad: id },
+      relations: {
+        mesProceso: true,
+        unidad: true,
+        region: true,
+        sectorE: true,
+        subSectorE: true,
+      },
+    });
     if (!ventaElectricidad) {
       throw new NotFoundException('Venta de electricidad no encontrada');
     }
     return ventaElectricidad;
   }
 
-  async update(id: number, updateVentaElectricidadDto: UpdateVentaElectricidadDto) {
-
-    const ventaElectricidad = await this.ventaElectricidadRepository.findOne({where: {idVentaElectricidad: id}})
+  async update(
+    id: number,
+    updateVentaElectricidadDto: UpdateVentaElectricidadDto,
+  ) {
+    const ventaElectricidad = await this.ventaElectricidadRepository.findOne({
+      where: { idVentaElectricidad: id },
+    });
     if (!ventaElectricidad) {
       throw new NotFoundException('Venta de electricidad no encontrada');
     }
@@ -147,7 +193,7 @@ export class VentaElectricidadService {
         throw new NotFoundException('Sector no encontrado');
       }
     }
-    
+
     if (updateVentaElectricidadDto.idSubSectorEconomico) {
       const subSector = await this.subSectorRepository.findOneBy({
         idSubSector: updateVentaElectricidadDto.idSubSectorEconomico,
@@ -156,8 +202,6 @@ export class VentaElectricidadService {
         throw new NotFoundException('Subsector no encontrado');
       }
     }
-
-
 
     return await this.ventaElectricidadRepository.save(ventaElectricidad);
   }

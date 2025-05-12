@@ -62,22 +62,33 @@ export class TransformacionesService {
       }
     }
 
-    const transformacion = await this.transformacionRepository.save({
-      ...createTransformacioneDto,
+    const transformacion = this.transformacionRepository.create({
+      cantidad: createTransformacioneDto.cantidad,
       mesProceso,
-      message: 'Transformacion creada correctamente',
+      energeticoProducido: {
+        idEnergetico: createTransformacioneDto.idEnergeticoProducido,
+      },
+      energetico: { idEnergetico: createTransformacioneDto.idEnergetico },
+      unidad: { idUnidad: createTransformacioneDto.idUnidad },
     });
 
-    if (!transformacion) {
-      throw new NotFoundException('Error al crear la transformacion');
-    }
+    const respuesta = await this.transformacionRepository.save(transformacion);
 
-    return transformacion;
+    return {
+      message: 'Transformacion registrada correctamente',
+      data: respuesta,
+    };
   }
 
   async findAll() {
     return await this.transformacionRepository.find({
-      relations: {mesProceso: true}});
+      relations: {
+        mesProceso: true,
+        unidad: true,
+        energetico: true,
+        energeticoProducido: true,
+      },
+    });
   }
 
   async findOne(id: number) {
@@ -89,7 +100,9 @@ export class TransformacionesService {
   }
 
   async update(id: number, updateTransformacioneDto: UpdateTransformacioneDto) {
-    const transformacion = await this.transformacionRepository.findOne({where : {idTransformacion: id}});
+    const transformacion = await this.transformacionRepository.findOne({
+      where: { idTransformacion: id },
+    });
     if (!transformacion) {
       throw new NotFoundException('Transformacion no encontrada');
     }

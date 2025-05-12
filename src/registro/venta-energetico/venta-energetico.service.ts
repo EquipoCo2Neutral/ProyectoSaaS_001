@@ -91,27 +91,54 @@ export class VentaEnergeticoService {
       }
     }
 
-    const ventaEnergetico = await this.ventaEnergetico.save({
-      ...createVentaEnergeticoDto,
+    const ventaEnergetico = this.ventaEnergetico.create({
+      cantidad: createVentaEnergeticoDto.cantidad,
       mesProceso,
-      message: 'Venta Energetico registrada correctamente',
+      energetico: {
+        idEnergetico: createVentaEnergeticoDto.idEnergetico,
+      } as Energetico,
+      unidad: { idUnidad: createVentaEnergeticoDto.idUnidad } as Unidade,
+      region: { idRegion: createVentaEnergeticoDto.idRegion } as Regiones,
+      sector: {
+        idSector: createVentaEnergeticoDto.idSector,
+      } as SectorEconomico,
+      subSector: {
+        idSubSector: createVentaEnergeticoDto.idSubSector,
+      } as SubSectorEconomico,
     });
 
-    if (!ventaEnergetico) {
-      throw new NotFoundException('Error al ingresar venta energetico');
-    }
+    const resultado = await this.ventaEnergetico.save(ventaEnergetico);
 
-    return ventaEnergetico;
+    return {
+      message: 'Venta Energetico registrada correctamente',
+      data: resultado,
+    };
   }
 
   async findAll() {
-    return await this.ventaEnergetico.find({ relations: { mesProceso: true } });
+    return await this.ventaEnergetico.find({
+      relations: {
+        mesProceso: true,
+        unidad: true,
+        sector: true,
+        subSector: true,
+        region: true,
+        energetico: true,
+      },
+    });
   }
 
   async findOne(id: number) {
     const ventaEnergetico = await this.ventaEnergetico.findOne({
       where: { idVentaEnergetico: id },
-      relations: { mesProceso: true },
+      relations: {
+        mesProceso: true,
+        unidad: true,
+        sector: true,
+        subSector: true,
+        region: true,
+        energetico: true,
+      },
     });
     if (!ventaEnergetico) {
       throw new NotFoundException('Venta energetico no encontrado');

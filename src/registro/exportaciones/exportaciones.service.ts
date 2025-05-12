@@ -62,13 +62,23 @@ export class ExportacionesService {
       }
     }
 
-    const exportacion = await this.exportacionRepository.save({
-      ...createExportacioneDto,
+    const exportacion = this.exportacionRepository.create({
+      cantidad: createExportacioneDto.cantidad,
+      empresaDestino: createExportacioneDto.empresaDestino,
       mesProceso,
-      message: 'Exportacion registrada correctamente',
+      unidad: { idUnidad: createExportacioneDto.idUnidad } as Unidade,
+      energetico: {
+        idEnergetico: createExportacioneDto.idEnergetico,
+      } as Energetico,
+      pais: { idPais: createExportacioneDto.idPais } as Pais,
     });
 
-    return exportacion;
+    const resultado = await this.exportacionRepository.save(exportacion);
+
+    return {
+      message: 'Exportacion registrada correctamente',
+      data: resultado,
+    };
   }
 
   findAll() {
