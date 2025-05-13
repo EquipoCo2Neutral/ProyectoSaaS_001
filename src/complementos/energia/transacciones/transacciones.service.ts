@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTransaccioneDto } from './dto/create-transaccione.dto';
 import { UpdateTransaccioneDto } from './dto/update-transaccione.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Transaccione } from './entities/transaccione.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TransaccionesService {
+  constructor(
+    @InjectRepository(Transaccione)
+    private readonly transaccionRepository: Repository<Transaccione>,
+  ) {}
+
   create(createTransaccioneDto: CreateTransaccioneDto) {
     return 'This action adds a new transaccione';
   }
 
   findAll() {
-    return `This action returns all transacciones`;
+    return this.transaccionRepository.find();
   }
 
   findOne(id: number) {
