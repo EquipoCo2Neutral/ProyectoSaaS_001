@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UnidadesService } from './unidades.service';
 import { CreateUnidadeDto } from './dto/create-unidade.dto';
 import { UpdateUnidadeDto } from './dto/update-unidade.dto';
@@ -12,9 +20,9 @@ export class UnidadesController {
     return this.unidadesService.create(createUnidadeDto);
   }
 
-  @Get()
-  findAll() {
-    return this.unidadesService.findAll();
+  @Get('energetico/:id')
+  findByEnergetico(@Param('id') id: string) {
+    return this.unidadesService.findAll(+id);
   }
 
   @Get(':id')

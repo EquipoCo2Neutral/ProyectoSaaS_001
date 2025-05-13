@@ -11,8 +11,6 @@ export class EnergeticosService {
   constructor(
     @InjectRepository(Energetico)
     private readonly energeticoRepository: Repository<Energetico>,
-    @InjectRepository(GrupoEnergetico)
-    private readonly grupoERepository: Repository<GrupoEnergetico>,
   ) {}
   create(createEnergeticoDto: CreateEnergeticoDto) {
     return 'This action adds a new energetico';
@@ -25,7 +23,7 @@ export class EnergeticosService {
           idGrupoEnergetico,
         },
       },
-      relations: ['grupoEnergetico'], // Si quieres incluir los datos del grupo
+      relations: ['grupoEnergetico'], // para incluir los datos del grupo
     });
   }
 

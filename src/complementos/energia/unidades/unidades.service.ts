@@ -1,15 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUnidadeDto } from './dto/create-unidade.dto';
 import { UpdateUnidadeDto } from './dto/update-unidade.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Unidade } from './entities/unidade.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UnidadesService {
+  constructor(
+    @InjectRepository(Unidade)
+    private readonly unidadRepository: Repository<Unidade>,
+  ) {}
   create(createUnidadeDto: CreateUnidadeDto) {
     return 'This action adds a new unidade';
   }
 
-  findAll() {
-    return `This action returns all unidades`;
+  async findAll(idEnergetico: number) {
+    return this.unidadRepository.find({
+      where: {
+        energetico: {
+          idEnergetico,
+        },
+      },
+      relations: ['energetico'],
+    });
   }
 
   findOne(id: number) {
