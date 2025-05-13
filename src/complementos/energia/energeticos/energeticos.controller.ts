@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { EnergeticosService } from './energeticos.service';
 import { CreateEnergeticoDto } from './dto/create-energetico.dto';
 import { UpdateEnergeticoDto } from './dto/update-energetico.dto';
@@ -7,14 +15,14 @@ import { UpdateEnergeticoDto } from './dto/update-energetico.dto';
 export class EnergeticosController {
   constructor(private readonly energeticosService: EnergeticosService) {}
 
+  @Get('grupo/:id')
+  findByGrupo(@Param('id') id: string) {
+    return this.energeticosService.findAll(+id);
+  }
+
   @Post()
   create(@Body() createEnergeticoDto: CreateEnergeticoDto) {
     return this.energeticosService.create(createEnergeticoDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.energeticosService.findAll();
   }
 
   @Get(':id')
@@ -23,7 +31,10 @@ export class EnergeticosController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEnergeticoDto: UpdateEnergeticoDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateEnergeticoDto: UpdateEnergeticoDto,
+  ) {
     return this.energeticosService.update(+id, updateEnergeticoDto);
   }
 

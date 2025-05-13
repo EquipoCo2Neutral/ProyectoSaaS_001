@@ -1,15 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreateEnergeticoDto } from './dto/create-energetico.dto';
 import { UpdateEnergeticoDto } from './dto/update-energetico.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Energetico } from './entities/energetico.entity';
+import { Repository } from 'typeorm';
+import { GrupoEnergetico } from '../grupo-energetico/entities/grupo-energetico.entity';
 
 @Injectable()
 export class EnergeticosService {
+  constructor(
+    @InjectRepository(Energetico)
+    private readonly energeticoRepository: Repository<Energetico>,
+    @InjectRepository(GrupoEnergetico)
+    private readonly grupoERepository: Repository<GrupoEnergetico>,
+  ) {}
   create(createEnergeticoDto: CreateEnergeticoDto) {
     return 'This action adds a new energetico';
   }
 
-  findAll() {
-    return `This action returns all energeticos`;
+  async findAll(idGrupoEnergetico: number) {
+    return this.energeticoRepository.find({
+      where: {
+        grupoEnergetico: {
+          idGrupoEnergetico,
+        },
+      },
+      relations: ['grupoEnergetico'], // Si quieres incluir los datos del grupo
+    });
   }
 
   findOne(id: number) {
