@@ -111,16 +111,15 @@ export class AdquisicionesService {
     };
   }
 
-  async findAll() {
-    return await this.adquisicioneRepository.find({
-      relations: {
-        mesProceso: true,
-        transaccion: true,
-        grupoEnergetico: true,
-        paisOrigen: true,
-        unidad: true,
-      },
-    });
+  async findAll(id: string): Promise<Adquisicione[]> {
+    const adquisiciones = await this.adquisicioneRepository.find({where: {mesProceso: { idMesProceso: id }}});
+    if (!adquisiciones || adquisiciones.length === 0) {
+      throw new NotFoundException(
+        `No se encontraron adquisiciones para el mes de proceso con ID ${id}`,
+      );
+    }
+      
+    return adquisiciones;
   }
 
   async findOne(id: number): Promise<Adquisicione> {

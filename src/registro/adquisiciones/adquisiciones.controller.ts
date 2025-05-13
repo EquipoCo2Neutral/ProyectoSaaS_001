@@ -12,9 +12,9 @@ export class AdquisicionesController {
     return this.adquisicionesService.create(createAdquisicioneDto);
   }
 
-  @Get()
-  findAll() {
-    return this.adquisicionesService.findAll();
+  @Get('/listar/:id')
+  findAll(@Param('id') id: string) {
+    return this.adquisicionesService.findAll(id);
   }
 
   @Get(':id')
