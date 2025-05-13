@@ -12,9 +12,9 @@ export class GeneracionController {
     return this.generacionService.create(createGeneracionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.generacionService.findAll();
+  @Get('/listar/:id')
+  findAll(@Param('id') id: string) {
+    return this.generacionService.findAll(id);
   }
 
   @Get(':id')

@@ -81,15 +81,12 @@ export class ExportacionesService {
     };
   }
 
-  async findAll() {
-    return await this.exportacionRepository.find({
-      relations: {
-        mesProceso: true,
-        energetico: true,
-        unidad: true,
-        pais: true,
-      },
-    });
+  async findAll(id: string): Promise<Exportacione[]> {
+    const exportaciones = await this.exportacionRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'energetico', 'unidad', 'pais']});
+    if (!exportaciones) {
+      throw new NotFoundException('No hay exportaciones registradas');
+    }
+    return exportaciones
   }
 
   async findOne(id: number) {

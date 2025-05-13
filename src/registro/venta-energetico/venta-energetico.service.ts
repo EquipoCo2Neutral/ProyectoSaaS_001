@@ -115,17 +115,12 @@ export class VentaEnergeticoService {
     };
   }
 
-  async findAll() {
-    return await this.ventaEnergetico.find({
-      relations: {
-        mesProceso: true,
-        unidad: true,
-        sector: true,
-        subSector: true,
-        region: true,
-        energetico: true,
-      },
-    });
+  async findAll(id: string): Promise<VentaEnergetico[]> {
+    const ventaEnergetico = await this.ventaEnergetico.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidad', 'sector', 'subSector', 'region', 'energetico']});
+    if (!ventaEnergetico) {
+      throw new NotFoundException('Venta energetico no encontrado');
+    }
+    return ventaEnergetico;
   }
 
   async findOne(id: number) {

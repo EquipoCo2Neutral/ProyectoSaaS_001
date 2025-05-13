@@ -12,9 +12,9 @@ export class ExportacionesController {
     return this.exportacionesService.create(createExportacioneDto);
   }
 
-  @Get()
-  findAll() {
-    return this.exportacionesService.findAll();
+  @Get("/listar/:id")
+  findAll(@Param('id') id: string) {
+    return this.exportacionesService.findAll(id);
   }
 
   @Get(':id')

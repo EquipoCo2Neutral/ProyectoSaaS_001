@@ -109,16 +109,12 @@ export class UsosFinalesService {
     };
   }
 
-  async findAll() {
-    return await this.usoFinaleRepository.find({
-      relations: {
-        mesProceso: true,
-        energetico: true,
-        categoriaUF: true,
-        tipoUF: true,
-        unidad: true,
-      },
-    });
+  async findAll(id: string): Promise<UsosFinale[]> {
+    const usoFinal = await this.usoFinaleRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'energetico', 'categoriaUF', 'tipoUF', 'unidad']});
+    if (!usoFinal) {
+      throw new NotFoundException('Uso Final no encontrado');
+    }
+    return usoFinal
   }
 
   async findOne(id: number) {

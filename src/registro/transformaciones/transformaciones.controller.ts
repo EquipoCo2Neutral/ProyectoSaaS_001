@@ -22,9 +22,9 @@ export class TransformacionesController {
     return this.transformacionesService.create(createTransformacioneDto);
   }
 
-  @Get()
-  findAll() {
-    return this.transformacionesService.findAll();
+  @Get('listar/:id')
+  findAll(@Param('id') id: string) {
+    return this.transformacionesService.findAll(id);
   }
 
   @Get(':id')

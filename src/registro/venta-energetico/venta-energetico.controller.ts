@@ -12,9 +12,9 @@ export class VentaEnergeticoController {
     return this.ventaEnergeticoService.create(createVentaEnergeticoDto);
   }
 
-  @Get()
-  findAll() {
-    return this.ventaEnergeticoService.findAll();
+  @Get('listar/:id')
+  findAll(@Param('id') id: string) {
+    return this.ventaEnergeticoService.findAll(id);
   }
 
   @Get(':id')

@@ -12,9 +12,9 @@ export class UsosFinalesController {
     return this.usosFinalesService.create(createUsosFinaleDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usosFinalesService.findAll();
+  @Get('listar/:id')
+  findAll(@Param('id') id: string) {
+    return this.usosFinalesService.findAll(id);
   }
 
   @Get(':id')

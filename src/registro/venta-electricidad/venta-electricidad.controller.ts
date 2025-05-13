@@ -12,9 +12,9 @@ export class VentaElectricidadController {
     return this.ventaElectricidadService.create(createVentaElectricidadDto);
   }
 
-  @Get()
-  findAll() {
-    return this.ventaElectricidadService.findAll();
+  @Get('listar/:id')
+  findAll(@Param('id') id: string) {
+    return this.ventaElectricidadService.findAll(id);
   }
 
   @Get(':id')

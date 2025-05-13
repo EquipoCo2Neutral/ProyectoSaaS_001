@@ -114,17 +114,12 @@ export class GeneracionService {
     };
   }
 
-  async findAll() {
-    return await this.generacionRepository.find({
-      relations: {
-        mesProceso: true,
-        energetico: true,
-        unidadCE: true,
-        unidadCENA: true,
-        unidadCGB: true,
-        unidadCI: true,
-      },
-    });
+  async findAll(id: string): Promise<Generacion[]> {
+    const generacion = await this.generacionRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidadCGB', 'unidadCI', 'unidadCENA', 'unidadCE', 'energetico']});
+    if (!generacion) {
+      throw new NotFoundException('Generacion no encontrada');
+    }
+    return generacion;
   }
 
   async findOne(id: number) {

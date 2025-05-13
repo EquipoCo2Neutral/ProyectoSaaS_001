@@ -80,15 +80,14 @@ export class TransformacionesService {
     };
   }
 
-  async findAll() {
-    return await this.transformacionRepository.find({
-      relations: {
-        mesProceso: true,
-        unidad: true,
-        energetico: true,
-        energeticoProducido: true,
-      },
-    });
+  async findAll(id: string): Promise<Transformacione[]> {
+    const transformacion = await this.transformacionRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidad', 'energetico', 'energeticoProducido']});
+    
+    if (!transformacion) {
+      throw new NotFoundException('Transformacion no encontrada');
+    }
+
+    return transformacion
   }
 
   async findOne(id: number) {

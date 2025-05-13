@@ -115,16 +115,12 @@ export class VentaElectricidadService {
     };
   }
 
-  async findAll() {
-    return await this.ventaElectricidadRepository.find({
-      relations: {
-        mesProceso: true,
-        unidad: true,
-        region: true,
-        sectorE: true,
-        subSectorE: true,
-      },
-    });
+  async findAll(id: string): Promise<VentaElectricidad[]> {
+    const ventaElectricidad = await this.ventaElectricidadRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidad', 'region', 'sectorE', 'subSectorE']});
+    if (!ventaElectricidad) {
+      throw new NotFoundException('Venta de electricidad no encontrada');
+    }
+    return ventaElectricidad
   }
 
   async findOne(id: number) {
