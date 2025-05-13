@@ -81,16 +81,84 @@ export class ExportacionesService {
     };
   }
 
-  findAll() {
-    return `This action returns all exportaciones`;
+  async findAll() {
+    return await this.exportacionRepository.find({
+      relations: {
+        mesProceso: true,
+        energetico: true,
+        unidad: true,
+        pais: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} exportacione`;
+  async findOne(id: number) {
+    const exportacion = await this.exportacionRepository.findOne({
+      where: { idExportacion: id },
+      relations: {
+        mesProceso: true,
+        energetico: true,
+        unidad: true,
+        pais: true,
+      },
+    });
+    if (!exportacion) {
+      throw new NotFoundException('Exportacion no encontrada');
+    }
+    return exportacion;
   }
 
-  update(id: number, updateExportacioneDto: UpdateExportacioneDto) {
-    return `This action updates a #${id} exportacione`;
+  async update(id: number, updateExportacioneDto: UpdateExportacioneDto) {
+    const exportacion = await this.exportacionRepository.findOne({
+      where: { idExportacion: id },
+    });
+    if (!exportacion) {
+      throw new NotFoundException('Exportacion no encontrada');
+    }
+
+    Object.assign(exportacion, updateExportacioneDto);
+
+    if (updateExportacioneDto.idMesProceso) {
+      const mesProceso = await this.mesProcesoRepository.findOne({
+        where: { idMesProceso: updateExportacioneDto.idMesProceso },
+      });
+
+      if (!mesProceso) {
+        throw new NotFoundException('Mes Proceso no encontrado');
+      }
+      exportacion.mesProceso = mesProceso;
+    }
+
+
+
+    if (updateExportacioneDto.idEnergetico) {
+      const Energetico = this.energeticoRepository.findOne({
+        where: { idEnergetico: updateExportacioneDto.idEnergetico },
+      });
+
+      if (!Energetico) {
+        throw new NotFoundException('Energetico no encontrado');
+      }
+    }
+    if (updateExportacioneDto.idUnidad) {
+      const Unidad = this.unidadRepository.findOne({
+        where: { idUnidad: updateExportacioneDto.idUnidad },
+      });
+      if (!Unidad) {
+        throw new NotFoundException('Unidad no encontrada');
+      }
+    }
+    if (updateExportacioneDto.idPais) {
+      const Pais = this.paisRepository.findOne({
+        where: { idPais: updateExportacioneDto.idPais },
+      });
+      if (!Pais) {
+        throw new NotFoundException('Pais no encontrado');
+      }
+    }
+
+
+    return this.exportacionRepository.save(exportacion);
   }
 
   remove(id: number) {
