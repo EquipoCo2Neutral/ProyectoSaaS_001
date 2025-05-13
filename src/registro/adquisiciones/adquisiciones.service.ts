@@ -112,7 +112,7 @@ export class AdquisicionesService {
   }
 
   async findAll(id: string): Promise<Adquisicione[]> {
-    const adquisiciones = await this.adquisicioneRepository.find({where: {mesProceso: { idMesProceso: id }}});
+    const adquisiciones = await this.adquisicioneRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'transaccion', 'grupoEnergetico', 'energetico', 'unidad', 'paisOrigen']});
     if (!adquisiciones || adquisiciones.length === 0) {
       throw new NotFoundException(
         `No se encontraron adquisiciones para el mes de proceso con ID ${id}`,
