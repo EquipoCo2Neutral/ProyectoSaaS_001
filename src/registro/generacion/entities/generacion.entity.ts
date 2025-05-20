@@ -69,7 +69,7 @@ export class Generacion {
   @ManyToOne(() => Unidade, (u) => u.generacion_UCE, {
     nullable: true,
   })
-  @JoinColumn({ name: 'idUnidadCe' })
+  @JoinColumn({ name: 'idUnidad_Ce' })
   unidadCE: Unidade;
 
   @ManyToOne(() => MesProceso, (mesProceso) => mesProceso.generacion, {

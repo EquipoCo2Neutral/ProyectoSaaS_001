@@ -112,13 +112,22 @@ export class AdquisicionesService {
   }
 
   async findAll(id: string): Promise<Adquisicione[]> {
-    const adquisiciones = await this.adquisicioneRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'transaccion', 'grupoEnergetico', 'energetico', 'unidad']});
+    const adquisiciones = await this.adquisicioneRepository.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: [
+        'mesProceso',
+        'transaccion',
+        'grupoEnergetico',
+        'energetico',
+        'unidad',
+      ],
+    });
     if (!adquisiciones || adquisiciones.length === 0) {
       throw new NotFoundException(
         `No se encontraron adquisiciones para el mes de proceso con ID ${id}`,
       );
     }
-      
+
     return adquisiciones;
   }
 
@@ -160,6 +169,19 @@ export class AdquisicionesService {
     }
 
     return await this.adquisicioneRepository.save(adquisicion);
+  }
+
+  async findEnergeticosByMesProceso(idMesProceso: string) {
+    return this.adquisicioneRepository
+      .createQueryBuilder('adq')
+      .innerJoin('adq.energetico', 'energetico')
+      .where('adq.mesProceso = :idMesProceso', { idMesProceso })
+      .select([
+        'energetico.idEnergetico AS id',
+        'energetico.nombreEnergetico AS nombre',
+      ])
+      .distinct(true)
+      .getRawMany();
   }
 
   remove(id: number) {

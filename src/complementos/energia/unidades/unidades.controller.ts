@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UnidadesService } from './unidades.service';
 import { CreateUnidadeDto } from './dto/create-unidade.dto';
@@ -18,6 +19,12 @@ export class UnidadesController {
   @Post()
   create(@Body() createUnidadeDto: CreateUnidadeDto) {
     return this.unidadesService.create(createUnidadeDto);
+  }
+
+  @Get('by-ids')
+  async findByIds(@Query('ids') ids: string) {
+    const idArray = ids.split(',').map((id) => parseInt(id, 10));
+    return this.unidadesService.findByIds(idArray);
   }
 
   @Get('energetico/:id')

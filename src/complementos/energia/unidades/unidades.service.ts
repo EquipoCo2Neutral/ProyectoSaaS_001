@@ -3,7 +3,7 @@ import { CreateUnidadeDto } from './dto/create-unidade.dto';
 import { UpdateUnidadeDto } from './dto/update-unidade.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Unidade } from './entities/unidade.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class UnidadesService {
@@ -23,6 +23,14 @@ export class UnidadesService {
         },
       },
       relations: ['energetico'],
+    });
+  }
+
+  async findByIds(ids: number[]): Promise<Unidade[]> {
+    return this.unidadRepository.find({
+      where: {
+        idUnidad: In(ids),
+      },
     });
   }
 

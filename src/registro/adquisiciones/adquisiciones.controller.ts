@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AdquisicionesService } from './adquisiciones.service';
 import { CreateAdquisicioneDto } from './dto/create-adquisicione.dto';
 import { UpdateAdquisicioneDto } from './dto/update-adquisicione.dto';
@@ -23,12 +31,20 @@ export class AdquisicionesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAdquisicioneDto: UpdateAdquisicioneDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAdquisicioneDto: UpdateAdquisicioneDto,
+  ) {
     return this.adquisicionesService.update(+id, updateAdquisicioneDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.adquisicionesService.remove(+id);
+  }
+
+  @Get('energeticos/:idMesProceso')
+  findEnergeticosByMesProceso(@Param('idMesProceso') idMesProceso: string) {
+    return this.adquisicionesService.findEnergeticosByMesProceso(idMesProceso);
   }
 }
