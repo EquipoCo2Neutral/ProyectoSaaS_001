@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TipoUfService } from './tipo-uf.service';
 import { CreateTipoUfDto } from './dto/create-tipo-uf.dto';
 import { UpdateTipoUfDto } from './dto/update-tipo-uf.dto';
@@ -12,9 +20,9 @@ export class TipoUfController {
     return this.tipoUfService.create(createTipoUfDto);
   }
 
-  @Get()
-  findAll() {
-    return this.tipoUfService.findAll();
+  @Get('categoria/:id')
+  findByCategoria(@Param('id') id: string) {
+    return this.tipoUfService.findAll(+id);
   }
 
   @Get(':id')
