@@ -184,6 +184,23 @@ export class AdquisicionesService {
       .getRawMany();
   }
 
+  async findEnergeticosByMesProcesoConTransaccion4(idMesProceso: string) {
+    return this.adquisicioneRepository
+      .createQueryBuilder('adq')
+      .innerJoin('adq.energetico', 'energetico')
+      .innerJoin('adq.transaccion', 'transaccion')
+      .where('adq.mesProceso = :idMesProceso', { idMesProceso })
+      .andWhere('transaccion.idTransaccion = :idTransaccion', {
+        idTransaccion: 4,
+      })
+      .select([
+        'energetico.idEnergetico AS id',
+        'energetico.nombreEnergetico AS nombre',
+      ])
+      .distinct(true)
+      .getRawMany();
+  }
+
   remove(id: number) {
     return `This action removes a #${id} adquisicione`;
   }

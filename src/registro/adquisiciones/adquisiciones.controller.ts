@@ -47,4 +47,13 @@ export class AdquisicionesController {
   findEnergeticosByMesProceso(@Param('idMesProceso') idMesProceso: string) {
     return this.adquisicionesService.findEnergeticosByMesProceso(idMesProceso);
   }
+
+  @Get('energeticos-mes-proceso-transaccion/:idMesProceso')
+  findEnergeticosByMesProcesoConTransaccion4(
+    @Param('idMesProceso') idMesProceso: string,
+  ) {
+    return this.adquisicionesService.findEnergeticosByMesProcesoConTransaccion4(
+      idMesProceso,
+    );
+  }
 }
