@@ -3,6 +3,7 @@ import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
 import { Adquisicione } from 'src/registro/adquisiciones/entities/adquisicione.entity';
 import { Exportacione } from 'src/registro/exportaciones/entities/exportacione.entity';
 import { Generacion } from 'src/registro/generacion/entities/generacion.entity';
+import { ResumenTransaccione } from 'src/registro/resumen-transacciones/entities/resumen-transaccione.entity';
 import { Transformacione } from 'src/registro/transformaciones/entities/transformacione.entity';
 import { UsosFinale } from 'src/registro/usos-finales/entities/usos-finale.entity';
 import { VentaElectricidad } from 'src/registro/venta-electricidad/entities/venta-electricidad.entity';
@@ -78,4 +79,10 @@ export class MesProceso {
     cascade: true,
   })
   exportacion: Exportacione[];
+    
+  @OneToMany(() => ResumenTransaccione, (resumenTransaccione) => resumenTransaccione.mesProceso, {
+    cascade: true,
+  })
+  resumenTransaccione: ResumenTransaccione[];
+  
 }
