@@ -47,176 +47,178 @@ export class ResumenTransaccionesService {
     if (!mesProceso) {
       throw new Error('MesProceso not found');
     }
-  // 2. Obtener datos en paralelo para mejor rendimiento
-  const [
-    adquisiciones,
-    generacion,
-    transformacion,
-    usoFinal,
-    ventaElectricidad,
-    ventaEnergetico,
-    exportaciones,
-  ] = await Promise.all([
-    this.adquisicioneRepository.find({
-      where: { mesProceso },
-      relations: ['energetico', 'transaccion', 'unidad'],
-    }),
-    this.generacionRepository.find({
-      where: { mesProceso },
-      relations: ['energetico', 'unidadCGB'],
-    }),
-    this.transformacioneRepository.find({
-      where: { mesProceso },
-      relations: ['energetico', 'unidad'],
-    }),
-    this.usosFinaleRepository.find({
-      where: { mesProceso },
-      relations: ['energetico', 'unidad', 'categoriaUF'],
-    }),
-    this.ventaElectricidadRepository.find({
-      where: { mesProceso },
-      relations: ['unidad'],
-    }),
-    this.ventaEnergeticoRepository.find({
-      where: { mesProceso },
-      relations: ['energetico', 'unidad'],
-    }),
-    this.exportacioneRepository.find({
-      where: { mesProceso },
-      relations: ['energetico', 'unidad'],
-    }),
-  ]);
+    await this.resumenTransaccioneRepository.delete({ mesProceso });
+    // 2. Obtener datos en paralelo para mejor rendimiento
+    const [
+      adquisiciones,
+      generacion,
+      transformacion,
+      usoFinal,
+      ventaElectricidad,
+      ventaEnergetico,
+      exportaciones,
+    ] = await Promise.all([
+      this.adquisicioneRepository.find({
+        where: { mesProceso },
+        relations: ['energetico', 'transaccion', 'unidad'],
+      }),
+      this.generacionRepository.find({
+        where: { mesProceso },
+        relations: ['energetico', 'unidadCGB'],
+      }),
+      this.transformacioneRepository.find({
+        where: { mesProceso },
+        relations: ['energetico', 'unidad'],
+      }),
+      this.usosFinaleRepository.find({
+        where: { mesProceso },
+        relations: ['energetico', 'unidad', 'categoriaUF'],
+      }),
+      this.ventaElectricidadRepository.find({
+        where: { mesProceso },
+        relations: ['unidad'],
+      }),
+      this.ventaEnergeticoRepository.find({
+        where: { mesProceso },
+        relations: ['energetico', 'unidad'],
+      }),
+      this.exportacioneRepository.find({
+        where: { mesProceso },
+        relations: ['energetico', 'unidad'],
+      }),
+    ]);
 
-  // 3. Crear mapa para consolidar la información
-  const resumenTransacciones: Partial<ResumenTransaccione>[] = [];
+    // 3. Crear mapa para consolidar la información
+    const resumenTransacciones: Partial<ResumenTransaccione>[] = [];
 
-  // Ejemplo para adquisiciones (entradas)
-  adquisiciones.forEach(adq => {
-    resumenTransacciones.push({
-      Energetico: adq.energetico.nombreEnergetico,
-      Categoria: adq.transaccion.nombreTransaccion,
-      Unidad: adq.unidad.nombreUnidad,
-      cantidadEntrada: adq.Cantidad,
-      cantidadSalida: 0,
-      mesProceso: mesProceso,
+    // Ejemplo para adquisiciones (entradas)
+    adquisiciones.forEach(adq => {
+      resumenTransacciones.push({
+        Energetico: adq.energetico.nombreEnergetico,
+        Categoria: adq.transaccion.nombreTransaccion,
+        Unidad: adq.unidad.nombreUnidad,
+        cantidadEntrada: adq.Cantidad,
+        cantidadSalida: 0,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
-  generacion.forEach(adq => {
-    let categoriaGeneracion: string;
-    let energeticoGeneracion: string;
-    let cantidadEntrada: number;
-    let cantidadSalida: number;
+    generacion.forEach(adq => {
+      let categoriaGeneracion: string;
+      let energeticoGeneracion: string;
+      let cantidadEntrada: number;
+      let cantidadSalida: number;
 
-    // Definir categoría
-    if ([1, 2, 3].includes(adq.idTecnologia)) {
-      categoriaGeneracion = 'Generación Energía Renovable';
-    } else if ([4, 5].includes(adq.idTecnologia)) {
-      categoriaGeneracion = 'Generación Eléctrica Termica';
-    } else {
-      categoriaGeneracion = 'Generación'; // valor por defecto
-    }
+      // Definir categoría
+      if ([1, 2, 3].includes(adq.idTecnologia)) {
+        categoriaGeneracion = 'Generación Energía Renovable';
+      } else if ([4, 5].includes(adq.idTecnologia)) {
+        categoriaGeneracion = 'Generación Eléctrica Termica';
+      } else {
+        categoriaGeneracion = 'Generación'; // valor por defecto
+      }
 
-    // Definir energético
-    if ([1, 2, 3, 5].includes(adq.idTecnologia)) {
-      energeticoGeneracion = 'Electricidad';
-    } else if (adq.idTecnologia === 4) {
-      energeticoGeneracion = adq.energetico?.nombreEnergetico?.trim() || 'Desconocido';
-    } else {
-      energeticoGeneracion = 'Desconocido';
-    }
+      // Definir energético
+      if ([1, 2, 3, 5].includes(adq.idTecnologia)) {
+        energeticoGeneracion = 'Electricidad';
+      } else if (adq.idTecnologia === 4) {
+        energeticoGeneracion = adq.energetico?.nombreEnergetico?.trim() || 'Desconocido';
+      } else {
+        energeticoGeneracion = 'Desconocido';
+      }
 
-    // Definir cantidad de entrada y salida
-    cantidadEntrada = [1, 2, 3, 5].includes(adq.idTecnologia) ? adq.cantidadGeneradaBruta : 0;
-    cantidadSalida = adq.idTecnologia === 4 ? adq.cantidadGeneradaBruta : 0;
+      // Definir cantidad de entrada y salida
+      cantidadEntrada = [1, 2, 3, 5].includes(adq.idTecnologia) ? adq.cantidadGeneradaBruta : 0;
+      cantidadSalida = adq.idTecnologia === 4 ? adq.cantidadGeneradaBruta : 0;
 
-    resumenTransacciones.push({
-      Energetico: energeticoGeneracion,
-      Categoria: categoriaGeneracion,
-      Unidad: adq.unidadCGB.nombreUnidad,
-      cantidadEntrada: cantidadEntrada,
-      cantidadSalida: cantidadSalida,
-      mesProceso: mesProceso,
+      resumenTransacciones.push({
+        Energetico: energeticoGeneracion,
+        Categoria: categoriaGeneracion,
+        Unidad: adq.unidadCGB.nombreUnidad,
+        cantidadEntrada: cantidadEntrada,
+        cantidadSalida: cantidadSalida,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
 
-  // Ejemplo para usos finales (salidas)
-  
-  transformacion.forEach(uf => {
-    resumenTransacciones.push({
-      Energetico: uf.energetico.nombreEnergetico,
-      Categoria: 'Transformación',
-      Unidad: uf.unidad.nombreUnidad,
-      cantidadEntrada: 0,
-      cantidadSalida: uf.cantidad,
-      mesProceso: mesProceso,
+    // Ejemplo para usos finales (salidas)
+    
+    transformacion.forEach(uf => {
+      resumenTransacciones.push({
+        Energetico: uf.energetico.nombreEnergetico,
+        Categoria: 'Transformación',
+        Unidad: uf.unidad.nombreUnidad,
+        cantidadEntrada: 0,
+        cantidadSalida: uf.cantidad,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
 
 
-  usoFinal.forEach(uf => {
-    resumenTransacciones.push({
-      Energetico: uf.energetico.nombreEnergetico,
-      Categoria: uf.categoriaUF.nombreCategoria,
-      Unidad: uf.unidad.nombreUnidad,
-      cantidadEntrada: 0,
-      cantidadSalida: uf.cantidad,
-      mesProceso: mesProceso,
+    usoFinal.forEach(uf => {
+      resumenTransacciones.push({
+        Energetico: uf.energetico.nombreEnergetico,
+        Categoria: uf.categoriaUF.nombreCategoria,
+        Unidad: uf.unidad.nombreUnidad,
+        cantidadEntrada: 0,
+        cantidadSalida: uf.cantidad,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
-  ventaElectricidad.forEach(uf => {
-    let categoriaVentaElectricidad: string;
+    ventaElectricidad.forEach(uf => {
+      let categoriaVentaElectricidad: string;
 
 
-    // Definir categoría
-    if(uf.idDestinoVenta === 1){
-      categoriaVentaElectricidad = 'Venta a generación eléctrica'
-    } else if (uf.idDestinoVenta === 2){
-      categoriaVentaElectricidad = 'Venta a distribución eléctrica'
-    } else if(uf.idDestinoVenta===3){
-      categoriaVentaElectricidad = 'Venta regulada'
-    } else if(uf.idDestinoVenta===4){
-      categoriaVentaElectricidad = 'Venta no regulada'
-    } else {
-      categoriaVentaElectricidad = 'Venta electrica'
-    }
-    resumenTransacciones.push({
-      Energetico: 'Electricidad',
-      Categoria: categoriaVentaElectricidad,
-      Unidad: uf.unidad.nombreUnidad,
-      cantidadEntrada: 0,
-      cantidadSalida: uf.cantidadVendida,
-      mesProceso: mesProceso,
+      // Definir categoría
+      if(uf.idDestinoVenta === 1){
+        categoriaVentaElectricidad = 'Venta a generación eléctrica'
+      } else if (uf.idDestinoVenta === 2){
+        categoriaVentaElectricidad = 'Venta a distribución eléctrica'
+      } else if(uf.idDestinoVenta===3){
+        categoriaVentaElectricidad = 'Venta regulada'
+      } else if(uf.idDestinoVenta===4){
+        categoriaVentaElectricidad = 'Venta no regulada'
+      } else {
+        categoriaVentaElectricidad = 'Venta electrica'
+      }
+      resumenTransacciones.push({
+        Energetico: 'Electricidad',
+        Categoria: categoriaVentaElectricidad,
+        Unidad: uf.unidad.nombreUnidad,
+        cantidadEntrada: 0,
+        cantidadSalida: uf.cantidadVendida,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
-  ventaEnergetico.forEach(uf => {
-    resumenTransacciones.push({
-      Energetico: uf.energetico.nombreEnergetico,
-      Categoria: 'Venta',
-      Unidad: uf.unidad.nombreUnidad,
-      cantidadEntrada: 0,
-      cantidadSalida: uf.cantidad,
-      mesProceso: mesProceso,
+    ventaEnergetico.forEach(uf => {
+      resumenTransacciones.push({
+        Energetico: uf.energetico.nombreEnergetico,
+        Categoria: 'Venta',
+        Unidad: uf.unidad.nombreUnidad,
+        cantidadEntrada: 0,
+        cantidadSalida: uf.cantidad,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
-  exportaciones.forEach(uf => {
-    resumenTransacciones.push({
-      Energetico: uf.energetico.nombreEnergetico,
-      Categoria: 'Exportación',
-      Unidad: uf.unidad.nombreUnidad,
-      cantidadEntrada: 0,
-      cantidadSalida: uf.cantidad,
-      mesProceso: mesProceso,
+    exportaciones.forEach(uf => {
+      resumenTransacciones.push({
+        Energetico: uf.energetico.nombreEnergetico,
+        Categoria: 'Exportación',
+        Unidad: uf.unidad.nombreUnidad,
+        cantidadEntrada: 0,
+        cantidadSalida: uf.cantidad,
+        mesProceso: mesProceso,
+      });
     });
-  });
 
-  // Guardar todos los resúmenes
-  return resumenTransacciones;
+    await this.resumenTransaccioneRepository.save(resumenTransacciones);
+    // Guardar todos los resúmenes
+    return resumenTransacciones;
 
   }
   
