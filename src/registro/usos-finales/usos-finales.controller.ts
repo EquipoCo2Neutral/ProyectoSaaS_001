@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UsosFinalesService } from './usos-finales.service';
 import { CreateUsosFinaleDto } from './dto/create-usos-finale.dto';
 import { UpdateUsosFinaleDto } from './dto/update-usos-finale.dto';
@@ -23,7 +31,10 @@ export class UsosFinalesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsosFinaleDto: UpdateUsosFinaleDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateUsosFinaleDto: UpdateUsosFinaleDto,
+  ) {
     return this.usosFinalesService.update(+id, updateUsosFinaleDto);
   }
 

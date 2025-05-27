@@ -110,17 +110,33 @@ export class UsosFinalesService {
   }
 
   async findAll(id: string): Promise<UsosFinale[]> {
-    const usoFinal = await this.usoFinaleRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'energetico', 'categoriaUF', 'tipoUF', 'unidad']});
+    const usoFinal = await this.usoFinaleRepository.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: [
+        'mesProceso',
+        'energetico',
+        'categoriaUF',
+        'tipoUF',
+        'unidad',
+      ],
+    });
     if (!usoFinal) {
       throw new NotFoundException('Uso Final no encontrado');
     }
-    return usoFinal
+    return usoFinal;
   }
 
   async findOne(id: number) {
     const usoFinal = await this.usoFinaleRepository.findOne({
       where: { idUsoFinal: id },
-      relations: { mesProceso: true },
+
+      relations: [
+        'mesProceso',
+        'energetico',
+        'categoriaUF',
+        'tipoUF',
+        'unidad',
+      ],
     });
     if (!usoFinal) {
       throw new NotFoundException('Uso Final no encontrado');
@@ -155,6 +171,7 @@ export class UsosFinalesService {
       if (!energetico) {
         throw new NotFoundException('Energetico no encontrado');
       }
+      usoFinal.energetico = energetico;
     }
 
     if (updateUsosFinaleDto.idCategoriaUF) {
@@ -164,6 +181,7 @@ export class UsosFinalesService {
       if (!categoriaUf) {
         throw new NotFoundException('Categoria no encontrada');
       }
+      usoFinal.categoriaUF = categoriaUf;
     }
 
     if (updateUsosFinaleDto.idTipoUF) {
@@ -173,6 +191,7 @@ export class UsosFinalesService {
       if (!tipoUf) {
         throw new NotFoundException('Tipo no encontrado');
       }
+      usoFinal.tipoUF = tipoUf;
     }
 
     if (updateUsosFinaleDto.idUnidad) {
@@ -182,9 +201,13 @@ export class UsosFinalesService {
       if (!unidad) {
         throw new NotFoundException('Unidad no encontrada');
       }
+      usoFinal.unidad = unidad;
     }
-
-    return await this.usoFinaleRepository.save(usoFinal);
+    const resultado = await this.usoFinaleRepository.save(usoFinal);
+    return {
+      resultado,
+      message: 'Uso Final Actualizado Correctamente',
+    };
   }
 
   remove(id: number) {
