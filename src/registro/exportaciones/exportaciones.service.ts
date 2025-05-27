@@ -126,36 +126,40 @@ export class ExportacionesService {
       exportacion.mesProceso = mesProceso;
     }
 
-
-
     if (updateExportacioneDto.idEnergetico) {
-      const Energetico = this.energeticoRepository.findOne({
+      const Energetico = await this.energeticoRepository.findOne({
         where: { idEnergetico: updateExportacioneDto.idEnergetico },
       });
-
       if (!Energetico) {
         throw new NotFoundException('Energetico no encontrado');
       }
+      exportacion.energetico = Energetico;
     }
+
     if (updateExportacioneDto.idUnidad) {
-      const Unidad = this.unidadRepository.findOne({
+      const Unidad = await this.unidadRepository.findOne({
         where: { idUnidad: updateExportacioneDto.idUnidad },
       });
       if (!Unidad) {
         throw new NotFoundException('Unidad no encontrada');
       }
+      exportacion.unidad = Unidad;
     }
     if (updateExportacioneDto.idPais) {
-      const Pais = this.paisRepository.findOne({
+      const Pais = await this.paisRepository.findOne({
         where: { idPais: updateExportacioneDto.idPais },
       });
       if (!Pais) {
         throw new NotFoundException('Pais no encontrado');
       }
+      exportacion.pais = Pais;
     }
 
-
-    return this.exportacionRepository.save(exportacion);
+    const resultado = await this.exportacionRepository.save(exportacion);
+    return {
+      resultado,
+      message: 'Exportacion actualizada correctamente',
+    }
   }
 
   remove(id: number) {

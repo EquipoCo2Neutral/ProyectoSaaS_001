@@ -170,6 +170,7 @@ export class VentaElectricidadService {
       if (!unidad) {
         throw new NotFoundException('Unidad no encontrada');
       }
+      ventaElectricidad.unidad = unidad;
     }
 
     if (updateVentaElectricidadDto.idRegion) {
@@ -179,6 +180,7 @@ export class VentaElectricidadService {
       if (!region) {
         throw new NotFoundException('Region no encontrada');
       }
+      ventaElectricidad.region = region;
     }
 
     if (updateVentaElectricidadDto.idSectorEconomico) {
@@ -188,6 +190,7 @@ export class VentaElectricidadService {
       if (!sector) {
         throw new NotFoundException('Sector no encontrado');
       }
+      ventaElectricidad.sectorE = sector;
     }
 
     if (updateVentaElectricidadDto.idSubSectorEconomico) {
@@ -197,9 +200,16 @@ export class VentaElectricidadService {
       if (!subSector) {
         throw new NotFoundException('Subsector no encontrado');
       }
+      ventaElectricidad.subSectorE = subSector;
     }
 
-    return await this.ventaElectricidadRepository.save(ventaElectricidad);
+    
+
+    const resultado = await this.ventaElectricidadRepository.save(ventaElectricidad);
+    return {
+      resultado,
+      message: 'Venta de electricidad actualizada correctamente',
+    }
   }
 
   remove(id: number) {

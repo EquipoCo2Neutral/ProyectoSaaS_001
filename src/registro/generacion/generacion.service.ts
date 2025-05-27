@@ -158,6 +158,7 @@ export class GeneracionService {
       if (!Unidad_CGB) {
         throw new NotFoundException('Unidad CGB no encontrada');
       }
+      generacion.unidadCGB = Unidad_CGB;
     }
     if (updateGeneracionDto.idUnidad_Ci) {
       const Unidad_Ci = await this.unidadRepository.findOneBy({
@@ -166,6 +167,7 @@ export class GeneracionService {
       if (!Unidad_Ci) {
         throw new NotFoundException('Unidad CGB no encontrada');
       }
+      generacion.unidadCI = Unidad_Ci;
     }
     if (updateGeneracionDto.idUnidad_Cena) {
       const Unidad_Cena = await this.unidadRepository.findOneBy({
@@ -174,6 +176,7 @@ export class GeneracionService {
       if (!Unidad_Cena) {
         throw new NotFoundException('Unidad CGB no encontrada');
       }
+      generacion.unidadCENA = Unidad_Cena;
     }
     if (updateGeneracionDto.idUnidad_Ce) {
       const Unidad_Ce = await this.unidadRepository.findOneBy({
@@ -182,6 +185,7 @@ export class GeneracionService {
       if (!Unidad_Ce) {
         throw new NotFoundException('Unidad CGB no encontrada');
       }
+      generacion.unidadCE = Unidad_Ce;
     }
     if (updateGeneracionDto.idEnergetico) {
       const Unidad_Energetico = await this.energeticoRepository.findOneBy({
@@ -190,9 +194,15 @@ export class GeneracionService {
       if (!Unidad_Energetico) {
         throw new NotFoundException('Unidad CGB no encontrada');
       }
+      generacion.energetico = Unidad_Energetico;
     }
+    
+    const resultado = await this.generacionRepository.save(generacion);
 
-    return await this.generacionRepository.save(generacion);
+    return {
+      resultado,
+      message: 'Generacion actualizada correctamente',
+    }
   }
 
   remove(id: number) {

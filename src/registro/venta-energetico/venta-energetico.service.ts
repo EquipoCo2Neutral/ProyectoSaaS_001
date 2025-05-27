@@ -168,6 +168,7 @@ export class VentaEnergeticoService {
       if (!energetico) {
         throw new NotFoundException('energetico invalido');
       }
+      ventaEnergetico.energetico = energetico;
     }
     if (updateVentaEnergeticoDto.idUnidad) {
       const unidad = await this.unidadRepository.findOneBy({
@@ -176,6 +177,7 @@ export class VentaEnergeticoService {
       if (!unidad) {
         throw new NotFoundException('unidad invalida');
       }
+      ventaEnergetico.unidad = unidad;
     }
 
     if (updateVentaEnergeticoDto.idRegion) {
@@ -185,6 +187,7 @@ export class VentaEnergeticoService {
       if (!region) {
         throw new NotFoundException('region invalida');
       }
+      ventaEnergetico.region = region;
     }
 
     if (updateVentaEnergeticoDto.idSector) {
@@ -194,6 +197,7 @@ export class VentaEnergeticoService {
       if (!sector) {
         throw new NotFoundException('sector invalido');
       }
+      ventaEnergetico.sector = sector;
     }
 
     if (updateVentaEnergeticoDto.idSubSector) {
@@ -203,9 +207,13 @@ export class VentaEnergeticoService {
       if (!subSector) {
         throw new NotFoundException('Sub Sector invalido');
       }
+      ventaEnergetico.subSector = subSector;
     }
-
-    return await this.ventaEnergetico.save(ventaEnergetico);
+    const respuesta = await this.ventaEnergetico.save(ventaEnergetico);
+    return {
+      respuesta,
+      message: 'Venta Energetico actualizada correctamente',
+    }
   }
 
   remove(id: number) {

@@ -168,7 +168,65 @@ export class AdquisicionesService {
       adquisicion.mesProceso = mesProceso;
     }
 
-    return await this.adquisicioneRepository.save(adquisicion);
+    if(updateAdquisicioneDto.idTransaccion) {
+      const transaccion = await this.transaccioneRepository.findOne({
+        where: { idTransaccion: updateAdquisicioneDto.idTransaccion },
+      });
+      if (!transaccion) {
+        throw new NotFoundException(
+          `Transacción con ID ${updateAdquisicioneDto.idTransaccion} no encontrada`,
+        );
+      }
+      adquisicion.transaccion = transaccion;
+    }
+
+    if (updateAdquisicioneDto.idGrupoEnergetico) {
+      const grupoEnergetico = await this.grupoEnergeticoRepository.findOne({
+        where: { idGrupoEnergetico: updateAdquisicioneDto.idGrupoEnergetico },
+      });
+      if (!grupoEnergetico) {
+        throw new NotFoundException(
+          `Grupo energético con ID ${updateAdquisicioneDto.idGrupoEnergetico} no encontrado`,
+        );
+      }
+      adquisicion.grupoEnergetico = grupoEnergetico;
+    }
+
+    if (updateAdquisicioneDto.idEnergetico) {
+      const energetico = await this.energeticoRepository.findOne({
+        where: { idEnergetico: updateAdquisicioneDto.idEnergetico },
+      });
+      if (!energetico) {
+        throw new NotFoundException(
+          `Energetico con ID ${updateAdquisicioneDto.idEnergetico} no encontrado`,
+        );
+      }
+      adquisicion.energetico = energetico;
+    }
+    if (updateAdquisicioneDto.idUnidad) {
+      const unidad = await this.unidadRepository.findOne({
+        where: { idUnidad: updateAdquisicioneDto.idUnidad },
+      });
+      if (!unidad) {
+        throw new NotFoundException(
+          `Unidad con ID ${updateAdquisicioneDto.idUnidad} no encontrada`,
+        );
+      }
+      adquisicion.unidad = unidad;
+    }
+    if (updateAdquisicioneDto.Cantidad){
+      if (updateAdquisicioneDto.Cantidad < 0) {
+        throw new NotFoundException('La cantidad no puede ser menor que 0');
+      }
+      adquisicion.Cantidad = updateAdquisicioneDto.Cantidad;
+    }
+
+    const resultado = await this.adquisicioneRepository.save(adquisicion);
+
+    return {
+      resultado,
+      message: 'Adquisición actualizada correctamente',
+    }
   }
 
   async findEnergeticosByMesProceso(idMesProceso: string) {

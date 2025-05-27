@@ -125,6 +125,7 @@ export class TransformacionesService {
       if (!energetico) {
         throw new NotFoundException('Energetico no encontrado');
       }
+      transformacion.energetico = energetico;
     }
 
     if (updateTransformacioneDto.idEnergeticoProducido) {
@@ -134,6 +135,7 @@ export class TransformacionesService {
       if (!energeticoProducido) {
         throw new NotFoundException('Energetico Producido no encontrado');
       }
+      transformacion.energeticoProducido = energeticoProducido;
     }
 
     if (updateTransformacioneDto.idUnidad) {
@@ -143,9 +145,14 @@ export class TransformacionesService {
       if (!unidad) {
         throw new NotFoundException('Unidad no encontrada');
       }
+      transformacion.unidad = unidad;
     }
 
-    return this.transformacionRepository.save(transformacion);
+    const resultado = await this.transformacionRepository.save(transformacion)
+    return {
+      resultado,
+      message: 'Transformacion actualizada correctamente',
+    }
   }
 
   remove(id: number) {
