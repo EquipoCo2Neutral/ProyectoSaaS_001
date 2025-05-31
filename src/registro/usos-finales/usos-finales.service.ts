@@ -80,7 +80,9 @@ export class UsosFinalesService {
       }
     }
 
-    //guardar en db
+    //guardar en db resumen
+
+    //guardar en db uso final
 
     const usoFinal = this.usoFinaleRepository.create({
       cantidad: createUsosFinaleDto.cantidad,

@@ -41,13 +41,13 @@ export class VentaElectricidad {
     nullable: true,
   })
   @JoinColumn({ name: 'idRegion' })
-  region: Regiones;
+  region: Regiones | null;
 
   @ManyToOne(() => SectorEconomico, (sectorE) => sectorE.ventaElectricidad, {
     nullable: true,
   })
   @JoinColumn({ name: 'idSectorEconomico' })
-  sectorE: SectorEconomico;
+  sectorE: SectorEconomico | null;
 
   @ManyToOne(
     () => SubSectorEconomico,
@@ -57,5 +57,5 @@ export class VentaElectricidad {
     },
   )
   @JoinColumn({ name: 'idSubSectorEconomico' })
-  subSectorE: SubSectorEconomico;
+  subSectorE: SubSectorEconomico | null;
 }

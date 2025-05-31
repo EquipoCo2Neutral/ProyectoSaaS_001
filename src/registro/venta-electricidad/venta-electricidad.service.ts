@@ -116,11 +116,14 @@ export class VentaElectricidadService {
   }
 
   async findAll(id: string): Promise<VentaElectricidad[]> {
-    const ventaElectricidad = await this.ventaElectricidadRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidad', 'region', 'sectorE', 'subSectorE']});
+    const ventaElectricidad = await this.ventaElectricidadRepository.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: ['mesProceso', 'unidad', 'region', 'sectorE', 'subSectorE'],
+    });
     if (!ventaElectricidad) {
       throw new NotFoundException('Venta de electricidad no encontrada');
     }
-    return ventaElectricidad
+    return ventaElectricidad;
   }
 
   async findOne(id: number) {
@@ -173,7 +176,10 @@ export class VentaElectricidadService {
       ventaElectricidad.unidad = unidad;
     }
 
-    if (updateVentaElectricidadDto.idRegion) {
+    // REGION
+    if (updateVentaElectricidadDto.idRegion === null) {
+      ventaElectricidad.region = null;
+    } else if (updateVentaElectricidadDto.idRegion !== undefined) {
       const region = await this.regionesRepository.findOneBy({
         idRegion: updateVentaElectricidadDto.idRegion,
       });
@@ -183,7 +189,10 @@ export class VentaElectricidadService {
       ventaElectricidad.region = region;
     }
 
-    if (updateVentaElectricidadDto.idSectorEconomico) {
+    // SECTOR
+    if (updateVentaElectricidadDto.idSectorEconomico === null) {
+      ventaElectricidad.sectorE = null;
+    } else if (updateVentaElectricidadDto.idSectorEconomico !== undefined) {
       const sector = await this.sectorRepository.findOneBy({
         idSector: updateVentaElectricidadDto.idSectorEconomico,
       });
@@ -193,7 +202,10 @@ export class VentaElectricidadService {
       ventaElectricidad.sectorE = sector;
     }
 
-    if (updateVentaElectricidadDto.idSubSectorEconomico) {
+    // SUBSECTOR
+    if (updateVentaElectricidadDto.idSubSectorEconomico === null) {
+      ventaElectricidad.subSectorE = null;
+    } else if (updateVentaElectricidadDto.idSubSectorEconomico !== undefined) {
       const subSector = await this.subSectorRepository.findOneBy({
         idSubSector: updateVentaElectricidadDto.idSubSectorEconomico,
       });
@@ -203,13 +215,12 @@ export class VentaElectricidadService {
       ventaElectricidad.subSectorE = subSector;
     }
 
-    
-
-    const resultado = await this.ventaElectricidadRepository.save(ventaElectricidad);
+    const resultado =
+      await this.ventaElectricidadRepository.save(ventaElectricidad);
     return {
       resultado,
       message: 'Venta de electricidad actualizada correctamente',
-    }
+    };
   }
 
   remove(id: number) {
