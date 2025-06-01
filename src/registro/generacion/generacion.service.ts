@@ -115,7 +115,17 @@ export class GeneracionService {
   }
 
   async findAll(id: string): Promise<Generacion[]> {
-    const generacion = await this.generacionRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidadCGB', 'unidadCI', 'unidadCENA', 'unidadCE', 'energetico']});
+    const generacion = await this.generacionRepository.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: [
+        'mesProceso',
+        'unidadCGB',
+        'unidadCI',
+        'unidadCENA',
+        'unidadCE',
+        'energetico',
+      ],
+    });
     if (!generacion) {
       throw new NotFoundException('Generacion no encontrada');
     }
@@ -125,7 +135,14 @@ export class GeneracionService {
   async findOne(id: number) {
     const generacion = await this.generacionRepository.findOne({
       where: { idGeneracion: id },
-      relations: { mesProceso: true },
+      relations: [
+        'mesProceso',
+        'energetico',
+        'unidadCE',
+        'unidadCENA',
+        'unidadCI',
+        'unidadCGB',
+      ],
     });
     if (!generacion) {
       throw new NotFoundException(`Generacion con ID ${id} no encontrada`);
@@ -187,22 +204,30 @@ export class GeneracionService {
       }
       generacion.unidadCE = Unidad_Ce;
     }
-    if (updateGeneracionDto.idEnergetico) {
-      const Unidad_Energetico = await this.energeticoRepository.findOneBy({
-        idEnergetico: updateGeneracionDto.idEnergetico,
-      });
-      if (!Unidad_Energetico) {
-        throw new NotFoundException('Unidad CGB no encontrada');
+    if (updateGeneracionDto.idEnergetico !== undefined) {
+      if (updateGeneracionDto.idEnergetico === null) {
+        generacion.energetico = null;
+      } else {
+        const energetico = await this.energeticoRepository.findOne({
+          where: { idEnergetico: updateGeneracionDto.idEnergetico },
+        });
+
+        if (!energetico) {
+          throw new NotFoundException(
+            `Energético con ID ${updateGeneracionDto.idEnergetico} no encontrado`,
+          );
+        }
+
+        generacion.energetico = energetico;
       }
-      generacion.energetico = Unidad_Energetico;
     }
-    
+
     const resultado = await this.generacionRepository.save(generacion);
 
     return {
       resultado,
       message: 'Generacion actualizada correctamente',
-    }
+    };
   }
 
   remove(id: number) {

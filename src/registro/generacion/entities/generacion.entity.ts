@@ -80,5 +80,5 @@ export class Generacion {
     nullable: true,
   })
   @JoinColumn({ name: 'idEnergetico' })
-  energetico: Energetico;
+  energetico: Energetico | null;
 }
