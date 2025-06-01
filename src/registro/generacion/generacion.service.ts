@@ -230,7 +230,11 @@ export class GeneracionService {
     };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} generacion`;
+  async remove(id: number) {
+    const deleteGeneracion = await this.generacionRepository.delete(id);
+    return {
+      deleteGeneracion,
+      message: 'Generacion Borrada Correctamente',
+    };
   }
 }

@@ -158,7 +158,11 @@ export class TransformacionesService {
     };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transformacione`;
+  async remove(id: number) {
+    const deleteTransformacion = await this.transformacionRepository.delete(id);
+    return {
+      deleteTransformacion,
+      message: 'Transformacion Borrada Correctamente',
+    };
   }
 }

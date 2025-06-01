@@ -116,7 +116,17 @@ export class VentaEnergeticoService {
   }
 
   async findAll(id: string): Promise<VentaEnergetico[]> {
-    const ventaEnergetico = await this.ventaEnergetico.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidad', 'sector', 'subSector', 'region', 'energetico']});
+    const ventaEnergetico = await this.ventaEnergetico.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: [
+        'mesProceso',
+        'unidad',
+        'sector',
+        'subSector',
+        'region',
+        'energetico',
+      ],
+    });
     if (!ventaEnergetico) {
       throw new NotFoundException('Venta energetico no encontrado');
     }
@@ -213,10 +223,14 @@ export class VentaEnergeticoService {
     return {
       respuesta,
       message: 'Venta Energetico actualizada correctamente',
-    }
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ventaEnergetico`;
+  async remove(id: number) {
+    const deleteVEnergetico = await this.ventaEnergetico.delete(id);
+    return {
+      deleteVEnergetico,
+      message: 'Venta de Energético Borrada Correctamente',
+    };
   }
 }

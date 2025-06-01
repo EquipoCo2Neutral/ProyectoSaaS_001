@@ -212,7 +212,11 @@ export class UsosFinalesService {
     };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usosFinale`;
+  async remove(id: number) {
+    const deleteUF = await this.usoFinaleRepository.delete(id);
+    return {
+      deleteUF,
+      message: 'Uso Final Borrado Correctamente',
+    };
   }
 }

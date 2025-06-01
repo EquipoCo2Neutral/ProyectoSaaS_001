@@ -223,7 +223,12 @@ export class VentaElectricidadService {
     };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ventaElectricidad`;
+  async remove(id: number) {
+    const deleteVElectricidad =
+      await this.ventaElectricidadRepository.delete(id);
+    return {
+      deleteVElectricidad,
+      message: 'Venta de Electricidad Borrada Correctamente',
+    };
   }
 }

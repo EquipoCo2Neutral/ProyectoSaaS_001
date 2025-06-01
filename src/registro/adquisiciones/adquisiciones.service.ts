@@ -303,7 +303,11 @@ export class AdquisicionesService {
       .getRawMany();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} adquisicione`;
+  async remove(id: number) {
+    const deleteAdquisicion = await this.adquisicioneRepository.delete(id);
+    return {
+      deleteAdquisicion,
+      message: 'Adquisicion Borrada Correctamente',
+    };
   }
 }

@@ -82,11 +82,14 @@ export class ExportacionesService {
   }
 
   async findAll(id: string): Promise<Exportacione[]> {
-    const exportaciones = await this.exportacionRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'energetico', 'unidad', 'pais']});
+    const exportaciones = await this.exportacionRepository.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: ['mesProceso', 'energetico', 'unidad', 'pais'],
+    });
     if (!exportaciones) {
       throw new NotFoundException('No hay exportaciones registradas');
     }
-    return exportaciones
+    return exportaciones;
   }
 
   async findOne(id: number) {
@@ -159,10 +162,14 @@ export class ExportacionesService {
     return {
       resultado,
       message: 'Exportacion actualizada correctamente',
-    }
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} exportacione`;
+  async remove(id: number) {
+    const deleteExportacion = await this.exportacionRepository.delete(id);
+    return {
+      deleteExportacion,
+      message: 'Exportacion Borrada Correctamente',
+    };
   }
 }
