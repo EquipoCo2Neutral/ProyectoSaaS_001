@@ -81,19 +81,22 @@ export class TransformacionesService {
   }
 
   async findAll(id: string): Promise<Transformacione[]> {
-    const transformacion = await this.transformacionRepository.find({where: {mesProceso: { idMesProceso: id }} ,relations: ['mesProceso', 'unidad', 'energetico', 'energeticoProducido']});
-    
+    const transformacion = await this.transformacionRepository.find({
+      where: { mesProceso: { idMesProceso: id } },
+      relations: ['mesProceso', 'unidad', 'energetico', 'energeticoProducido'],
+    });
+
     if (!transformacion) {
       throw new NotFoundException('Transformacion no encontrada');
     }
 
-    return transformacion
+    return transformacion;
   }
 
   async findOne(id: number) {
     const transformacion = await this.transformacionRepository.findOne({
       where: { idTransformacion: id },
-      relations: { mesProceso: true },
+      relations: ['mesProceso', 'energetico', 'unidad', 'energeticoProducido'],
     });
     return transformacion;
   }
@@ -148,11 +151,11 @@ export class TransformacionesService {
       transformacion.unidad = unidad;
     }
 
-    const resultado = await this.transformacionRepository.save(transformacion)
+    const resultado = await this.transformacionRepository.save(transformacion);
     return {
       resultado,
       message: 'Transformacion actualizada correctamente',
-    }
+    };
   }
 
   remove(id: number) {
