@@ -15,15 +15,19 @@ export class CreateAdquisicioneDto {
   idMesProceso: string;
 
   @IsNotEmpty({ message: 'La transaccion es requerida' })
+  @IsNumber()
   idTransaccion: number;
 
   @IsNotEmpty({ message: 'El grupo energetico es requerido' })
+  @IsNumber()
   idGrupoEnergetico: number;
 
   @IsNotEmpty({ message: 'El energetico es requerido' })
+  @IsNumber()
   idEnergetico: number;
 
   @IsNotEmpty({ message: 'La unidad es requerida' })
+  @IsNumber()
   idUnidad: number;
 
   @ValidateIf((o) => o.idTransaccion === 2)

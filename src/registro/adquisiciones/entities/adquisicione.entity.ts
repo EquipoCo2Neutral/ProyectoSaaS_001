@@ -60,7 +60,7 @@ export class Adquisicione {
     nullable: true,
   })
   @JoinColumn({ name: 'idPaisOrigen' })
-  paisOrigen: Pais;
+  paisOrigen: Pais | null;
 
   @ManyToOne(() => Unidade, (unidad) => unidad.adquisicion, {
     nullable: false,

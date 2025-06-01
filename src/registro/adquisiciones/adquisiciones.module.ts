@@ -8,9 +8,20 @@ import { Transaccione } from 'src/complementos/energia/transacciones/entities/tr
 import { GrupoEnergetico } from 'src/complementos/energia/grupo-energetico/entities/grupo-energetico.entity';
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { Pais } from 'src/complementos/paises/entities/paise.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Adquisicione, MesProceso, Transaccione, GrupoEnergetico, Energetico, Unidade])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Adquisicione,
+      MesProceso,
+      Transaccione,
+      GrupoEnergetico,
+      Energetico,
+      Unidade,
+      Pais,
+    ]),
+  ],
   controllers: [AdquisicionesController],
   providers: [AdquisicionesService],
 })

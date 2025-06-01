@@ -28,6 +28,7 @@ export class AdquisicionesService {
     private readonly energeticoRepository: Repository<Energetico>,
     @InjectRepository(Unidade)
     private readonly unidadRepository: Repository<Unidade>,
+    @InjectRepository(Pais) private readonly paisRepository: Repository<Pais>,
   ) {}
 
   async create(createAdquisicioneDto: CreateAdquisicioneDto) {
@@ -134,7 +135,14 @@ export class AdquisicionesService {
   async findOne(id: number): Promise<Adquisicione> {
     const adquisicion = await this.adquisicioneRepository.findOne({
       where: { idAdquisicion: id },
-      relations: ['mesProceso'],
+      relations: [
+        'mesProceso',
+        'transaccion',
+        'grupoEnergetico',
+        'energetico',
+        'paisOrigen',
+        'unidad',
+      ],
     });
 
     if (!adquisicion) {
@@ -168,7 +176,7 @@ export class AdquisicionesService {
       adquisicion.mesProceso = mesProceso;
     }
 
-    if(updateAdquisicioneDto.idTransaccion) {
+    if (updateAdquisicioneDto.idTransaccion) {
       const transaccion = await this.transaccioneRepository.findOne({
         where: { idTransaccion: updateAdquisicioneDto.idTransaccion },
       });
@@ -214,11 +222,47 @@ export class AdquisicionesService {
       }
       adquisicion.unidad = unidad;
     }
-    if (updateAdquisicioneDto.Cantidad){
+    if (updateAdquisicioneDto.Cantidad) {
       if (updateAdquisicioneDto.Cantidad < 0) {
         throw new NotFoundException('La cantidad no puede ser menor que 0');
       }
       adquisicion.Cantidad = updateAdquisicioneDto.Cantidad;
+    }
+
+    if (updateAdquisicioneDto.cantidadInicial) {
+      if (updateAdquisicioneDto.cantidadInicial < 0) {
+        throw new NotFoundException(
+          'La cantidadInicial no puede ser menor que 0',
+        );
+      }
+      adquisicion.cantidadInicial = updateAdquisicioneDto.cantidadInicial;
+    }
+
+    if (updateAdquisicioneDto.cantidadFinal) {
+      if (updateAdquisicioneDto.cantidadFinal < 0) {
+        throw new NotFoundException(
+          'La cantidadFinal no puede ser menor que 0',
+        );
+      }
+      adquisicion.cantidadFinal = updateAdquisicioneDto.cantidadFinal;
+    }
+
+    if (updateAdquisicioneDto.idPaisOrigen !== undefined) {
+      if (updateAdquisicioneDto.idPaisOrigen === null) {
+        adquisicion.paisOrigen = null;
+      } else {
+        const pais = await this.paisRepository.findOne({
+          where: { idPais: updateAdquisicioneDto.idPaisOrigen },
+        });
+
+        if (!pais) {
+          throw new NotFoundException(
+            `País con ID ${updateAdquisicioneDto.idPaisOrigen} no encontrado`,
+          );
+        }
+
+        adquisicion.paisOrigen = pais;
+      }
     }
 
     const resultado = await this.adquisicioneRepository.save(adquisicion);
@@ -226,7 +270,7 @@ export class AdquisicionesService {
     return {
       resultado,
       message: 'Adquisición actualizada correctamente',
-    }
+    };
   }
 
   async findEnergeticosByMesProceso(idMesProceso: string) {
