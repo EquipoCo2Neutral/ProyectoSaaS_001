@@ -108,7 +108,7 @@ export class AdquisicionesService {
 
     await this.resumenTransaccionService.createRT({
       idEnergetico: createAdquisicioneDto.idEnergetico,
-      idCategoria: 1, // Si aplica
+      idCategoriaRegistro: createAdquisicioneDto.idTransaccion, // Si aplica
       cantidadEntrada: createAdquisicioneDto.Cantidad,
       cantidadSalida: 0,
       idUnidad: createAdquisicioneDto.idUnidad,

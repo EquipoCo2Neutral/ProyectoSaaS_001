@@ -7,7 +7,7 @@ export class CreateResumenTransaccionDto {
 
   @IsNotEmpty()
   @IsNumber()
-  idCategoria: number;
+  idCategoriaRegistro: number;
 
   @IsNotEmpty()
   @IsNumber()

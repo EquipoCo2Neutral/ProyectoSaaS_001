@@ -1,5 +1,6 @@
 import { Inquilino } from 'src/administracion/inquilino/entities/inquilino.entity';
 import { Planta } from 'src/administracion/planta/entities/planta.entity';
+import { CategoriaRegistro } from 'src/complementos/energia/categoria-registro/entities/categoria-registro.entity';
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
@@ -22,9 +23,6 @@ export class ResumenTransaccion {
   })
   @JoinColumn({ name: 'idEnergetico' })
   energetico: Energetico;
-
-  @Column()
-  idCategoria: number;
 
   @Column()
   cantidadEntrada: number;
@@ -60,6 +58,12 @@ export class ResumenTransaccion {
   })
   @JoinColumn({ name: 'idPlanta' })
   planta: Planta;
+
+  @ManyToOne(() => CategoriaRegistro, (p) => p.resumenTransaccion, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'idCategoriaRegistro' })
+  categoriaRegistro: CategoriaRegistro;
 
   @Column('float')
   cantidadGeneral: number;

@@ -9,6 +9,7 @@ import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
 import { Inquilino } from 'src/administracion/inquilino/entities/inquilino.entity';
 import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
 import { Planta } from 'src/administracion/planta/entities/planta.entity';
+import { CategoriaRegistro } from 'src/complementos/energia/categoria-registro/entities/categoria-registro.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { Planta } from 'src/administracion/planta/entities/planta.entity';
       Inquilino,
       Proceso,
       Planta,
+      CategoriaRegistro,
     ]),
   ],
   controllers: [ResumenTransaccionController],

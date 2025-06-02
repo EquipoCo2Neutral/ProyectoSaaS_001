@@ -10,6 +10,7 @@ import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
 import { Inquilino } from 'src/administracion/inquilino/entities/inquilino.entity';
 import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
 import { Planta } from 'src/administracion/planta/entities/planta.entity';
+import { CategoriaRegistro } from 'src/complementos/energia/categoria-registro/entities/categoria-registro.entity';
 
 @Injectable()
 export class ResumenTransaccionService {
@@ -34,12 +35,14 @@ export class ResumenTransaccionService {
 
     @InjectRepository(Planta)
     private readonly plantaRepo: Repository<Planta>,
+    @InjectRepository(CategoriaRegistro)
+    private readonly cRegistroRepo: Repository<CategoriaRegistro>,
   ) {}
 
   async createRT(createResumenTransaccionDto: CreateResumenTransaccionDto) {
     const {
       idEnergetico,
-      idCategoria,
+      idCategoriaRegistro,
       cantidadEntrada,
       cantidadSalida,
       idUnidad,
@@ -55,6 +58,9 @@ export class ResumenTransaccionService {
       idEnergetico,
     });
     const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
+    const categoriaRegistro = await this.cRegistroRepo.findOneByOrFail({
+      idCategoriaRegistro,
+    });
     const mesProceso = await this.mesProcesoRepo.findOneByOrFail({
       idMesProceso,
     });
@@ -64,7 +70,7 @@ export class ResumenTransaccionService {
 
     const nuevaTransaccion = this.resumenTransaccionRepo.create({
       energetico,
-      idCategoria,
+      categoriaRegistro,
       cantidadEntrada,
       cantidadSalida,
       unidad,
