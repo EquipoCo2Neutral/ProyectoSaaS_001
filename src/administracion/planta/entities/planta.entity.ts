@@ -2,6 +2,7 @@ import { Inquilino } from 'src/administracion/inquilino/entities/inquilino.entit
 import { Usuario } from 'src/administracion/usuario/entities/usuario.entity';
 import { Comuna } from 'src/complementos/comunas/entities/comuna.entity';
 import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Column,
   Entity,
@@ -36,4 +37,13 @@ export class Planta {
 
   @ManyToOne(() => Comuna)
   comuna: Comuna;
+
+  @OneToMany(
+    () => ResumenTransaccion,
+    (resumenTransaccion) => resumenTransaccion.planta,
+    {
+      cascade: true,
+    },
+  )
+  resumenTransaccion: ResumenTransaccion[];
 }

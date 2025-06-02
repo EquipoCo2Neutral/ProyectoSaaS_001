@@ -1,0 +1,97 @@
+import { Injectable } from '@nestjs/common';
+import { CreateResumenTransaccionDto } from './dto/create-resumen-transaccion.dto';
+import { UpdateResumenTransaccionDto } from './dto/update-resumen-transaccion.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ResumenTransaccion } from './entities/resumen-transaccion.entity';
+import { Repository } from 'typeorm';
+import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
+import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { Inquilino } from 'src/administracion/inquilino/entities/inquilino.entity';
+import { Proceso } from 'src/gestor/proceso/entities/proceso.entity';
+import { Planta } from 'src/administracion/planta/entities/planta.entity';
+
+@Injectable()
+export class ResumenTransaccionService {
+  constructor(
+    @InjectRepository(ResumenTransaccion)
+    private readonly resumenTransaccionRepo: Repository<ResumenTransaccion>,
+
+    @InjectRepository(Energetico)
+    private readonly energeticoRepo: Repository<Energetico>,
+
+    @InjectRepository(Unidade)
+    private readonly unidadeRepo: Repository<Unidade>,
+
+    @InjectRepository(MesProceso)
+    private readonly mesProcesoRepo: Repository<MesProceso>,
+
+    @InjectRepository(Inquilino)
+    private readonly inquilinoRepo: Repository<Inquilino>,
+
+    @InjectRepository(Proceso)
+    private readonly procesoRepo: Repository<Proceso>,
+
+    @InjectRepository(Planta)
+    private readonly plantaRepo: Repository<Planta>,
+  ) {}
+
+  async createRT(createResumenTransaccionDto: CreateResumenTransaccionDto) {
+    const {
+      idEnergetico,
+      idCategoria,
+      cantidadEntrada,
+      cantidadSalida,
+      idUnidad,
+      idMesProceso,
+      idProceso,
+      idPlanta, // No está en la entidad original, así que asegúrate de que `ResumenTransaccion` tenga relación con Planta
+      inquilinoId,
+      cantidadGeneral,
+      teraCalorias,
+    } = createResumenTransaccionDto;
+
+    const energetico = await this.energeticoRepo.findOneByOrFail({
+      idEnergetico,
+    });
+    const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
+    const mesProceso = await this.mesProcesoRepo.findOneByOrFail({
+      idMesProceso,
+    });
+    const proceso = await this.procesoRepo.findOneByOrFail({ idProceso });
+    const planta = await this.plantaRepo.findOneByOrFail({ idPlanta }); // Solo si existe la relación
+    const inquilino = await this.inquilinoRepo.findOneByOrFail({ inquilinoId });
+
+    const nuevaTransaccion = this.resumenTransaccionRepo.create({
+      energetico,
+      idCategoria,
+      cantidadEntrada,
+      cantidadSalida,
+      unidad,
+      mesProceso,
+      proceso,
+      inquilino,
+      cantidadGeneral,
+      teraCalorias,
+      planta, // incluir solo si existe la relación en la entidad
+    });
+
+    return await this.resumenTransaccionRepo.save(nuevaTransaccion);
+  }
+
+  findAll() {
+    return `This action returns all resumenTransaccion`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} resumenTransaccion`;
+  }
+
+  update(id: number, updateResumenTransaccionDto: UpdateResumenTransaccionDto) {
+    return `This action updates a #${id} resumenTransaccion`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} resumenTransaccion`;
+  }
+}

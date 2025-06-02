@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAdquisicioneDto } from './dto/create-adquisicione.dto';
 import { UpdateAdquisicioneDto } from './dto/update-adquisicione.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +14,9 @@ import { GrupoEnergetico } from 'src/complementos/energia/grupo-energetico/entit
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Pais } from 'src/complementos/paises/entities/paise.entity';
+import { conversorTcal } from 'src/utilties/conversor';
+import { ResumenTransaccion } from '../resumen-transaccion/entities/resumen-transaccion.entity';
+import { ResumenTransaccionService } from '../resumen-transaccion/resumen-transaccion.service';
 
 @Injectable()
 export class AdquisicionesService {
@@ -29,15 +36,37 @@ export class AdquisicionesService {
     @InjectRepository(Unidade)
     private readonly unidadRepository: Repository<Unidade>,
     @InjectRepository(Pais) private readonly paisRepository: Repository<Pais>,
+    @InjectRepository(ResumenTransaccion)
+    private readonly rTRepository: Repository<ResumenTransaccion>,
+    private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createAdquisicioneDto: CreateAdquisicioneDto) {
-    const mesProceso = await this.mesProcesoRepository.findOneBy({
-      idMesProceso: createAdquisicioneDto.idMesProceso,
+    const mesProceso = await this.mesProcesoRepository.findOne({
+      where: { idMesProceso: createAdquisicioneDto.idMesProceso },
+      relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
     });
 
     if (!mesProceso) {
       throw new NotFoundException('Mes Proceso no encontrado');
+    }
+    //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico: createAdquisicioneDto.idEnergetico,
+      idUnidad: createAdquisicioneDto.idUnidad, //kg
+      cantidad: createAdquisicioneDto.Cantidad, //kg
+      poderCalorifico: createAdquisicioneDto.poderCalorifico
+        ? createAdquisicioneDto.poderCalorifico
+        : null,
+      humedad: createAdquisicioneDto.porcentajeHumedad
+        ? createAdquisicioneDto.porcentajeHumedad
+        : null,
+    };
+
+    const resultado2 = await conversorTcal(ejemploDatos);
+
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
     if (createAdquisicioneDto.idTransaccion) {
@@ -77,6 +106,20 @@ export class AdquisicionesService {
       }
     }
 
+    await this.resumenTransaccionService.createRT({
+      idEnergetico: createAdquisicioneDto.idEnergetico,
+      idCategoria: 1, // Si aplica
+      cantidadEntrada: createAdquisicioneDto.Cantidad,
+      cantidadSalida: 0,
+      idUnidad: createAdquisicioneDto.idUnidad,
+      idMesProceso: createAdquisicioneDto.idMesProceso,
+      idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+      idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+      inquilinoId: mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+      cantidadGeneral: resultado2.cantidadGeneral,
+      teraCalorias: resultado2.cantidadTcal,
+    });
+
     const adquisicion = this.adquisicioneRepository.create({
       mesProceso,
       transaccion: {
@@ -107,7 +150,7 @@ export class AdquisicionesService {
     const resultado = await this.adquisicioneRepository.save(adquisicion);
 
     return {
-      message: 'Adquisicion registrada correctamente',
+      message: `Adquisicion registrada correctamente desde backend ${resultado2?.cantidadTcal} and ${resultado2?.cantidadGeneral}`,
       data: resultado,
     };
   }

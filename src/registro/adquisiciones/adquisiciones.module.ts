@@ -9,6 +9,8 @@ import { GrupoEnergetico } from 'src/complementos/energia/grupo-energetico/entit
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Pais } from 'src/complementos/paises/entities/paise.entity';
+import { ResumenTransaccion } from '../resumen-transaccion/entities/resumen-transaccion.entity';
+import { ResumenTransaccionModule } from '../resumen-transaccion/resumen-transaccion.module';
 
 @Module({
   imports: [
@@ -20,7 +22,9 @@ import { Pais } from 'src/complementos/paises/entities/paise.entity';
       Energetico,
       Unidade,
       Pais,
+      ResumenTransaccion,
     ]),
+    ResumenTransaccionModule,
   ],
   controllers: [AdquisicionesController],
   providers: [AdquisicionesService],

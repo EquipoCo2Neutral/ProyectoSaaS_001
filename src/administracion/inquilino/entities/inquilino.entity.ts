@@ -1,6 +1,7 @@
 import { Planta } from 'src/administracion/planta/entities/planta.entity';
 import { Suscripcion } from 'src/administracion/suscripcion/entities/suscripcion.entity';
 import { Usuario } from 'src/administracion/usuario/entities/usuario.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -48,4 +49,13 @@ export class Inquilino {
 
   @OneToMany(() => Planta, (planta) => planta.inquilino, { cascade: true })
   plantas: Planta[];
+
+  @OneToMany(
+    () => ResumenTransaccion,
+    (resumenTransaccion) => resumenTransaccion.inquilino,
+    {
+      cascade: true,
+    },
+  )
+  resumenTransaccion: ResumenTransaccion[];
 }

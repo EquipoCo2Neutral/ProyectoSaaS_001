@@ -15,6 +15,7 @@ import { UsosFinale } from 'src/registro/usos-finales/entities/usos-finale.entit
 import { Transformacione } from 'src/registro/transformaciones/entities/transformacione.entity';
 import { Generacion } from 'src/registro/generacion/entities/generacion.entity';
 import { Adquisicione } from 'src/registro/adquisiciones/entities/adquisicione.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 
 @Entity()
 @Unique(['nombreEnergetico'])
@@ -73,4 +74,9 @@ export class Energetico {
     cascade: true,
   })
   adquisicion: Adquisicione[];
+
+  @OneToMany(() => ResumenTransaccion, (a) => a.energetico, {
+    cascade: true,
+  })
+  resumenTransaccion: ResumenTransaccion[];
 }
