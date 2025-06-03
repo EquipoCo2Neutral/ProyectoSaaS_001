@@ -221,6 +221,7 @@ export class AdquisicionesService {
     if (updateAdquisicioneDto.idMesProceso) {
       const mesProceso = await this.mesProcesoRepository.findOne({
         where: { idMesProceso: updateAdquisicioneDto.idMesProceso },
+        relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
       });
 
       if (!mesProceso) {
@@ -228,6 +229,13 @@ export class AdquisicionesService {
           `MesProceso con ID ${updateAdquisicioneDto.idMesProceso} no encontrado`,
         );
       }
+      // Validar que las relaciones necesarias existen
+      if (!mesProceso.proceso || !mesProceso.proceso.planta || !mesProceso.proceso.planta.inquilino) {
+        throw new NotFoundException(
+          'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
+        );
+      }
+
       adquisicion.mesProceso = mesProceso;
     }
 
@@ -358,7 +366,7 @@ export class AdquisicionesService {
       resultado,
       message: 'Adquisición actualizada correctamente',
     };
-  }
+  } 
 
   async findEnergeticosByMesProceso(idMesProceso: string) {
     return this.adquisicioneRepository
