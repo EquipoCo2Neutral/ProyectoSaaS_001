@@ -37,7 +37,7 @@ export class ResumenTransaccionController {
     @Param('id') id: string,
     @Body() updateResumenTransaccionDto: UpdateResumenTransaccionDto,
   ) {
-    return this.resumenTransaccionService.update(
+    return this.resumenTransaccionService.updateRT(
       +id,
       updateResumenTransaccionDto,
     );

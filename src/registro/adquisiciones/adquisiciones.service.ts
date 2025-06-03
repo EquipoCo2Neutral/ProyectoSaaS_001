@@ -200,6 +200,17 @@ export class AdquisicionesService {
     // Buscar la adquisición existente
     const adquisicion = await this.adquisicioneRepository.findOne({
       where: { idAdquisicion: id },
+      relations: [
+        'energetico',
+        'unidad',
+        'mesProceso',
+        'mesProceso.proceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
+        'transaccion',
+        'resumenTransaccion'
+      ],
+
     });
     if (!adquisicion) {
       throw new NotFoundException(`Adquisición con ID ${id} no encontrada`);
@@ -308,6 +319,38 @@ export class AdquisicionesService {
         adquisicion.paisOrigen = pais;
       }
     }
+ // proceso resumen
+      //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico: updateAdquisicioneDto.idEnergetico ?? adquisicion.energetico.idEnergetico ?? 0,
+      idUnidad: updateAdquisicioneDto.idUnidad ?? adquisicion.unidad.idUnidad ?? 0, 
+      cantidad: updateAdquisicioneDto.Cantidad ?? adquisicion.Cantidad ?? 0, 
+      poderCalorifico: updateAdquisicioneDto.poderCalorifico ?? adquisicion.poderCalorifico ?? 0,
+      humedad: updateAdquisicioneDto.porcentajeHumedad ?? adquisicion.porcentajeHumedad ?? 0,
+    };
+    // realizar conversion a Tcal
+    const resultado2 = await conversorTcal(ejemploDatos);
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
+
+    
+    // asignar valores
+    await this.resumenTransaccionService.updateRT(adquisicion.resumenTransaccion.idResumenTransaccion, {
+      idEnergetico: updateAdquisicioneDto.idEnergetico ? updateAdquisicioneDto.idEnergetico : adquisicion.energetico.idEnergetico,
+      idCategoriaRegistro: updateAdquisicioneDto.idTransaccion ? updateAdquisicioneDto.idTransaccion : adquisicion.transaccion.idTransaccion, // Si aplica
+      cantidadEntrada: updateAdquisicioneDto.Cantidad ? updateAdquisicioneDto.Cantidad : adquisicion.Cantidad,
+      cantidadSalida: 0,
+      idUnidad: updateAdquisicioneDto.idUnidad ? updateAdquisicioneDto.idUnidad : adquisicion.unidad.idUnidad,
+      idMesProceso: updateAdquisicioneDto.idMesProceso ? updateAdquisicioneDto.idMesProceso : adquisicion.mesProceso.idMesProceso,
+      idProceso: adquisicion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+      idPlanta: adquisicion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+      inquilinoId: adquisicion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+      cantidadGeneral: resultado2.cantidadGeneral,
+      teraCalorias: resultado2.cantidadTcal,
+    });
+
+
 
     const resultado = await this.adquisicioneRepository.save(adquisicion);
 

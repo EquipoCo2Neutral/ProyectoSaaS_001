@@ -22,16 +22,16 @@ export class Adquisicione {
   @Column('float')
   Cantidad: number;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   cantidadInicial?: number | null;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   cantidadFinal?: number | null;
 
   @Column({ type: 'varchar', nullable: true })
   empresaOrigen?: string | null;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   poderCalorifico?: number | null;
 
   @Column({ type: 'int', nullable: true })

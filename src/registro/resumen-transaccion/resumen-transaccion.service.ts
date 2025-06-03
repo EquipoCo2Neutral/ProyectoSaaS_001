@@ -93,9 +93,49 @@ export class ResumenTransaccionService {
     return `This action returns a #${id} resumenTransaccion`;
   }
 
-  update(id: number, updateResumenTransaccionDto: UpdateResumenTransaccionDto) {
-    return `This action updates a #${id} resumenTransaccion`;
-  }
+
+async updateRT(id: number, updateResumenTransaccionDto: UpdateResumenTransaccionDto) {
+  const {
+    idEnergetico,
+    idCategoriaRegistro,
+    cantidadEntrada,
+    cantidadSalida,
+    idUnidad,
+    idMesProceso,
+    idProceso,
+    idPlanta,
+    inquilinoId,
+    cantidadGeneral,
+    teraCalorias,
+  } = updateResumenTransaccionDto;
+
+  const resumenExistente = await this.resumenTransaccionRepo.findOneByOrFail({ idResumenTransaccion: id });
+
+  const energetico = await this.energeticoRepo.findOneByOrFail({ idEnergetico });
+  const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
+  const categoriaRegistro = await this.cRegistroRepo.findOneByOrFail({ idCategoriaRegistro });
+  const mesProceso = await this.mesProcesoRepo.findOneByOrFail({ idMesProceso });
+  const proceso = await this.procesoRepo.findOneByOrFail({ idProceso });
+  const planta = await this.plantaRepo.findOneByOrFail({ idPlanta });
+  const inquilino = await this.inquilinoRepo.findOneByOrFail({ inquilinoId });
+
+  const updatedResumen = this.resumenTransaccionRepo.merge(resumenExistente, {
+    energetico,
+    categoriaRegistro,
+    cantidadEntrada,
+    cantidadSalida,
+    unidad,
+    mesProceso,
+    proceso,
+    planta,
+    inquilino,
+    cantidadGeneral,
+    teraCalorias,
+  });
+
+  return await this.resumenTransaccionRepo.save(updatedResumen);
+}
+
 
   remove(id: number) {
     return `This action removes a #${id} resumenTransaccion`;
