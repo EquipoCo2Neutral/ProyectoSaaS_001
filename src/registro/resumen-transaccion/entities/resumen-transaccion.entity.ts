@@ -24,7 +24,7 @@ export class ResumenTransaccion {
   @JoinColumn({ name: 'idEnergetico' })
   energetico: Energetico;
 
-  @Column()
+  @Column('float')
   cantidadEntrada: number;
   @Column()
   cantidadSalida: number;

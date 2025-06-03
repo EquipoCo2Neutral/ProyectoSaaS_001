@@ -106,7 +106,7 @@ export class AdquisicionesService {
       }
     }
 
-    await this.resumenTransaccionService.createRT({
+    const resumenTransaccion = await this.resumenTransaccionService.createRT({
       idEnergetico: createAdquisicioneDto.idEnergetico,
       idCategoriaRegistro: createAdquisicioneDto.idTransaccion, // Si aplica
       cantidadEntrada: createAdquisicioneDto.Cantidad,
@@ -121,6 +121,7 @@ export class AdquisicionesService {
     });
 
     const adquisicion = this.adquisicioneRepository.create({
+      resumenTransaccion: resumenTransaccion,
       mesProceso,
       transaccion: {
         idTransaccion: createAdquisicioneDto.idTransaccion,

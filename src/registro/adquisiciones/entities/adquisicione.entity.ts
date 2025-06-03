@@ -4,11 +4,13 @@ import { Transaccione } from 'src/complementos/energia/transacciones/entities/tr
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Pais } from 'src/complementos/paises/entities/paise.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -17,7 +19,7 @@ export class Adquisicione {
   @PrimaryGeneratedColumn('increment')
   idAdquisicion: number;
 
-  @Column()
+  @Column('float')
   Cantidad: number;
 
   @Column({ type: 'int', nullable: true })
@@ -72,4 +74,8 @@ export class Adquisicione {
     nullable: false,
   })
   mesProceso: MesProceso;
+
+  @OneToOne(() => ResumenTransaccion)
+  @JoinColumn({ name: 'idResumenTransaccion' })
+  resumenTransaccion: ResumenTransaccion;
 }

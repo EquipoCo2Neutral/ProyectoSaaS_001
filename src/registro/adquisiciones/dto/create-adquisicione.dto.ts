@@ -64,4 +64,8 @@ export class CreateAdquisicioneDto {
   @ValidateIf((o) => o.idTransaccion === 1 && o.idEnergetico === 43)
   @IsBoolean({ message: 'El campo compraMercadoSpot es un booleano' })
   compraMercadoSpot?: boolean;
+
+  //@IsNotEmpty()
+  //@IsNumber()
+  //idResumenTransaccion: number;
 }
