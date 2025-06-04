@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsosFinaleDto } from './dto/create-usos-finale.dto';
 import { UpdateUsosFinaleDto } from './dto/update-usos-finale.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +10,8 @@ import { CategoriaUf } from 'src/complementos/energia/categoria-uf/entities/cate
 import { TipoUf } from 'src/complementos/energia/tipo-uf/entities/tipo-uf.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { ResumenTransaccion } from '../resumen-transaccion/entities/resumen-transaccion.entity';
+import { conversorTcal } from 'src/utilties/conversor';
+import { ResumenTransaccionService } from '../resumen-transaccion/resumen-transaccion.service';
 
 @Injectable()
 export class UsosFinalesService {
@@ -27,7 +29,7 @@ export class UsosFinalesService {
     @InjectRepository(Unidade)
     private readonly unidadeRepository: Repository<Unidade>,
     @InjectRepository(ResumenTransaccion)
-    private readonly resumenTransaccionRepository: Repository<ResumenTransaccion>,
+    private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createUsosFinaleDto: CreateUsosFinaleDto) {
@@ -160,8 +162,8 @@ export class UsosFinalesService {
         'mesProceso.proceso',
         'mesProceso.proceso.planta',
         'mesProceso.proceso.planta.inquilino',
-        'transaccion',
-        'resumenTransaccion'
+        'resumenTransaccion',
+        'categoriaUF',
       ],
     });
     if (!usoFinal) {
@@ -185,7 +187,7 @@ export class UsosFinalesService {
           'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
         );
       }
-      
+
       usoFinal.mesProceso = mesProceso;
     }
 
@@ -228,6 +230,38 @@ export class UsosFinalesService {
       }
       usoFinal.unidad = unidad;
     }
+
+     // proceso resumen
+      //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico: updateUsosFinaleDto.idEnergetico ?? usoFinal.energetico.idEnergetico ?? 0,
+      idUnidad: updateUsosFinaleDto.idUnidad ?? usoFinal.unidad.idUnidad ?? 0, 
+      cantidad: updateUsosFinaleDto.cantidad ?? usoFinal.cantidad?? null, 
+      poderCalorifico: null,
+      humedad: null,
+    };
+
+      // realizar conversion a Tcal
+    const resultado2 = await conversorTcal(ejemploDatos);
+    if (!resultado2) {
+          throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
+
+    // asignar valores
+    await this.resumenTransaccionService.updateRT(usoFinal.resumenTransaccion.idResumenTransaccion, {
+      idEnergetico: updateUsosFinaleDto.idEnergetico ? updateUsosFinaleDto.idEnergetico : usoFinal.energetico.idEnergetico,
+      idCategoriaRegistro: updateUsosFinaleDto.idCategoriaUF ? updateUsosFinaleDto.idCategoriaUF : usoFinal.categoriaUF.idCategoriaUF, // Si aplica
+      cantidadEntrada: 0,
+      cantidadSalida: updateUsosFinaleDto.cantidad ? updateUsosFinaleDto.cantidad : usoFinal.cantidad,
+      idUnidad: updateUsosFinaleDto.idUnidad ? updateUsosFinaleDto.idUnidad : usoFinal.unidad.idUnidad,
+      idMesProceso: updateUsosFinaleDto.idMesProceso ? updateUsosFinaleDto.idMesProceso : usoFinal.mesProceso.idMesProceso,
+      idProceso: usoFinal.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+      idPlanta: usoFinal.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+      inquilinoId: usoFinal.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+      cantidadGeneral: resultado2.cantidadGeneral,
+      teraCalorias: resultado2.cantidadTcal,
+    });
+
 
 
 

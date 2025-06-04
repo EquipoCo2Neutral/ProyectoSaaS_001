@@ -3,11 +3,13 @@ import { Energetico } from 'src/complementos/energia/energeticos/entities/energe
 import { TipoUf } from 'src/complementos/energia/tipo-uf/entities/tipo-uf.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -52,4 +54,8 @@ export class UsosFinale {
   @ManyToOne(() => Unidade, (unidad) => unidad.usoFinal, { nullable: false })
   @JoinColumn({ name: 'idUnidad' })
   unidad: Unidade;
+
+  @OneToOne(() => ResumenTransaccion)
+  @JoinColumn({ name: 'idResumenTransaccion' })
+  resumenTransaccion: ResumenTransaccion;
 }
