@@ -93,28 +93,6 @@ export class UsosFinalesService {
       }
     }
 
-    //guardar en db resumen
-    //guardar en db uso final
-
-    const usoFinal = this.usoFinaleRepository.create({
-      cantidad: createUsosFinaleDto.cantidad,
-      detalle: createUsosFinaleDto.detalle,
-      tipo: createUsosFinaleDto.tipo,
-      mesProceso,
-      energetico: {
-        idEnergetico: createUsosFinaleDto.idEnergetico,
-      } as Energetico,
-      categoriaUF: {
-        idCategoriaUF: createUsosFinaleDto.idCategoriaUF,
-      } as CategoriaUf,
-      unidad: { idUnidad: createUsosFinaleDto.idUnidad } as Unidade,
-    });
-
-    if (createUsosFinaleDto.idTipoUF) {
-      usoFinal.tipoUF = {
-        idTipoUF: createUsosFinaleDto.idTipoUF,
-      } as TipoUf;
-    }
 
     // proceso resumen
     //extraer tcal y unidadGeneral
@@ -132,7 +110,7 @@ export class UsosFinalesService {
       throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
     // asignar valores
-    await this.resumenTransaccionService.createRT({
+    const resumenTransaccion = await this.resumenTransaccionService.createRT({
       idEnergetico: createUsosFinaleDto.idEnergetico,
       idCategoriaRegistro: createUsosFinaleDto.idCategoriaUF + 10, // Si aplica
       cantidadEntrada: 0,
@@ -145,6 +123,27 @@ export class UsosFinalesService {
       cantidadGeneral: resultado2.cantidadGeneral,
       teraCalorias: resultado2.cantidadTcal,
     });
+
+
+    const usoFinal = this.usoFinaleRepository.create({
+      resumenTransaccion: resumenTransaccion,
+      cantidad: createUsosFinaleDto.cantidad,
+      detalle: createUsosFinaleDto.detalle,
+      tipo: createUsosFinaleDto.tipo,
+      mesProceso,
+      energetico: {
+        idEnergetico: createUsosFinaleDto.idEnergetico,
+      } as Energetico,
+      categoriaUF: {
+        idCategoriaUF: createUsosFinaleDto.idCategoriaUF,
+      } as CategoriaUf,
+      unidad: { idUnidad: createUsosFinaleDto.idUnidad } as Unidade,
+    });
+    if (createUsosFinaleDto.idTipoUF) {
+      usoFinal.tipoUF = {
+        idTipoUF: createUsosFinaleDto.idTipoUF,
+      } as TipoUf;
+    }
 
     const resultado = await this.usoFinaleRepository.save(usoFinal);
     return {
