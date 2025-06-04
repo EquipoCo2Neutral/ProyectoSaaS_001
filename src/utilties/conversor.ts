@@ -8,7 +8,7 @@ type DatosEnergeticos = {
 
 export const conversorTcal = async (
   datos: DatosEnergeticos,
-): Promise<{ cantidadTcal: number; cantidadGeneral: number } | null> => {
+): Promise<{ cantidadTcal: number; cantidadGeneral: number; unidadGeneral:number } | null> => {
   switch (datos.idEnergetico) {
     // COQUE METALÚRGICO (id: 1)
     case 1:
@@ -20,11 +20,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad * 800, // Convertir m3 a kg (1 m3 de coque = 800 kg)
+              unidadGeneral: 2, // kg
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0056, // 1 m3 de coque metalúrgico = 0.0056 Tcal ;7000 de PC
               cantidadGeneral: datos.cantidad * 800, // Convertir m3 a kg (1 m3 de coque = 800 kg)
+              unidadGeneral: 2, // kg
             };
           }
 
@@ -35,11 +37,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 2, // kg
             };
           }
           return {
             cantidadTcal: datos.cantidad * 0.000007,
             cantidadGeneral: datos.cantidad,
+            unidadGeneral: 2, // kg
           };
 
         case 3: // ton
@@ -49,11 +53,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a kg
+              unidadGeneral: 2, // kg
             };
           }
           return {
             cantidadTcal: datos.cantidad * 0.007,
             cantidadGeneral: datos.cantidad * 1000, // pasar a kg
+            unidadGeneral: 2, // kg
           };
         default:
           return null;
@@ -66,6 +72,7 @@ export const conversorTcal = async (
           return {
             cantidadTcal: datos.cantidad * 0.001,
             cantidadGeneral: datos.cantidad / 4.4,
+            unidadGeneral: 5, // m3
           };
         case 5: // m3
           if (datos.poderCalorifico) {
@@ -74,11 +81,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 5, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0000048,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 5, // m3
             };
           }
         case 6: // MMm3
@@ -88,11 +97,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad * 1e6, // pasar a m3
+              unidadGeneral: 5, // m3
             };
           }
           return {
             cantidadTcal: datos.cantidad * 4.8,
             cantidadGeneral: datos.cantidad * 1e6, // pasar a m3
+            unidadGeneral: 5, // m3
           };
         default:
           return null;
@@ -105,6 +116,7 @@ export const conversorTcal = async (
           return {
             cantidadTcal: (datos.cantidad * 8700 * 1000000) / 1e9,
             cantidadGeneral: datos.cantidad,
+            unidadGeneral: 7, // Mm3
           };
         default:
           return null; // No hay conversión definida para ALQUITRÁN
@@ -120,11 +132,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 9, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00000817, // 11.200 PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 9, // m3
             };
           }
         case 9: // m3
@@ -134,11 +148,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 9, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.008176, // 11.200
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 9, // m3
             };
           }
         case 10: // Mm3
@@ -148,11 +164,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 9, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 8.176,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 9, // m3
             };
           }
         default:
@@ -169,11 +187,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 12, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00000817, // 11.200 PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 12, // m3
             };
           }
         case 12: // m3
@@ -183,11 +203,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 12, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.008176, // 11.200
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 12, // m3
             };
           }
         case 13: // Mm3
@@ -197,11 +219,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 12, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 8.176,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 12, // m3
             };
           }
         default:
@@ -218,11 +242,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 15, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00000817, // 11.200 PC
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 15, // m3
             };
           }
         case 15: // m3
@@ -232,11 +258,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 15, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.008176, // 11.200
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 15, // m3
             };
           }
         case 16: // Lts
@@ -246,11 +274,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 15, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 8.176,
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 15, // m3
             };
           }
         default:
@@ -267,11 +297,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 18, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00000798, // 11.400 PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a m3
+              unidadGeneral: 18, // m3
             };
           }
         case 18: // m3
@@ -281,11 +313,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorfico,
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 18, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00798, // 11.400 PC
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 18, // m3
             };
           }
         case 19: // Mm3
@@ -295,11 +329,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 18, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 7.98, // 11.400 PC
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 18, // m3
             };
           }
         default:
@@ -320,6 +356,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 20, // m3
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -332,6 +369,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 20, // m3
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -340,11 +378,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 20, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00792, // 9.000 PC
               cantidadGeneral: datos.cantidad, // m3 ya está en la unidad correcta
+              unidadGeneral: 20, // m3
             };
           }
         case 21: // Mm3
@@ -359,6 +399,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -372,6 +413,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -381,11 +423,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00792, // 9.000 PC
               cantidadGeneral: datos.cantidad * 1000, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           }
         case 22: // ton
@@ -398,6 +442,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1.136, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -407,6 +452,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1.136, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -415,11 +461,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1.136, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.009, // 9.000 PC
               cantidadGeneral: datos.cantidad * 1.136, // pasar a m3
+              unidadGeneral: 20, // m3
             };
           }
         default:
@@ -436,11 +484,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.001267, // pasar a Mm3
+              unidadGeneral: 24, // Mm3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0064, // 6.400  PC
               cantidadGeneral: datos.cantidad * 0.001267, // pasar a Mm3
+              unidadGeneral: 24, // Mm3
             };
           }
         case 24: // Mm3
@@ -451,11 +501,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 24, // Mm3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 5.049, // 6.400  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 24, // Mm3
             };
           }
         case 25: // m3
@@ -465,11 +517,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a Mm3
+              unidadGeneral: 24, // Mm3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00504, // 6.400  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a Mm3
+              unidadGeneral: 24, // Mm3
             };
           }
         default:
@@ -488,6 +542,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -496,6 +551,8 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
+              
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -504,11 +561,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0000056, // 5.600  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           }
         case 27: // Mm3
@@ -521,6 +580,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 27, // Mm3
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -530,6 +590,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 27, // Mm3
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -538,11 +599,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 27, // Mm3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0056, // 5.600  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral: 27, // Mm3
             };
           }
         case 28: // MMm3
@@ -555,6 +618,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -564,6 +628,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -572,11 +637,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 5.6, // 5.600  PC
               cantidadGeneral: datos.cantidad * 1000, // pasar a Mm3
+              unidadGeneral: 27, // Mm3
             };
           }
         default:
@@ -597,6 +664,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de leña = 0.6 ton)
+              unidadGeneral:30, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -609,6 +677,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de leña = 0.6 ton)
+              unidadGeneral:30, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -617,11 +686,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de leña = 0.6 ton)
+              unidadGeneral:30, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0021, // 3500  PC
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de leña = 0.6 ton)
+              unidadGeneral:30, // ton
             };
           }
         case 30: // ton
@@ -634,6 +705,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:30, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -643,6 +715,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:30, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -651,11 +724,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:30, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0035, // 3500  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:30, // ton
             };
           }
         default:
@@ -675,6 +750,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:31, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -684,6 +760,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:31, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -692,11 +769,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:31, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0035, // 3500  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:31, // ton
             };
           }
         case 32: // m3
@@ -710,6 +789,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de pellet = 0.6 ton)
+              unidadGeneral:31, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -722,6 +802,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de pellet = 0.6 ton)
+              unidadGeneral:31, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -730,11 +811,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de pellet = 0.6 ton)
+              unidadGeneral:31, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0021, // 3500  PC
               cantidadGeneral: datos.cantidad * 0.6, // Convertir m3 a toneladas (1 m3 de pellet = 0.6 ton)
+              unidadGeneral:30, // ton
             };
           }
         default:
@@ -751,11 +834,14 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:33, // ton
+              
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.007, // 7000  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:33, // ton
             };
           }
         case 34: // kg
@@ -765,11 +851,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:33, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.000007, // 7000  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:33, // ton
             };
           }
         default:
@@ -788,6 +876,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -796,6 +885,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -804,11 +894,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0000042, // 4200  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           }
         case 36: // m3
@@ -822,6 +914,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.7, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -834,6 +927,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.7, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -842,11 +936,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.7, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00294, // 7000  PC
               cantidadGeneral: datos.cantidad * 0.7, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           }
         default:
@@ -867,6 +963,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1.28, // pasar a toneladas
+              unidadGeneral:38, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -879,6 +976,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1.28, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -887,11 +985,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 1.28, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00369, // 2885  PC
               cantidadGeneral: datos.cantidad * 1.28, // pasar a toneladas
+              unidadGeneral:35, // ton
             };
           }
         case 38: // ton
@@ -904,6 +1004,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           }
           if (datos.humedad) {
@@ -913,6 +1014,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           }
           if (datos.poderCalorifico) {
@@ -921,11 +1023,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.002885, // 2885  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:35, // ton
             };
           }
         default:
@@ -946,6 +1050,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.45,
+              unidadGeneral:41, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -958,6 +1063,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.45,
+              unidadGeneral:41, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -966,11 +1072,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.45,
+              unidadGeneral:41, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.00171, // 3800  PC
               cantidadGeneral: datos.cantidad * 0.45,
+              unidadGeneral:41, // ton
             };
           }
         case 40: // kg
@@ -982,6 +1090,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:41, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -990,6 +1099,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:41, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -998,11 +1108,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:41, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0000038, // 3800  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:41, // ton
             };
           }
         case 41: // ton
@@ -1015,6 +1127,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:41, // ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1024,6 +1137,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:41, // ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1032,11 +1146,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:41, // ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0038, // 3800  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:41, // ton
             };
           }
         default:
@@ -1055,7 +1171,7 @@ export const conversorTcal = async (
 
             const cantidadGeneral = datos.cantidad / 1000; // pasar a toneladas
 
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:43};
           }
           if (datos.poderCalorifico !== null && datos.humedad === null) {
             const cantidadTcal =
@@ -1064,13 +1180,13 @@ export const conversorTcal = async (
 
             const cantidadGeneral = datos.cantidad / 1000; // pasar a toneladas
 
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral,unidadGeneral:43 };
           } else {
             const cantidadTcal =
               (datos.cantidad * 7800 * (1 - 10 * 0.01)) / 10 ** 9;
 
             const cantidadGeneral = datos.cantidad / 1000; // pasar a toneladas
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral,unidadGeneral:43  };
           }
           break;
 
@@ -1085,7 +1201,7 @@ export const conversorTcal = async (
 
             const cantidadGeneral = datos.cantidad; // ya está en toneladas
 
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:43 };
           }
           if (datos.poderCalorifico !== null && datos.humedad === null) {
             const cantidadTcal =
@@ -1097,7 +1213,7 @@ export const conversorTcal = async (
 
             const cantidadGeneral = datos.cantidad; // ya está en toneladas
 
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:43 };
           } else {
             const cantidadTcal =
               (datos.cantidad *
@@ -1108,7 +1224,7 @@ export const conversorTcal = async (
 
             const cantidadGeneral = datos.cantidad; // ya está en toneladas
 
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:43 };
           }
           break;
 
@@ -1127,6 +1243,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:45 //ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1135,6 +1252,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:45 //ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1143,11 +1261,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:45 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.000007, // 7000  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:45 //ton
             };
           }
         case 45: // ton
@@ -1160,6 +1280,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:45 //ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1169,6 +1290,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:45 //ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1177,11 +1299,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:45 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0007, // 7000  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:45 //ton
             };
           }
         default:
@@ -1201,6 +1325,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:46 //ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1210,6 +1335,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:46 //ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1218,11 +1344,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:46 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.0007, // 7000  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:46 //ton
             };
           }
         case 47: // kg
@@ -1234,6 +1362,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:46 //ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1242,6 +1371,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:46 //ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1250,11 +1380,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:46 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.000007, // 7000  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:46 //ton
             };
           }
         default:
@@ -1273,6 +1405,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:49 //ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1281,6 +1414,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:49 //ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1289,11 +1423,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:49 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.000008, // 8000  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:49 //ton
             };
           }
         case 49: // ton
@@ -1306,6 +1442,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:49 //ton
             };
           }
           if (datos.humedad && !datos.poderCalorifico) {
@@ -1315,6 +1452,7 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:49 //ton
             };
           }
           if (datos.poderCalorifico && !datos.humedad) {
@@ -1323,11 +1461,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:49 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.008, // 8000  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:49 //ton
             };
           }
         default:
@@ -1344,11 +1484,14 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:50 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.007, // 7000  PC
               cantidadGeneral: datos.cantidad,
+              unidadGeneral:50 //ton
+              
             };
           }
         case 51: // kg
@@ -1358,11 +1501,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:50 //ton
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.000007, // 7000  PC
               cantidadGeneral: datos.cantidad / 1000, // pasar a toneladas
+              unidadGeneral:50 //ton
             };
           }
         default:
@@ -1376,11 +1521,11 @@ export const conversorTcal = async (
             const cantidadTcal =
               (datos.cantidad * 550 * datos.poderCalorifico) / 1_000_000_000;
             const cantidadGeneral = datos.cantidad; // unidad general: m3
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:52 };
           } else {
             const cantidadTcal = (datos.cantidad * 550 * 12000) / 1_000_000_000;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:52 };
           }
 
         case 53: // kg
@@ -1388,11 +1533,11 @@ export const conversorTcal = async (
             const cantidadTcal =
               (datos.cantidad * datos.poderCalorifico) / 1_000_000_000;
             const cantidadGeneral = datos.cantidad / 550; // a m3
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral , unidadGeneral:52 };
           } else {
             const cantidadTcal = (datos.cantidad * 12000) / 1_000_000_000;
             const cantidadGeneral = datos.cantidad / 550; // a m3
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:52  };
           }
           break;
 
@@ -1402,12 +1547,12 @@ export const conversorTcal = async (
             const cantidadTcal =
               (cantidadKg * datos.poderCalorifico) / 1_000_000_000;
             const cantidadGeneral = cantidadKg / 550; // a m3
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:52  };
           } else {
             const cantidadKg = datos.cantidad * 1000;
             const cantidadTcal = (cantidadKg * 12000) / 1_000_000_000;
             const cantidadGeneral = cantidadKg / 550; // a m3
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral , unidadGeneral:52 };
           }
           break;
 
@@ -1417,12 +1562,12 @@ export const conversorTcal = async (
             const cantidadTcal =
               (cantidadKg * datos.poderCalorifico) / 1_000_000_000;
             const cantidadGeneral = cantidadKg / 550; // a m3
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:52  };
           } else {
             const cantidadKg = datos.cantidad * 1_000_000;
             const cantidadTcal = (cantidadKg * 12000) / 1_000_000_000;
             const cantidadGeneral = cantidadKg / 550; // a m3
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:52  };
           }
           break;
 
@@ -1437,6 +1582,7 @@ export const conversorTcal = async (
           return {
             cantidadTcal: datos.cantidad * 0.000252,
             cantidadGeneral: datos.cantidad,
+            unidadGeneral:56, // MMBTu
           };
         case 57: // m3
           if (datos.poderCalorifico) {
@@ -1445,11 +1591,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 0.03346, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.000009341, // 9341  PC
               cantidadGeneral: datos.cantidad * 0.03346, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           }
         case 58: // Mm3
@@ -1459,11 +1607,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 33.46, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.009341, // 9341  PC
               cantidadGeneral: datos.cantidad * 33.46, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           }
         case 59: // MMm3
@@ -1473,11 +1623,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 33460, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 9.341, // 9341  PC
               cantidadGeneral: datos.cantidad * 33460, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           }
         case 60: // ton
@@ -1487,11 +1639,13 @@ export const conversorTcal = async (
             return {
               cantidadTcal: cantidadPoderCalorifico,
               cantidadGeneral: datos.cantidad * 46.67, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           } else {
             return {
               cantidadTcal: datos.cantidad * 0.013, // 9341  PC
               cantidadGeneral: datos.cantidad * 46.67, // pasar a MMBtu
+              unidadGeneral:56, // MMBTu
             };
           }
         default:
@@ -1506,7 +1660,7 @@ export const conversorTcal = async (
             const poderCalorifico = 5000; //aprox consultar PC Metanol
             const cantidadTcal = datos.cantidad * 0.005;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral , unidadGeneral:61 }; 
           }
 
         case 62: //MTon
@@ -1514,7 +1668,7 @@ export const conversorTcal = async (
             const poderCalorifico = 5000; //aprox consultar PC Metanol
             const cantidadTcal = datos.cantidad * 5;
             const cantidadGeneral = datos.cantidad / 1000;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral  , unidadGeneral:61};
           }
       }
       break;
@@ -1526,11 +1680,11 @@ export const conversorTcal = async (
             const cantidadTcal = datos.cantidad * 10 ** -3;
             const cantidadGeneral =
               (datos.cantidad * 1000000) / datos.poderCalorifico; //a m3
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:64 };
           } else {
             const cantidadTcal = datos.cantidad * 10 ** -3;
             const cantidadGeneral = (datos.cantidad * 1000000) / 9341; //PC estandar
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:64 };
           }
         case 64: //m3------------- UNIDAD GENERAL---------------
           if (datos.poderCalorifico !== null) {
@@ -1538,12 +1692,12 @@ export const conversorTcal = async (
               datos.cantidad * datos.poderCalorifico * 10 ** -9;
             const cantidadGeneral = datos.cantidad;
 
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:64};
           } else {
             const cantidadTcal = datos.cantidad * 9431 * 10 ** -9;
             const cantidadGeneral = datos.cantidad;
 
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:64 };
           }
         case 65: //MMm3
           if (datos.poderCalorifico !== null) {
@@ -1551,12 +1705,12 @@ export const conversorTcal = async (
               datos.cantidad * datos.poderCalorifico * 10 ** -3;
             const cantidadGeneral = datos.cantidad * 1000000;
 
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:64 };
           } else {
             const cantidadTcal = datos.cantidad * 9431 * 10 ** -3;
             const cantidadGeneral = datos.cantidad * 1000000;
 
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:64 };
           }
       }
     //GNL-GAS NATURAL LICUADO
@@ -1568,24 +1722,24 @@ export const conversorTcal = async (
             const cantidadAKcal = datos.cantidad * 252000;
             const cantidadAM3 = cantidadAKcal / datos.poderCalorifico;
             const cantidadGeneral = cantidadAM3 / 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:67 };
           } else {
             const cantidadTcal = datos.cantidad * 0.000252;
             const cantidadAKcal = datos.cantidad * 252000;
             const cantidadAM3 = cantidadAKcal / 9555;
             const cantidadGeneral = cantidadAM3 / 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:67 };
           }
         case 67: //MMmm3------------- UNIDAD GENERAL---------------
           if (datos.poderCalorifico !== null) {
             const cantidadTcal =
               (datos.cantidad * 1000000 * datos.poderCalorifico) / 10 ** 9;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:67 };
           } else {
             const cantidadTcal = (datos.cantidad * 1000000 * 9555) / 10 ** 9;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:67 };
           }
       }
       break;
@@ -1596,13 +1750,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00805;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:68 };
           }
         case 69: //Mm3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 8.05;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:68 };
           }
       }
     //COQUE DE PETRÓLEO
@@ -1612,26 +1766,26 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00891;
             const cantidadGeneral = datos.cantidad * 1100; //a kg
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:71};
           }
 
         case 71: //kg------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = (datos.cantidad * 8100) / 10 ** 9;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:71 };
           }
         case 72: //ton Toneladas
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0081;
             const cantidadGeneral = datos.cantidad * 1000; //a kg
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:71};
           }
         case 73: //Mton Miles de Toneladas(debería ser kton, Mton = Megatoneladas)
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 8.1;
             const cantidadGeneral = datos.cantidad * 1000000; //a kg
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:71};
           }
       }
     //OTROS DERIVADOS DEL PETRÓLEO
@@ -1642,13 +1796,13 @@ export const conversorTcal = async (
             const cantidadTcal =
               datos.cantidad * (datos.poderCalorifico / 1_000_000);
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:74};
           }
         case 75: //Mton Miles de toneladas
           if (datos.poderCalorifico !== null) {
             const cantidadTcal = datos.cantidad * datos.poderCalorifico;
             const cantidadGeneral = datos.cantidad * 1_000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:74 };
           }
       }
 
@@ -1659,13 +1813,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 6.08 * 10 ** -3;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral  , unidadGeneral:76};
           }
         case 77: //Mm3 Miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 6.08;
             const cantidadGeneral = datos.cantidad * 1_000;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral  , unidadGeneral:76};
           }
       }
     //Pitch
@@ -1675,13 +1829,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0094;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral , unidadGeneral:78 };
           }
         case 79: // Mm3 Miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 9.4;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadTcal, cantidadGeneral };
+            return { cantidadTcal, cantidadGeneral, unidadGeneral:78  };
           }
       }
     //Componente Asfaltico
@@ -1691,13 +1845,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00992;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:80  };
           }
         case 81: // Mm3 Miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 9.92;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:80 };
           }
       }
     //Solventes
@@ -1707,13 +1861,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00805;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:83};
           }
         case 82: // Mm3 Miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 8.05;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:83 };
           }
       }
 
@@ -1724,13 +1878,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00992;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:85 };
           }
         case 84: // Mm3 Miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 9.92;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:85 };
           }
       }
 
@@ -1741,13 +1895,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00916;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:86 };
           }
         case 87: // Mm3 Miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 9.16;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:86};
           }
       }
     //Petróleo crudo
@@ -1757,13 +1911,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 9.04;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:88};
           }
         case 89: // Ton
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.01096;
             const cantidadGeneral = datos.cantidad / 825;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal  , unidadGeneral:88};
           }
       }
     //DIESEL//
@@ -1773,27 +1927,27 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.000009156;
             const cantidadGeneral = datos.cantidad * 0.001;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:91 };
           }
         case 91: // m3------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.009156;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:91};
           }
 
         case 92: // Mm3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 9.156;
             const cantidadGeneral = datos.cantidad * 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:91};
           }
 
         case 93: // Ton
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0109;
             const cantidadGeneral = datos.cantidad / 0.84; //(densidad ton/m3);
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:91 };
           }
         default:
           return null;
@@ -1807,25 +1961,25 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00973;
             const cantidadGeneral = datos.cantidad * 927; //a kg
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:95 };
           }
         case 95: //kg------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0000109;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:95 };
           }
         case 96: // Ton
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0105;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:95 };
           }
         case 97: // MTon
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 10.5;
             const cantidadGeneral = datos.cantidad * 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:95 };
           }
       }
     //Petróleo Comb 6
@@ -1835,25 +1989,25 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00992;
             const cantidadGeneral = datos.cantidad * 936; //a kg
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:100 };
           }
         case 100: //kg------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0000105;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:100 };
           }
         case 98: // Ton
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0105;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:100  };
           }
         case 99: // MTon
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 10.5;
             const cantidadGeneral = datos.cantidad * 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:100  };
           }
       }
 
@@ -1864,25 +2018,25 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00983;
             const cantidadGeneral = datos.cantidad * 936; //a kg
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:103};
           }
         case 103: //------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0000105;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:103};
           }
         case 105: // Ton
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.0105;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:103};
           }
         case 104: // MTon
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 10.5;
             const cantidadGeneral = datos.cantidad * 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:103 };
           }
       }
     //KEROSENE
@@ -1892,19 +2046,19 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.000008991;
             const cantidadGeneral = datos.cantidad * 0.001;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:109 };
           }
         case 109: //m3------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.008991;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:109};
           }
         case 108: //Mm3 miles de m3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 8.991;
             const cantidadGeneral = datos.cantidad * 1_000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:109 };
           }
       }
 
@@ -1915,19 +2069,19 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.000008991;
             const cantidadGeneral = datos.cantidad * 0.001;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:110};
           }
         case 110: //m3------------- UNIDAD GENERAL---------------
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.008991;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:110};
           }
         case 111: //Mm3
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 8.991;
             const cantidadGeneral = datos.cantidad * 1_000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:110 };
           }
       }
     //Electricidad//
@@ -1937,20 +2091,20 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00000086;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:113 };
           }
         case 114: // MHh
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.00086;
             const cantidadGeneral = datos.cantidad * 1000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:113};
           }
 
         case 115: // GHh
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.86;
             const cantidadGeneral = datos.cantidad * 1000000;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:113};
           }
 
         default:
@@ -1962,13 +2116,13 @@ export const conversorTcal = async (
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad;
             const cantidadGeneral = datos.cantidad;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal, unidadGeneral:116 };
           }
         case 117:
           if (datos.cantidad) {
             const cantidadTcal = datos.cantidad * 0.239;
             const cantidadGeneral = datos.cantidad * 0.239;
-            return { cantidadGeneral, cantidadTcal };
+            return { cantidadGeneral, cantidadTcal , unidadGeneral:116};
           }
       }
 

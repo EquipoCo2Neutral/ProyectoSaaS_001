@@ -89,7 +89,7 @@ export class TransformacionesService {
       idCategoriaRegistro: 10, // Si aplica
       cantidadEntrada: 0,
       cantidadSalida: createTransformacioneDto.cantidad,
-      idUnidad: createTransformacioneDto.idUnidad,
+      idUnidad: resultado2.unidadGeneral,
       idMesProceso: createTransformacioneDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
@@ -232,9 +232,7 @@ export class TransformacionesService {
         cantidadSalida: updateTransformacioneDto.cantidad
           ? updateTransformacioneDto.cantidad
           : transformacion.cantidad,
-        idUnidad: updateTransformacioneDto.idUnidad
-          ? updateTransformacioneDto.idUnidad
-          : transformacion.unidad.idUnidad,
+        idUnidad: resultado2.unidadGeneral,
         idMesProceso: updateTransformacioneDto.idMesProceso
           ? updateTransformacioneDto.idMesProceso
           : transformacion.mesProceso.idMesProceso,

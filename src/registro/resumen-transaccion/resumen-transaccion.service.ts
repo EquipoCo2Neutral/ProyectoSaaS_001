@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateResumenTransaccionDto } from './dto/create-resumen-transaccion.dto';
 import { UpdateResumenTransaccionDto } from './dto/update-resumen-transaccion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -149,4 +149,86 @@ export class ResumenTransaccionService {
   async removeRT(id: number) {
     return await this.resumenTransaccionRepo.delete(id);
   }
+
+
+
+
+async getEnergeticosAgrupadosTotales(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .select('e.nombreEnergetico', 'nombreEnergetico')
+      .addSelect('u.nombreUnidad', 'unidad')
+      .addSelect('SUM(rt.cantidadGeneral)', 'totalCantidadGeneral')
+      .innerJoin('rt.energetico', 'e')
+      .innerJoin('rt.unidad', 'u')
+      // Agregar joins para planta y proceso
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      // Agrupar por los campos requeridos
+      .groupBy('e.nombreEnergetico')
+      .addGroupBy('u.nombreUnidad')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener datos agrupados');
+  }
+}
+
+async getEnergeticosAgrupadosEntrada(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .select('e.nombreEnergetico', 'nombreEnergetico')
+      .addSelect('u.nombreUnidad', 'unidad')
+      .addSelect('SUM(rt.cantidadEntrada)', 'totalCantidadEntrada')
+      .innerJoin('rt.energetico', 'e')
+      .innerJoin('rt.unidad', 'u')
+      // Agregar joins para planta y proceso
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      // Agrupar por los campos requeridos
+      .groupBy('e.nombreEnergetico')
+      .addGroupBy('u.nombreUnidad')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener datos agrupados');
+  }
+}
+
+async getEnergeticosAgrupadosSalida(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .select('e.nombreEnergetico', 'nombreEnergetico')
+      .addSelect('u.nombreUnidad', 'unidad')
+      .addSelect('SUM(rt.cantidadSalida)', 'totalCantidadSalida')
+      .innerJoin('rt.energetico', 'e')
+      .innerJoin('rt.unidad', 'u')
+      // Agregar joins para planta y proceso
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      // Agrupar por los campos requeridos
+      .groupBy('e.nombreEnergetico')
+      .addGroupBy('u.nombreUnidad')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener datos agrupados');
+  }
+}
+
+async getTeraCalorias(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .select('SUM(rt.teraCalorias)', 'totalteraCalorias')
+      // Agregar joins para planta y proceso
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener datos agrupados');
+  }
+}
+
+
 }

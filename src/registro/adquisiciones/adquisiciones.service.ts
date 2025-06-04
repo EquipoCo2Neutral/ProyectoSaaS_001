@@ -111,7 +111,7 @@ export class AdquisicionesService {
       idCategoriaRegistro: createAdquisicioneDto.idTransaccion, // Si aplica
       cantidadEntrada: createAdquisicioneDto.Cantidad,
       cantidadSalida: 0,
-      idUnidad: createAdquisicioneDto.idUnidad,
+      idUnidad: resultado2.unidadGeneral,
       idMesProceso: createAdquisicioneDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
@@ -369,9 +369,7 @@ export class AdquisicionesService {
           ? updateAdquisicioneDto.Cantidad
           : adquisicion.Cantidad,
         cantidadSalida: 0,
-        idUnidad: updateAdquisicioneDto.idUnidad
-          ? updateAdquisicioneDto.idUnidad
-          : adquisicion.unidad.idUnidad,
+        idUnidad: resultado2.unidadGeneral,
         idMesProceso: updateAdquisicioneDto.idMesProceso
           ? updateAdquisicioneDto.idMesProceso
           : adquisicion.mesProceso.idMesProceso,

@@ -120,7 +120,7 @@ export class VentaEnergeticoService {
       idCategoriaRegistro: 20, // Si aplica
       cantidadEntrada: 0,
       cantidadSalida: createVentaEnergeticoDto.cantidad,
-      idUnidad: createVentaEnergeticoDto.idUnidad,
+      idUnidad: resultado2.unidadGeneral,
       idMesProceso: createVentaEnergeticoDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
@@ -326,9 +326,7 @@ export class VentaEnergeticoService {
         cantidadSalida: updateVentaEnergeticoDto.cantidad
           ? updateVentaEnergeticoDto.cantidad
           : ventaEnergetico.cantidad,
-        idUnidad: updateVentaEnergeticoDto.idUnidad
-          ? updateVentaEnergeticoDto.idUnidad
-          : ventaEnergetico.unidad.idUnidad,
+        idUnidad: resultado2.unidadGeneral,
         idMesProceso: updateVentaEnergeticoDto.idMesProceso
           ? updateVentaEnergeticoDto.idMesProceso
           : ventaEnergetico.mesProceso.idMesProceso,

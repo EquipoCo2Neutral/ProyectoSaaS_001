@@ -89,7 +89,7 @@ export class ExportacionesService {
       idCategoriaRegistro: 21, // Si aplica
       cantidadEntrada: 0,
       cantidadSalida: createExportacioneDto.cantidad,
-      idUnidad: createExportacioneDto.idUnidad,
+      idUnidad: resultado2.unidadGeneral,
       idMesProceso: createExportacioneDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso,
       idPlanta: mesProceso.proceso.planta.idPlanta,
@@ -253,9 +253,7 @@ export class ExportacionesService {
         cantidadSalida: updateExportacioneDto.cantidad
           ? updateExportacioneDto.cantidad
           : exportacion.cantidad,
-        idUnidad: updateExportacioneDto.idUnidad
-          ? updateExportacioneDto.idUnidad
-          : exportacion.unidad.idUnidad,
+        idUnidad: resultado2.unidadGeneral,
         idMesProceso: updateExportacioneDto.idMesProceso
           ? updateExportacioneDto.idMesProceso
           : exportacion.mesProceso.idMesProceso,

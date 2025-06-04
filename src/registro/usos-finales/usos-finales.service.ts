@@ -115,7 +115,7 @@ export class UsosFinalesService {
       idCategoriaRegistro: createUsosFinaleDto.idCategoriaUF + 10, // Si aplica
       cantidadEntrada: 0,
       cantidadSalida: createUsosFinaleDto.cantidad,
-      idUnidad: createUsosFinaleDto.idUnidad,
+      idUnidad: resultado2.unidadGeneral,
       idMesProceso: createUsosFinaleDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
@@ -305,9 +305,7 @@ export class UsosFinalesService {
         cantidadSalida: updateUsosFinaleDto.cantidad
           ? updateUsosFinaleDto.cantidad
           : usoFinal.cantidad,
-        idUnidad: updateUsosFinaleDto.idUnidad
-          ? updateUsosFinaleDto.idUnidad
-          : usoFinal.unidad.idUnidad,
+        idUnidad: resultado2.unidadGeneral,
         idMesProceso: updateUsosFinaleDto.idMesProceso
           ? updateUsosFinaleDto.idMesProceso
           : usoFinal.mesProceso.idMesProceso,

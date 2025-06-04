@@ -30,6 +30,7 @@ export class PlantaService {
         comuna: true,
         usuario: true,
         inquilino: true,
+        procesos: true,
       },
     });
 
@@ -41,6 +42,11 @@ export class PlantaService {
       usuarioId: planta.usuario.usuarioId,
       inquilinoId: planta.inquilino.inquilinoId,
       comunaId: planta.comuna.idComuna,
+      procesos: planta.procesos.map((proceso) => ({
+        idProceso: proceso.idProceso,
+        año: proceso.año_proceso,
+        estado: proceso.estado,
+      })),
     }));
   }
 
