@@ -337,11 +337,27 @@ export class VentaElectricidadService {
   }
 
   async remove(id: number) {
-    const deleteVElectricidad =
-      await this.ventaElectricidadRepository.delete(id);
+    const venta = await this.ventaElectricidadRepository.findOne({
+      where: { idVentaElectricidad: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!venta) {
+      throw new NotFoundException('Venta de Electricidad no encontrada');
+    }
+
+    // Elimina primero la venta
+    await this.ventaElectricidadRepository.delete(id);
+
+    // Luego elimina el resumen si existe
+    if (venta.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        venta.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteVElectricidad,
-      message: 'Venta de Electricidad Borrada Correctamente',
+      message: 'Venta de Electricidad y resumen borrados correctamente',
     };
   }
 }

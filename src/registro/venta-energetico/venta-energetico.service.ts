@@ -349,10 +349,27 @@ export class VentaEnergeticoService {
   }
 
   async remove(id: number) {
-    const deleteVEnergetico = await this.ventaEnergetico.delete(id);
+    const venta = await this.ventaEnergetico.findOne({
+      where: { idVentaEnergetico: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!venta) {
+      throw new NotFoundException('Venta de Energético no encontrada');
+    }
+
+    // Primero elimina la venta
+    await this.ventaEnergetico.delete(id);
+
+    // Luego elimina el resumen, si existe
+    if (venta.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        venta.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteVEnergetico,
-      message: 'Venta de Energético Borrada Correctamente',
+      message: 'Venta de Energético y resumen borrados correctamente',
     };
   }
 }

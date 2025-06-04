@@ -8,6 +8,7 @@ import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
 import { Adquisicione } from '../adquisiciones/entities/adquisicione.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
+import { ResumenTransaccionService } from '../resumen-transaccion/resumen-transaccion.service';
 
 @Injectable()
 export class GeneracionService {
@@ -22,6 +23,7 @@ export class GeneracionService {
     private readonly unidadRepository: Repository<Unidade>,
     @InjectRepository(Energetico)
     private readonly energeticoRepository: Repository<Energetico>,
+    private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createGeneracionDto: CreateGeneracionDto) {
@@ -231,10 +233,27 @@ export class GeneracionService {
   }
 
   async remove(id: number) {
-    const deleteGeneracion = await this.generacionRepository.delete(id);
+    const generacion = await this.generacionRepository.findOne({
+      where: { idGeneracion: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!generacion) {
+      throw new NotFoundException('Generación no encontrada');
+    }
+
+    // Elimina primero la generación
+    await this.generacionRepository.delete(id);
+
+    // Luego elimina el resumen si existe
+    if (generacion.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        generacion.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteGeneracion,
-      message: 'Generacion Borrada Correctamente',
+      message: 'Generación y resumen borrados correctamente',
     };
   }
 }

@@ -208,9 +208,8 @@ export class AdquisicionesService {
         'mesProceso.proceso.planta',
         'mesProceso.proceso.planta.inquilino',
         'transaccion',
-        'resumenTransaccion'
+        'resumenTransaccion',
       ],
-
     });
     if (!adquisicion) {
       throw new NotFoundException(`Adquisición con ID ${id} no encontrada`);
@@ -230,7 +229,11 @@ export class AdquisicionesService {
         );
       }
       // Validar que las relaciones necesarias existen
-      if (!mesProceso.proceso || !mesProceso.proceso.planta || !mesProceso.proceso.planta.inquilino) {
+      if (
+        !mesProceso.proceso ||
+        !mesProceso.proceso.planta ||
+        !mesProceso.proceso.planta.inquilino
+      ) {
         throw new NotFoundException(
           'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
         );
@@ -327,14 +330,24 @@ export class AdquisicionesService {
         adquisicion.paisOrigen = pais;
       }
     }
- // proceso resumen
-      //extraer tcal y unidadGeneral
+    // proceso resumen
+    //extraer tcal y unidadGeneral
     const ejemploDatos = {
-      idEnergetico: updateAdquisicioneDto.idEnergetico ?? adquisicion.energetico.idEnergetico ?? 0,
-      idUnidad: updateAdquisicioneDto.idUnidad ?? adquisicion.unidad.idUnidad ?? 0, 
-      cantidad: updateAdquisicioneDto.Cantidad ?? adquisicion.Cantidad ?? 0, 
-      poderCalorifico: updateAdquisicioneDto.poderCalorifico ?? adquisicion.poderCalorifico ?? 0,
-      humedad: updateAdquisicioneDto.porcentajeHumedad ?? adquisicion.porcentajeHumedad ?? 0,
+      idEnergetico:
+        updateAdquisicioneDto.idEnergetico ??
+        adquisicion.energetico.idEnergetico ??
+        0,
+      idUnidad:
+        updateAdquisicioneDto.idUnidad ?? adquisicion.unidad.idUnidad ?? 0,
+      cantidad: updateAdquisicioneDto.Cantidad ?? adquisicion.Cantidad ?? 0,
+      poderCalorifico:
+        updateAdquisicioneDto.poderCalorifico ??
+        adquisicion.poderCalorifico ??
+        0,
+      humedad:
+        updateAdquisicioneDto.porcentajeHumedad ??
+        adquisicion.porcentajeHumedad ??
+        0,
     };
     // realizar conversion a Tcal
     const resultado2 = await conversorTcal(ejemploDatos);
@@ -342,23 +355,34 @@ export class AdquisicionesService {
       throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
-    
     // asignar valores
-    await this.resumenTransaccionService.updateRT(adquisicion.resumenTransaccion.idResumenTransaccion, {
-      idEnergetico: updateAdquisicioneDto.idEnergetico ? updateAdquisicioneDto.idEnergetico : adquisicion.energetico.idEnergetico,
-      idCategoriaRegistro: updateAdquisicioneDto.idTransaccion ? updateAdquisicioneDto.idTransaccion : adquisicion.transaccion.idTransaccion, // Si aplica
-      cantidadEntrada: updateAdquisicioneDto.Cantidad ? updateAdquisicioneDto.Cantidad : adquisicion.Cantidad,
-      cantidadSalida: 0,
-      idUnidad: updateAdquisicioneDto.idUnidad ? updateAdquisicioneDto.idUnidad : adquisicion.unidad.idUnidad,
-      idMesProceso: updateAdquisicioneDto.idMesProceso ? updateAdquisicioneDto.idMesProceso : adquisicion.mesProceso.idMesProceso,
-      idProceso: adquisicion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
-      idPlanta: adquisicion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
-      inquilinoId: adquisicion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
-      cantidadGeneral: resultado2.cantidadGeneral,
-      teraCalorias: resultado2.cantidadTcal,
-    });
-
-
+    await this.resumenTransaccionService.updateRT(
+      adquisicion.resumenTransaccion.idResumenTransaccion,
+      {
+        idEnergetico: updateAdquisicioneDto.idEnergetico
+          ? updateAdquisicioneDto.idEnergetico
+          : adquisicion.energetico.idEnergetico,
+        idCategoriaRegistro: updateAdquisicioneDto.idTransaccion
+          ? updateAdquisicioneDto.idTransaccion
+          : adquisicion.transaccion.idTransaccion, // Si aplica
+        cantidadEntrada: updateAdquisicioneDto.Cantidad
+          ? updateAdquisicioneDto.Cantidad
+          : adquisicion.Cantidad,
+        cantidadSalida: 0,
+        idUnidad: updateAdquisicioneDto.idUnidad
+          ? updateAdquisicioneDto.idUnidad
+          : adquisicion.unidad.idUnidad,
+        idMesProceso: updateAdquisicioneDto.idMesProceso
+          ? updateAdquisicioneDto.idMesProceso
+          : adquisicion.mesProceso.idMesProceso,
+        idProceso: adquisicion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+        idPlanta: adquisicion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+        inquilinoId:
+          adquisicion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+        cantidadGeneral: resultado2.cantidadGeneral,
+        teraCalorias: resultado2.cantidadTcal,
+      },
+    );
 
     const resultado = await this.adquisicioneRepository.save(adquisicion);
 
@@ -366,7 +390,7 @@ export class AdquisicionesService {
       resultado,
       message: 'Adquisición actualizada correctamente',
     };
-  } 
+  }
 
   async findEnergeticosByMesProceso(idMesProceso: string) {
     return this.adquisicioneRepository
@@ -399,10 +423,27 @@ export class AdquisicionesService {
   }
 
   async remove(id: number) {
-    const deleteAdquisicion = await this.adquisicioneRepository.delete(id);
+    const adquisicion = await this.adquisicioneRepository.findOne({
+      where: { idAdquisicion: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!adquisicion) {
+      throw new NotFoundException('Adquisición no encontrada');
+    }
+
+    // Elimina primero la adquisición
+    await this.adquisicioneRepository.delete(id);
+
+    // Luego elimina el resumen si existe
+    if (adquisicion.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        adquisicion.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteAdquisicion,
-      message: 'Adquisicion Borrada Correctamente',
+      message: 'Adquisición y resumen borrados correctamente',
     };
   }
 }

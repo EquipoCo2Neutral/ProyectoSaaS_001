@@ -276,10 +276,25 @@ export class ExportacionesService {
   }
 
   async remove(id: number) {
-    const deleteExportacion = await this.exportacionRepository.delete(id);
+    const exportacion = await this.exportacionRepository.findOne({
+      where: { idExportacion: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!exportacion) {
+      throw new NotFoundException('Exportación no encontrada');
+    }
+
+    await this.exportacionRepository.delete(id);
+
+    if (exportacion.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        exportacion.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteExportacion,
-      message: 'Exportacion Borrada Correctamente',
+      message: 'Exportación y resumen borrados correctamente',
     };
   }
 }

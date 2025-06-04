@@ -45,6 +45,6 @@ export class ResumenTransaccionController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.resumenTransaccionService.remove(+id);
+    return this.resumenTransaccionService.removeRT(+id);
   }
 }

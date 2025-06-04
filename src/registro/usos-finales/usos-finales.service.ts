@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUsosFinaleDto } from './dto/create-usos-finale.dto';
 import { UpdateUsosFinaleDto } from './dto/update-usos-finale.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,15 +39,15 @@ export class UsosFinalesService {
 
   async create(createUsosFinaleDto: CreateUsosFinaleDto) {
     //validar mes proceso
-      const mesProceso = await this.mesProcesoRepository.findOne({
-        where: {
-          idMesProceso: createUsosFinaleDto.idMesProceso,
-        },
-        relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
-      });
-      if (!mesProceso) {
-        throw new NotFoundException('Mes Proceso no encontrado');
-      }
+    const mesProceso = await this.mesProcesoRepository.findOne({
+      where: {
+        idMesProceso: createUsosFinaleDto.idMesProceso,
+      },
+      relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
+    });
+    if (!mesProceso) {
+      throw new NotFoundException('Mes Proceso no encontrado');
+    }
     //validar energético
     if (createUsosFinaleDto.idEnergetico) {
       const energetico = await this.energeticoRepository.findOneBy({
@@ -112,25 +116,25 @@ export class UsosFinalesService {
       } as TipoUf;
     }
 
-     // proceso resumen
-      //extraer tcal y unidadGeneral
+    // proceso resumen
+    //extraer tcal y unidadGeneral
     const ejemploDatos = {
-      idEnergetico: createUsosFinaleDto.idEnergetico  ?? 0,
-      idUnidad: createUsosFinaleDto.idUnidad ??  0, 
-      cantidad: createUsosFinaleDto.cantidad ?? null, 
+      idEnergetico: createUsosFinaleDto.idEnergetico ?? 0,
+      idUnidad: createUsosFinaleDto.idUnidad ?? 0,
+      cantidad: createUsosFinaleDto.cantidad ?? null,
       poderCalorifico: null,
       humedad: null,
     };
 
-      // realizar conversion a Tcal
+    // realizar conversion a Tcal
     const resultado2 = await conversorTcal(ejemploDatos);
     if (!resultado2) {
-          throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
-      // asignar valores
+    // asignar valores
     await this.resumenTransaccionService.createRT({
       idEnergetico: createUsosFinaleDto.idEnergetico,
-      idCategoriaRegistro: createUsosFinaleDto.idCategoriaUF +10, // Si aplica
+      idCategoriaRegistro: createUsosFinaleDto.idCategoriaUF + 10, // Si aplica
       cantidadEntrada: 0,
       cantidadSalida: createUsosFinaleDto.cantidad,
       idUnidad: createUsosFinaleDto.idUnidad,
@@ -141,10 +145,6 @@ export class UsosFinalesService {
       cantidadGeneral: resultado2.cantidadGeneral,
       teraCalorias: resultado2.cantidadTcal,
     });
-
-
-
-
 
     const resultado = await this.usoFinaleRepository.save(usoFinal);
     return {
@@ -219,7 +219,11 @@ export class UsosFinalesService {
         throw new NotFoundException('Mes Proceso no encontrado');
       }
       // Validar que las relaciones necesarias existen
-      if (!mesProceso.proceso || !mesProceso.proceso.planta || !mesProceso.proceso.planta.inquilino) {
+      if (
+        !mesProceso.proceso ||
+        !mesProceso.proceso.planta ||
+        !mesProceso.proceso.planta.inquilino
+      ) {
         throw new NotFoundException(
           'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
         );
@@ -268,61 +272,84 @@ export class UsosFinalesService {
       usoFinal.unidad = unidad;
     }
 
-     // proceso resumen
-      //extraer tcal y unidadGeneral
+    // proceso resumen
+    //extraer tcal y unidadGeneral
     const ejemploDatos = {
-      idEnergetico: updateUsosFinaleDto.idEnergetico ?? usoFinal.energetico.idEnergetico ?? 0,
-      idUnidad: updateUsosFinaleDto.idUnidad ?? usoFinal.unidad.idUnidad ?? 0, 
-      cantidad: updateUsosFinaleDto.cantidad ?? usoFinal.cantidad?? null, 
+      idEnergetico:
+        updateUsosFinaleDto.idEnergetico ??
+        usoFinal.energetico.idEnergetico ??
+        0,
+      idUnidad: updateUsosFinaleDto.idUnidad ?? usoFinal.unidad.idUnidad ?? 0,
+      cantidad: updateUsosFinaleDto.cantidad ?? usoFinal.cantidad ?? null,
       poderCalorifico: null,
       humedad: null,
     };
 
-      // realizar conversion a Tcal
+    // realizar conversion a Tcal
     const resultado2 = await conversorTcal(ejemploDatos);
     if (!resultado2) {
-          throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
     // asignar valores
-    await this.resumenTransaccionService.updateRT(usoFinal.resumenTransaccion.idResumenTransaccion, {
-      idEnergetico: updateUsosFinaleDto.idEnergetico ? updateUsosFinaleDto.idEnergetico : usoFinal.energetico.idEnergetico,
-      idCategoriaRegistro: updateUsosFinaleDto.idCategoriaUF !== undefined ? updateUsosFinaleDto.idCategoriaUF +10 : usoFinal.categoriaUF.idCategoriaUF +10 , // Si aplica
-      cantidadEntrada: 0,
-      cantidadSalida: updateUsosFinaleDto.cantidad ? updateUsosFinaleDto.cantidad : usoFinal.cantidad,
-      idUnidad: updateUsosFinaleDto.idUnidad ? updateUsosFinaleDto.idUnidad : usoFinal.unidad.idUnidad,
-      idMesProceso: updateUsosFinaleDto.idMesProceso ? updateUsosFinaleDto.idMesProceso : usoFinal.mesProceso.idMesProceso,
-      idProceso: usoFinal.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
-      idPlanta: usoFinal.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
-      inquilinoId: usoFinal.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
-      cantidadGeneral: resultado2.cantidadGeneral,
-      teraCalorias: resultado2.cantidadTcal,
-    });
-
-
-
+    await this.resumenTransaccionService.updateRT(
+      usoFinal.resumenTransaccion.idResumenTransaccion,
+      {
+        idEnergetico: updateUsosFinaleDto.idEnergetico
+          ? updateUsosFinaleDto.idEnergetico
+          : usoFinal.energetico.idEnergetico,
+        idCategoriaRegistro:
+          updateUsosFinaleDto.idCategoriaUF !== undefined
+            ? updateUsosFinaleDto.idCategoriaUF + 10
+            : usoFinal.categoriaUF.idCategoriaUF + 10, // Si aplica
+        cantidadEntrada: 0,
+        cantidadSalida: updateUsosFinaleDto.cantidad
+          ? updateUsosFinaleDto.cantidad
+          : usoFinal.cantidad,
+        idUnidad: updateUsosFinaleDto.idUnidad
+          ? updateUsosFinaleDto.idUnidad
+          : usoFinal.unidad.idUnidad,
+        idMesProceso: updateUsosFinaleDto.idMesProceso
+          ? updateUsosFinaleDto.idMesProceso
+          : usoFinal.mesProceso.idMesProceso,
+        idProceso: usoFinal.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+        idPlanta: usoFinal.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+        inquilinoId: usoFinal.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+        cantidadGeneral: resultado2.cantidadGeneral,
+        teraCalorias: resultado2.cantidadTcal,
+      },
+    );
 
     const resultado = await this.usoFinaleRepository.save(usoFinal);
-    
-    
-    
+
     return {
       resultado,
       message: 'Uso Final Actualizado Correctamente',
     };
   }
 
-
-
-
-
-
-
   async remove(id: number) {
-    const deleteUF = await this.usoFinaleRepository.delete(id);
+    const usoFinal = await this.usoFinaleRepository.findOne({
+      where: { idUsoFinal: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!usoFinal) {
+      throw new NotFoundException('Uso Final no encontrado');
+    }
+
+    // Elimina primero el uso final
+    await this.usoFinaleRepository.delete(id);
+
+    // Luego elimina el resumen si existe
+    if (usoFinal.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        usoFinal.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteUF,
-      message: 'Uso Final Borrado Correctamente',
+      message: 'Uso Final y resumen borrados correctamente',
     };
   }
 }

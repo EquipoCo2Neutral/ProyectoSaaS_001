@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { ResumenTransaccionService } from '../resumen-transaccion/resumen-transaccion.service';
 
 @Injectable()
 export class TransformacionesService {
@@ -20,6 +21,7 @@ export class TransformacionesService {
     private readonly energeticoRepository: Repository<Energetico>,
     @InjectRepository(Unidade)
     private readonly unidadRepository: Repository<Unidade>,
+    private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createTransformacioneDto: CreateTransformacioneDto) {
@@ -159,10 +161,27 @@ export class TransformacionesService {
   }
 
   async remove(id: number) {
-    const deleteTransformacion = await this.transformacionRepository.delete(id);
+    const transformacion = await this.transformacionRepository.findOne({
+      where: { idTransformacion: id },
+      relations: ['resumenTransaccion'],
+    });
+
+    if (!transformacion) {
+      throw new NotFoundException('Transformación no encontrada');
+    }
+
+    // Elimina primero la transformación
+    await this.transformacionRepository.delete(id);
+
+    // Luego elimina el resumen si existe
+    if (transformacion.resumenTransaccion) {
+      await this.resumenTransaccionService.removeRT(
+        transformacion.resumenTransaccion.idResumenTransaccion,
+      );
+    }
+
     return {
-      deleteTransformacion,
-      message: 'Transformacion Borrada Correctamente',
+      message: 'Transformación y resumen borrados correctamente',
     };
   }
 }

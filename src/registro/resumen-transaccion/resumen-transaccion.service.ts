@@ -48,7 +48,7 @@ export class ResumenTransaccionService {
       idUnidad,
       idMesProceso,
       idProceso,
-      idPlanta, // No está en la entidad original, así que asegúrate de que `ResumenTransaccion` tenga relación con Planta
+      idPlanta,
       inquilinoId,
       cantidadGeneral,
       teraCalorias,
@@ -79,7 +79,7 @@ export class ResumenTransaccionService {
       inquilino,
       cantidadGeneral,
       teraCalorias,
-      planta, // incluir solo si existe la relación en la entidad
+      planta,
     });
 
     return await this.resumenTransaccionRepo.save(nuevaTransaccion);
@@ -93,51 +93,60 @@ export class ResumenTransaccionService {
     return `This action returns a #${id} resumenTransaccion`;
   }
 
+  async updateRT(
+    id: number,
+    updateResumenTransaccionDto: UpdateResumenTransaccionDto,
+  ) {
+    const {
+      idEnergetico,
+      idCategoriaRegistro,
+      cantidadEntrada,
+      cantidadSalida,
+      idUnidad,
+      idMesProceso,
+      idProceso,
+      idPlanta,
+      inquilinoId,
+      cantidadGeneral,
+      teraCalorias,
+    } = updateResumenTransaccionDto;
 
-async updateRT(id: number, updateResumenTransaccionDto: UpdateResumenTransaccionDto) {
-  const {
-    idEnergetico,
-    idCategoriaRegistro,
-    cantidadEntrada,
-    cantidadSalida,
-    idUnidad,
-    idMesProceso,
-    idProceso,
-    idPlanta,
-    inquilinoId,
-    cantidadGeneral,
-    teraCalorias,
-  } = updateResumenTransaccionDto;
+    const resumenExistente = await this.resumenTransaccionRepo.findOneByOrFail({
+      idResumenTransaccion: id,
+    });
 
-  const resumenExistente = await this.resumenTransaccionRepo.findOneByOrFail({ idResumenTransaccion: id });
+    const energetico = await this.energeticoRepo.findOneByOrFail({
+      idEnergetico,
+    });
+    const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
+    const categoriaRegistro = await this.cRegistroRepo.findOneByOrFail({
+      idCategoriaRegistro,
+    });
+    const mesProceso = await this.mesProcesoRepo.findOneByOrFail({
+      idMesProceso,
+    });
+    const proceso = await this.procesoRepo.findOneByOrFail({ idProceso });
+    const planta = await this.plantaRepo.findOneByOrFail({ idPlanta });
+    const inquilino = await this.inquilinoRepo.findOneByOrFail({ inquilinoId });
 
-  const energetico = await this.energeticoRepo.findOneByOrFail({ idEnergetico });
-  const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
-  const categoriaRegistro = await this.cRegistroRepo.findOneByOrFail({ idCategoriaRegistro });
-  const mesProceso = await this.mesProcesoRepo.findOneByOrFail({ idMesProceso });
-  const proceso = await this.procesoRepo.findOneByOrFail({ idProceso });
-  const planta = await this.plantaRepo.findOneByOrFail({ idPlanta });
-  const inquilino = await this.inquilinoRepo.findOneByOrFail({ inquilinoId });
+    const updatedResumen = this.resumenTransaccionRepo.merge(resumenExistente, {
+      energetico,
+      categoriaRegistro,
+      cantidadEntrada,
+      cantidadSalida,
+      unidad,
+      mesProceso,
+      proceso,
+      planta,
+      inquilino,
+      cantidadGeneral,
+      teraCalorias,
+    });
 
-  const updatedResumen = this.resumenTransaccionRepo.merge(resumenExistente, {
-    energetico,
-    categoriaRegistro,
-    cantidadEntrada,
-    cantidadSalida,
-    unidad,
-    mesProceso,
-    proceso,
-    planta,
-    inquilino,
-    cantidadGeneral,
-    teraCalorias,
-  });
+    return await this.resumenTransaccionRepo.save(updatedResumen);
+  }
 
-  return await this.resumenTransaccionRepo.save(updatedResumen);
-}
-
-
-  remove(id: number) {
-    return `This action removes a #${id} resumenTransaccion`;
+  async removeRT(id: number) {
+    return await this.resumenTransaccionRepo.delete(id);
   }
 }
