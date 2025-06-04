@@ -26,7 +26,7 @@ export class ResumenTransaccion {
 
   @Column('float')
   cantidadEntrada: number;
-  @Column()
+  @Column('float')
   cantidadSalida: number;
 
   @ManyToOne(() => Unidade, (e) => e.resumenTransaccion, {

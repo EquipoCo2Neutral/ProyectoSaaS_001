@@ -9,6 +9,8 @@ import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.enti
 import { Regiones } from 'src/complementos/regiones/entities/regione.entity';
 import { SectorEconomico } from 'src/complementos/energia/sector-economico/entities/sector-economico.entity';
 import { SubSectorEconomico } from 'src/complementos/energia/sub-sector-economico/entities/sub-sector-economico.entity';
+import { ResumenTransaccion } from '../resumen-transaccion/entities/resumen-transaccion.entity';
+import { ResumenTransaccionModule } from '../resumen-transaccion/resumen-transaccion.module';
 
 @Module({
   imports: [
@@ -20,7 +22,9 @@ import { SubSectorEconomico } from 'src/complementos/energia/sub-sector-economic
       Regiones,
       SectorEconomico,
       SubSectorEconomico,
+      ResumenTransaccion,
     ]),
+    ResumenTransaccionModule,
   ],
   controllers: [VentaEnergeticoController],
   providers: [VentaEnergeticoService],

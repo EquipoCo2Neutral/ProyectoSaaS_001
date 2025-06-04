@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateExportacioneDto } from './dto/create-exportacione.dto';
 import { UpdateExportacioneDto } from './dto/update-exportacione.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +12,8 @@ import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
 import { Pais } from 'src/complementos/paises/entities/paise.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
+import { conversorTcal } from 'src/utilties/conversor';
+import { ResumenTransaccionService } from '../resumen-transaccion/resumen-transaccion.service';
 
 @Injectable()
 export class ExportacionesService {
@@ -21,15 +27,31 @@ export class ExportacionesService {
     private readonly unidadRepository: Repository<Unidade>,
     @InjectRepository(Energetico)
     private readonly energeticoRepository: Repository<Energetico>,
+    private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createExportacioneDto: CreateExportacioneDto) {
-    const mesProceso = await this.mesProcesoRepository.findOneBy({
-      idMesProceso: createExportacioneDto.idMesProceso,
+    const mesProceso = await this.mesProcesoRepository.findOne({
+      where: { idMesProceso: createExportacioneDto.idMesProceso },
+      relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
     });
-
     if (!mesProceso) {
       throw new NotFoundException('Mes Proceso no encontrado');
+    }
+
+    //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico: createExportacioneDto.idEnergetico,
+      idUnidad: createExportacioneDto.idUnidad,
+      cantidad: createExportacioneDto.cantidad,
+      poderCalorifico: null,
+      humedad: null,
+    };
+
+    const resultado2 = await conversorTcal(ejemploDatos);
+
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
     if (createExportacioneDto.idEnergetico) {
@@ -62,7 +84,22 @@ export class ExportacionesService {
       }
     }
 
+    const resumenTransaccion = await this.resumenTransaccionService.createRT({
+      idEnergetico: createExportacioneDto.idEnergetico,
+      idCategoriaRegistro: 21, // Si aplica
+      cantidadEntrada: 0,
+      cantidadSalida: createExportacioneDto.cantidad,
+      idUnidad: createExportacioneDto.idUnidad,
+      idMesProceso: createExportacioneDto.idMesProceso,
+      idProceso: mesProceso.proceso.idProceso,
+      idPlanta: mesProceso.proceso.planta.idPlanta,
+      inquilinoId: mesProceso.proceso.planta.inquilino.inquilinoId,
+      cantidadGeneral: resultado2.cantidadGeneral,
+      teraCalorias: resultado2.cantidadTcal,
+    });
+
     const exportacion = this.exportacionRepository.create({
+      resumenTransaccion: resumenTransaccion,
       cantidad: createExportacioneDto.cantidad,
       empresaDestino: createExportacioneDto.empresaDestino,
       mesProceso,
@@ -111,6 +148,16 @@ export class ExportacionesService {
   async update(id: number, updateExportacioneDto: UpdateExportacioneDto) {
     const exportacion = await this.exportacionRepository.findOne({
       where: { idExportacion: id },
+      relations: [
+        'mesProceso',
+        'mesProceso.proceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
+        'energetico',
+        'unidad',
+        'pais',
+        'resumenTransaccion',
+      ],
     });
     if (!exportacion) {
       throw new NotFoundException('Exportacion no encontrada');
@@ -121,10 +168,26 @@ export class ExportacionesService {
     if (updateExportacioneDto.idMesProceso) {
       const mesProceso = await this.mesProcesoRepository.findOne({
         where: { idMesProceso: updateExportacioneDto.idMesProceso },
+        relations: [
+          'proceso',
+          'proceso.planta',
+          'proceso.planta.inquilino',
+          'resumenTransaccion',
+        ],
       });
 
       if (!mesProceso) {
         throw new NotFoundException('Mes Proceso no encontrado');
+      }
+      // Validar que las relaciones necesarias existen
+      if (
+        !mesProceso.proceso ||
+        !mesProceso.proceso.planta ||
+        !mesProceso.proceso.planta.inquilino
+      ) {
+        throw new NotFoundException(
+          'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
+        );
       }
       exportacion.mesProceso = mesProceso;
     }
@@ -157,6 +220,53 @@ export class ExportacionesService {
       }
       exportacion.pais = Pais;
     }
+
+    // proceso resumen
+    //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico:
+        updateExportacioneDto.idEnergetico ??
+        exportacion.energetico.idEnergetico ??
+        0,
+      idUnidad:
+        updateExportacioneDto.idUnidad ?? exportacion.unidad.idUnidad ?? 0,
+      cantidad: updateExportacioneDto.cantidad ?? exportacion.cantidad ?? 0,
+      poderCalorifico: null,
+      humedad: null,
+    };
+
+    // realizar conversion a Tcal
+    const resultado2 = await conversorTcal(ejemploDatos);
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
+
+    // asignar valores
+    await this.resumenTransaccionService.updateRT(
+      exportacion.resumenTransaccion.idResumenTransaccion,
+      {
+        idEnergetico: updateExportacioneDto.idEnergetico
+          ? updateExportacioneDto.idEnergetico
+          : exportacion.energetico.idEnergetico,
+        idCategoriaRegistro: 21, // Si aplica
+        cantidadEntrada: 0,
+        cantidadSalida: updateExportacioneDto.cantidad
+          ? updateExportacioneDto.cantidad
+          : exportacion.cantidad,
+        idUnidad: updateExportacioneDto.idUnidad
+          ? updateExportacioneDto.idUnidad
+          : exportacion.unidad.idUnidad,
+        idMesProceso: updateExportacioneDto.idMesProceso
+          ? updateExportacioneDto.idMesProceso
+          : exportacion.mesProceso.idMesProceso,
+        idProceso: exportacion.mesProceso.proceso.idProceso,
+        idPlanta: exportacion.mesProceso.proceso.planta.idPlanta,
+        inquilinoId:
+          exportacion.mesProceso.proceso.planta.inquilino.inquilinoId,
+        cantidadGeneral: resultado2.cantidadGeneral,
+        teraCalorias: resultado2.cantidadTcal,
+      },
+    );
 
     const resultado = await this.exportacionRepository.save(exportacion);
     return {

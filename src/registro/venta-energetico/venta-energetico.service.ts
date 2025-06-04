@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateVentaEnergeticoDto } from './dto/create-venta-energetico.dto';
 import { UpdateVentaEnergeticoDto } from './dto/update-venta-energetico.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +14,8 @@ import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.enti
 import { Regiones } from 'src/complementos/regiones/entities/regione.entity';
 import { SectorEconomico } from 'src/complementos/energia/sector-economico/entities/sector-economico.entity';
 import { SubSectorEconomico } from 'src/complementos/energia/sub-sector-economico/entities/sub-sector-economico.entity';
+import { ResumenTransaccionService } from '../resumen-transaccion/resumen-transaccion.service';
+import { conversorTcal } from 'src/utilties/conversor';
 
 @Injectable()
 export class VentaEnergeticoService {
@@ -28,15 +34,33 @@ export class VentaEnergeticoService {
     private readonly sectorRepository: Repository<SectorEconomico>,
     @InjectRepository(SubSectorEconomico)
     private readonly subSectorRepository: Repository<SubSectorEconomico>,
+    private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createVentaEnergeticoDto: CreateVentaEnergeticoDto) {
     //validar mes proceso
-    const mesProceso = await this.mesProcesoRepository.findOneBy({
-      idMesProceso: createVentaEnergeticoDto.idMesProceso,
+    const mesProceso = await this.mesProcesoRepository.findOne({
+      where: { idMesProceso: createVentaEnergeticoDto.idMesProceso },
+      relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
     });
+
     if (!mesProceso) {
       throw new NotFoundException('Mes proceso no encontrado');
+    }
+
+    //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico: createVentaEnergeticoDto.idEnergetico,
+      idUnidad: createVentaEnergeticoDto.idUnidad,
+      cantidad: createVentaEnergeticoDto.cantidad,
+      poderCalorifico: null,
+      humedad: null,
+    };
+
+    const resultado2 = await conversorTcal(ejemploDatos);
+
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
     //validar energetico
@@ -91,7 +115,22 @@ export class VentaEnergeticoService {
       }
     }
 
+    const resumenTransaccion = await this.resumenTransaccionService.createRT({
+      idEnergetico: createVentaEnergeticoDto.idEnergetico,
+      idCategoriaRegistro: 20, // Si aplica
+      cantidadEntrada: 0,
+      cantidadSalida: createVentaEnergeticoDto.cantidad,
+      idUnidad: createVentaEnergeticoDto.idUnidad,
+      idMesProceso: createVentaEnergeticoDto.idMesProceso,
+      idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+      idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+      inquilinoId: mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+      cantidadGeneral: resultado2.cantidadGeneral,
+      teraCalorias: resultado2.cantidadTcal,
+    });
+
     const ventaEnergetico = this.ventaEnergetico.create({
+      resumenTransaccion: resumenTransaccion,
       cantidad: createVentaEnergeticoDto.cantidad,
       mesProceso,
       energetico: {
@@ -155,18 +194,48 @@ export class VentaEnergeticoService {
   async update(id: number, updateVentaEnergeticoDto: UpdateVentaEnergeticoDto) {
     const ventaEnergetico = await this.ventaEnergetico.findOne({
       where: { idVentaEnergetico: id },
+      relations: [
+        'mesProceso',
+        'mesProceso.proceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
+        'unidad',
+        'sector',
+        'subSector',
+        'region',
+        'energetico',
+        'resumenTransaccion',
+      ],
     });
     if (!ventaEnergetico) {
       throw new NotFoundException('Venta energetico no encontrado');
     }
+    // Asignar los cambios del DTO
     Object.assign(ventaEnergetico, updateVentaEnergeticoDto);
 
     if (updateVentaEnergeticoDto.idMesProceso) {
-      const mesProceso = await this.mesProcesoRepository.findOneBy({
-        idMesProceso: updateVentaEnergeticoDto.idMesProceso,
+      const mesProceso = await this.mesProcesoRepository.findOne({
+        where: { idMesProceso: updateVentaEnergeticoDto.idMesProceso },
+        relations: [
+          'proceso',
+          'proceso.planta',
+          'proceso.planta.inquilino',
+          'resumenTransaccion',
+        ],
       });
       if (!mesProceso) {
         throw new NotFoundException('Mes proceso no encontrado');
+      }
+
+      // Validar que las relaciones necesarias existen
+      if (
+        !mesProceso.proceso ||
+        !mesProceso.proceso.planta ||
+        !mesProceso.proceso.planta.inquilino
+      ) {
+        throw new NotFoundException(
+          'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
+        );
       }
       ventaEnergetico.mesProceso = mesProceso;
     }
@@ -219,6 +288,59 @@ export class VentaEnergeticoService {
       }
       ventaEnergetico.subSector = subSector;
     }
+
+    // proceso resumen
+    //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico:
+        updateVentaEnergeticoDto.idEnergetico ??
+        ventaEnergetico.energetico.idEnergetico ??
+        0,
+      idUnidad:
+        updateVentaEnergeticoDto.idUnidad ??
+        ventaEnergetico.unidad.idUnidad ??
+        0,
+      cantidad:
+        updateVentaEnergeticoDto.cantidad ?? ventaEnergetico.cantidad ?? 0,
+      poderCalorifico: null,
+      humedad: null,
+    };
+    // realizar conversion a Tcal
+    const resultado2 = await conversorTcal(ejemploDatos);
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
+
+    if (!ventaEnergetico.resumenTransaccion) {
+      throw new NotFoundException('Resumen de transacción no encontrado');
+    }
+    // asignar valores
+    await this.resumenTransaccionService.updateRT(
+      ventaEnergetico.resumenTransaccion.idResumenTransaccion,
+      {
+        idEnergetico: updateVentaEnergeticoDto.idEnergetico
+          ? updateVentaEnergeticoDto.idEnergetico
+          : ventaEnergetico.energetico.idEnergetico,
+        idCategoriaRegistro: 20, // Si aplica
+        cantidadEntrada: 0,
+        cantidadSalida: updateVentaEnergeticoDto.cantidad
+          ? updateVentaEnergeticoDto.cantidad
+          : ventaEnergetico.cantidad,
+        idUnidad: updateVentaEnergeticoDto.idUnidad
+          ? updateVentaEnergeticoDto.idUnidad
+          : ventaEnergetico.unidad.idUnidad,
+        idMesProceso: updateVentaEnergeticoDto.idMesProceso
+          ? updateVentaEnergeticoDto.idMesProceso
+          : ventaEnergetico.mesProceso.idMesProceso,
+        idProceso: ventaEnergetico.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+        idPlanta: ventaEnergetico.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+        inquilinoId:
+          ventaEnergetico.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+        cantidadGeneral: resultado2.cantidadGeneral,
+        teraCalorias: resultado2.cantidadTcal,
+      },
+    );
+
     const respuesta = await this.ventaEnergetico.save(ventaEnergetico);
     return {
       respuesta,

@@ -3,11 +3,13 @@ import { SubSectorEconomico } from 'src/complementos/energia/sub-sector-economic
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Regiones } from 'src/complementos/regiones/entities/regione.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,7 +23,7 @@ export class VentaElectricidad {
   idDestinoVenta: number;
   @Column({ nullable: true })
   ventaMercadoSpot: boolean;
-  @Column({ nullable: false })
+  @Column('float', { nullable: false })
   cantidadVendida: number;
   @Column({ nullable: true })
   empresaDestino: string;
@@ -58,4 +60,8 @@ export class VentaElectricidad {
   )
   @JoinColumn({ name: 'idSubSectorEconomico' })
   subSectorE: SubSectorEconomico | null;
+
+  @OneToOne(() => ResumenTransaccion)
+  @JoinColumn({ name: 'idResumenTransaccion' })
+  resumenTransaccion: ResumenTransaccion;
 }

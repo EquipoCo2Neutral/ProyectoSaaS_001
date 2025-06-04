@@ -2,11 +2,13 @@ import { Energetico } from 'src/complementos/energia/energeticos/entities/energe
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { Pais } from 'src/complementos/paises/entities/paise.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -18,7 +20,7 @@ export class Exportacione {
   @Column({ nullable: false })
   empresaDestino: string;
 
-  @Column({ nullable: false })
+  @Column('float', { nullable: false })
   cantidad: number;
 
   @ManyToOne(() => MesProceso, (mesProceso) => mesProceso.exportacion, {
@@ -41,4 +43,8 @@ export class Exportacione {
   })
   @JoinColumn({ name: 'idEnergetico' })
   energetico: Energetico;
+
+  @OneToOne(() => ResumenTransaccion)
+  @JoinColumn({ name: 'idResumenTransaccion' })
+  resumenTransaccion: ResumenTransaccion;
 }
