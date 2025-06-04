@@ -1,11 +1,13 @@
 import { Energetico } from 'src/complementos/energia/energeticos/entities/energetico.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/resumen-transaccion.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -28,7 +30,7 @@ export class Generacion {
   @Column({ type: 'float' })
   capacidadInstalada: number;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   consumoEnergetico?: number | null;
 
   @Column({ type: 'float', nullable: true })
@@ -81,4 +83,8 @@ export class Generacion {
   })
   @JoinColumn({ name: 'idEnergetico' })
   energetico: Energetico | null;
+
+  @OneToOne(() => ResumenTransaccion)
+  @JoinColumn({ name: 'idResumenTransaccion' })
+  resumenTransaccion: ResumenTransaccion;
 }
