@@ -9,6 +9,7 @@ import { Energetico } from 'src/complementos/energia/energeticos/entities/energe
 import { CategoriaUf } from 'src/complementos/energia/categoria-uf/entities/categoria-uf.entity';
 import { TipoUf } from 'src/complementos/energia/tipo-uf/entities/tipo-uf.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
+import { ResumenTransaccion } from '../resumen-transaccion/entities/resumen-transaccion.entity';
 
 @Injectable()
 export class UsosFinalesService {
@@ -25,6 +26,8 @@ export class UsosFinalesService {
     private readonly tipoUfRepository: Repository<TipoUf>,
     @InjectRepository(Unidade)
     private readonly unidadeRepository: Repository<Unidade>,
+    @InjectRepository(ResumenTransaccion)
+    private readonly resumenTransaccionRepository: Repository<ResumenTransaccion>,
   ) {}
 
   async create(createUsosFinaleDto: CreateUsosFinaleDto) {
@@ -150,6 +153,16 @@ export class UsosFinalesService {
   async update(id: number, updateUsosFinaleDto: UpdateUsosFinaleDto) {
     const usoFinal = await this.usoFinaleRepository.findOne({
       where: { idUsoFinal: id },
+      relations: [
+        'energetico',
+        'unidad',
+        'mesProceso',
+        'mesProceso.proceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
+        'transaccion',
+        'resumenTransaccion'
+      ],
     });
     if (!usoFinal) {
       throw new NotFoundException('Uso Final no encontrado');
@@ -157,12 +170,22 @@ export class UsosFinalesService {
     Object.assign(usoFinal, updateUsosFinaleDto);
 
     if (updateUsosFinaleDto.idMesProceso) {
-      const mesProceso = await this.mesProcesoRepository.findOneBy({
-        idMesProceso: updateUsosFinaleDto.idMesProceso,
+      const mesProceso = await this.mesProcesoRepository.findOne({
+        where: {
+          idMesProceso: updateUsosFinaleDto.idMesProceso,
+        },
+        relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
       });
       if (!mesProceso) {
         throw new NotFoundException('Mes Proceso no encontrado');
       }
+      // Validar que las relaciones necesarias existen
+      if (!mesProceso.proceso || !mesProceso.proceso.planta || !mesProceso.proceso.planta.inquilino) {
+        throw new NotFoundException(
+          'El MesProceso no tiene las relaciones completas (proceso, planta, inquilino)',
+        );
+      }
+      
       usoFinal.mesProceso = mesProceso;
     }
 
@@ -205,12 +228,24 @@ export class UsosFinalesService {
       }
       usoFinal.unidad = unidad;
     }
+
+
+
     const resultado = await this.usoFinaleRepository.save(usoFinal);
+    
+    
+    
     return {
       resultado,
       message: 'Uso Final Actualizado Correctamente',
     };
   }
+
+
+
+
+
+
 
   async remove(id: number) {
     const deleteUF = await this.usoFinaleRepository.delete(id);

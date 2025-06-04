@@ -22,16 +22,16 @@ export class Generacion {
   @Column({ type: 'varchar', nullable: true })
   Tipo?: string | null;
 
-  @Column()
+  @Column({ type: 'float' })
   cantidadGeneradaBruta: number;
 
-  @Column()
+  @Column({ type: 'float' })
   capacidadInstalada: number;
 
   @Column({ type: 'int', nullable: true })
   consumoEnergetico?: number | null;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   cantidadEnergiaNoAprovechada?: number | null;
 
   //relaciones

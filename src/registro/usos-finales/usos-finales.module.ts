@@ -8,6 +8,7 @@ import { CategoriaUf } from 'src/complementos/energia/categoria-uf/entities/cate
 import { TipoUf } from 'src/complementos/energia/tipo-uf/entities/tipo-uf.entity';
 import { Unidade } from 'src/complementos/energia/unidades/entities/unidade.entity';
 import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
+import { ResumenTransaccion } from '../resumen-transaccion/entities/resumen-transaccion.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MesProceso } from 'src/gestor/mes-proceso/entities/mes-proceso.entity';
       TipoUf,
       Unidade,
       MesProceso,
+      ResumenTransaccion,
     ]),
   ],
   controllers: [UsosFinalesController],
