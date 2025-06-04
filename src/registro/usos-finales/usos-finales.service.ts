@@ -29,17 +29,21 @@ export class UsosFinalesService {
     @InjectRepository(Unidade)
     private readonly unidadeRepository: Repository<Unidade>,
     @InjectRepository(ResumenTransaccion)
+    private readonly rTRepository: Repository<ResumenTransaccion>,
     private readonly resumenTransaccionService: ResumenTransaccionService,
   ) {}
 
   async create(createUsosFinaleDto: CreateUsosFinaleDto) {
     //validar mes proceso
-    const mesProceso = await this.mesProcesoRepository.findOneBy({
-      idMesProceso: createUsosFinaleDto.idMesProceso,
-    });
-    if (!mesProceso) {
-      throw new NotFoundException('Mes proceso no encontrado');
-    }
+      const mesProceso = await this.mesProcesoRepository.findOne({
+        where: {
+          idMesProceso: createUsosFinaleDto.idMesProceso,
+        },
+        relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
+      });
+      if (!mesProceso) {
+        throw new NotFoundException('Mes Proceso no encontrado');
+      }
     //validar energético
     if (createUsosFinaleDto.idEnergetico) {
       const energetico = await this.energeticoRepository.findOneBy({
@@ -86,7 +90,6 @@ export class UsosFinalesService {
     }
 
     //guardar en db resumen
-
     //guardar en db uso final
 
     const usoFinal = this.usoFinaleRepository.create({
@@ -108,6 +111,40 @@ export class UsosFinalesService {
         idTipoUF: createUsosFinaleDto.idTipoUF,
       } as TipoUf;
     }
+
+     // proceso resumen
+      //extraer tcal y unidadGeneral
+    const ejemploDatos = {
+      idEnergetico: createUsosFinaleDto.idEnergetico  ?? 0,
+      idUnidad: createUsosFinaleDto.idUnidad ??  0, 
+      cantidad: createUsosFinaleDto.cantidad ?? null, 
+      poderCalorifico: null,
+      humedad: null,
+    };
+
+      // realizar conversion a Tcal
+    const resultado2 = await conversorTcal(ejemploDatos);
+    if (!resultado2) {
+          throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
+      // asignar valores
+    await this.resumenTransaccionService.createRT({
+      idEnergetico: createUsosFinaleDto.idEnergetico,
+      idCategoriaRegistro: createUsosFinaleDto.idCategoriaUF +10, // Si aplica
+      cantidadEntrada: 0,
+      cantidadSalida: createUsosFinaleDto.cantidad,
+      idUnidad: createUsosFinaleDto.idUnidad,
+      idMesProceso: createUsosFinaleDto.idMesProceso,
+      idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+      idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+      inquilinoId: mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+      cantidadGeneral: resultado2.cantidadGeneral,
+      teraCalorias: resultado2.cantidadTcal,
+    });
+
+
+
+
 
     const resultado = await this.usoFinaleRepository.save(usoFinal);
     return {
@@ -250,7 +287,7 @@ export class UsosFinalesService {
     // asignar valores
     await this.resumenTransaccionService.updateRT(usoFinal.resumenTransaccion.idResumenTransaccion, {
       idEnergetico: updateUsosFinaleDto.idEnergetico ? updateUsosFinaleDto.idEnergetico : usoFinal.energetico.idEnergetico,
-      idCategoriaRegistro: updateUsosFinaleDto.idCategoriaUF ? updateUsosFinaleDto.idCategoriaUF : usoFinal.categoriaUF.idCategoriaUF, // Si aplica
+      idCategoriaRegistro: updateUsosFinaleDto.idCategoriaUF !== undefined ? updateUsosFinaleDto.idCategoriaUF +10 : usoFinal.categoriaUF.idCategoriaUF +10 , // Si aplica
       cantidadEntrada: 0,
       cantidadSalida: updateUsosFinaleDto.cantidad ? updateUsosFinaleDto.cantidad : usoFinal.cantidad,
       idUnidad: updateUsosFinaleDto.idUnidad ? updateUsosFinaleDto.idUnidad : usoFinal.unidad.idUnidad,
