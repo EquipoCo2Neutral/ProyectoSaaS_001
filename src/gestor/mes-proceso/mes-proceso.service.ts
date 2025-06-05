@@ -50,7 +50,7 @@ export class MesProcesoService {
   async findAllByProcesoId(idProceso: string): Promise<MesProceso[]> {
     return this.mesProcesoRepository.find({
       where: { proceso: { idProceso } },
-      relations: ['mes', 'proceso'],
+      relations: ['mes', 'proceso', 'proceso.planta'],
     });
   }
 

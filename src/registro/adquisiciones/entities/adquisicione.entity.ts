@@ -73,6 +73,7 @@ export class Adquisicione {
   @ManyToOne(() => MesProceso, (mesProceso) => mesProceso.adquisiciones, {
     nullable: false,
   })
+  @JoinColumn({ name: 'idMesProceso' })
   mesProceso: MesProceso;
 
   @OneToOne(() => ResumenTransaccion)
