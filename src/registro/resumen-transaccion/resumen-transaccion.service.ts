@@ -221,9 +221,10 @@ async getTeraCalorias(idPlanta: string, idProceso: string) {
     return this.resumenTransaccionRepo
       .createQueryBuilder('rt')
       .select('SUM(rt.teraCalorias)', 'totalteraCalorias')
-      // Agregar joins para planta y proceso
       .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
       .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      // Agregar filtro para cantidadSalida = 0
+      .andWhere('rt.cantidadSalida = 0')
       .getRawMany();
   } catch (error) {
     throw new BadRequestException('Error al obtener datos agrupados');

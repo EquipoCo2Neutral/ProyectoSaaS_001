@@ -42,11 +42,12 @@ export class AdquisicionesService {
   ) {}
 
   async create(createAdquisicioneDto: CreateAdquisicioneDto) {
+    console.time('mesProceso');
     const mesProceso = await this.mesProcesoRepository.findOne({
       where: { idMesProceso: createAdquisicioneDto.idMesProceso },
       relations: ['proceso', 'proceso.planta', 'proceso.planta.inquilino'],
     });
-
+    console.timeEnd('mesProceso');
     if (!mesProceso) {
       throw new NotFoundException('Mes Proceso no encontrado');
     }
@@ -62,13 +63,16 @@ export class AdquisicionesService {
         ? createAdquisicioneDto.porcentajeHumedad
         : null,
     };
-
+    console.time('conversorTcal');
     const resultado2 = await conversorTcal(ejemploDatos);
+    console.timeEnd('conversorTcal');
+
 
     if (!resultado2) {
       throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
+    console.time('validaciones');
     if (createAdquisicioneDto.idTransaccion) {
       const transaccion = await this.transaccioneRepository.findOneBy({
         idTransaccion: createAdquisicioneDto.idTransaccion,
@@ -105,7 +109,10 @@ export class AdquisicionesService {
         throw new NotFoundException('Unidad no encontrada');
       }
     }
+    console.timeEnd('validaciones');
 
+
+    console.time('resumenTransaccion');
     const resumenTransaccion = await this.resumenTransaccionService.createRT({
       idEnergetico: createAdquisicioneDto.idEnergetico,
       idCategoriaRegistro: createAdquisicioneDto.idTransaccion, // Si aplica
@@ -119,7 +126,9 @@ export class AdquisicionesService {
       cantidadGeneral: resultado2.cantidadGeneral,
       teraCalorias: resultado2.cantidadTcal,
     });
+    console.timeEnd('resumenTransaccion');
 
+    console.time('createAdquisicione');
     const adquisicion = this.adquisicioneRepository.create({
       resumenTransaccion: resumenTransaccion,
       mesProceso,
@@ -141,14 +150,16 @@ export class AdquisicionesService {
       porcentajeHumedad: createAdquisicioneDto.porcentajeHumedad,
       compraMercadoSpot: createAdquisicioneDto.compraMercadoSpot,
     });
-
+    console.timeEnd('createAdquisicione');
     if (createAdquisicioneDto.idPaisOrigen) {
       adquisicion.paisOrigen = {
         idPais: createAdquisicioneDto.idPaisOrigen,
       } as Pais;
     }
 
+    console.time('saveAdquisicion');
     const resultado = await this.adquisicioneRepository.save(adquisicion);
+    console.timeEnd('saveAdquisicion');
 
     return {
       message: `Adquisicion registrada correctamente desde backend ${resultado2?.cantidadTcal} and ${resultado2?.cantidadGeneral}`,
