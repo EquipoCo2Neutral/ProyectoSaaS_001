@@ -174,6 +174,46 @@ async getEnergeticosAgrupadosTotales(idPlanta: string, idProceso: string) {
   }
 }
 
+async getTeraCalorias(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .select('SUM(rt.teraCalorias)', 'totalteraCalorias')
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      // Agregar filtro para cantidadSalida = 0
+      .andWhere('rt.cantidadSalida = 0')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener datos agrupados');
+  }
+}
+
+async getEnergeticosAgrupadosEntradaSalida(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .select('e.nombreEnergetico', 'nombreEnergetico')
+      .addSelect('u.nombreUnidad', 'unidad')
+      .addSelect('SUM(rt.cantidadEntrada)', 'totalCantidadEntrada')
+      .addSelect('SUM(rt.cantidadSalida)', 'totalCantidadSalida')
+      .innerJoin('rt.energetico', 'e')
+      .innerJoin('rt.unidad', 'u')
+      // Agregar joins para planta y proceso
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      // Agrupar por los campos requeridos
+      .groupBy('e.nombreEnergetico')
+      .addGroupBy('u.nombreUnidad')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener datos agrupados');
+  }
+}
+
+
+
+
 async getEnergeticosAgrupadosEntrada(idPlanta: string, idProceso: string) {
   try {
     return this.resumenTransaccionRepo
@@ -216,20 +256,6 @@ async getEnergeticosAgrupadosSalida(idPlanta: string, idProceso: string) {
   }
 }
 
-async getTeraCalorias(idPlanta: string, idProceso: string) {
-  try {
-    return this.resumenTransaccionRepo
-      .createQueryBuilder('rt')
-      .select('SUM(rt.teraCalorias)', 'totalteraCalorias')
-      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
-      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
-      // Agregar filtro para cantidadSalida = 0
-      .andWhere('rt.cantidadSalida = 0')
-      .getRawMany();
-  } catch (error) {
-    throw new BadRequestException('Error al obtener datos agrupados');
-  }
-}
 
 
 }

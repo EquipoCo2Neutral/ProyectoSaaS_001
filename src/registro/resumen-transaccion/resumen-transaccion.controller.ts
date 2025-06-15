@@ -62,10 +62,15 @@ export class ResumenTransaccionController {
         throw new BadRequestException('Se requieren idPlanta e idProceso');
       }
       
-      return this.resumenTransaccionService.getEnergeticosAgrupadosTotales(
+      const datos = await this.resumenTransaccionService.getEnergeticosAgrupadosTotales(
         idPlanta,
         idProceso
       );
+      const total = datos.length
+      return{
+        total, 
+        datos,
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -124,6 +129,25 @@ export class ResumenTransaccionController {
       }
       
       return this.resumenTransaccionService.getTeraCalorias(
+        idPlanta,
+        idProceso
+      );
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+      @Get('energeticos/entrada-salida')
+  async getEnergeticoAgrupadosEntradaSalida(
+    @Query('idPlanta') idPlanta: string,
+    @Query('idProceso') idProceso: string
+  ) {
+    try {
+      if (!idPlanta || !idProceso) {
+        throw new BadRequestException('Se requieren idPlanta e idProceso');
+      }
+      
+      return this.resumenTransaccionService.getEnergeticosAgrupadosEntradaSalida(
         idPlanta,
         idProceso
       );
