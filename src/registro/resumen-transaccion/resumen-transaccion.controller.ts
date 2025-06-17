@@ -156,4 +156,25 @@ export class ResumenTransaccionController {
     }
   }
 
+  @Get('energeticos/conteo-id-registros')
+  async getConteoIdRegistrosDesdeResumenes(
+    @Query('idPlanta') idPlanta: string,
+    @Query('idProceso') idProceso: string
+  ) {
+    try {
+      if (!idPlanta || !idProceso) {
+        throw new BadRequestException('Se requieren idPlanta e idProceso');
+      }
+      
+      return this.resumenTransaccionService.getConteoIdRegistrosDesdeResumenes(
+        idPlanta,
+        idProceso
+      );
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+
+
 }

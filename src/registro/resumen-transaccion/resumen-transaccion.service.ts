@@ -212,6 +212,30 @@ async getEnergeticosAgrupadosEntradaSalida(idPlanta: string, idProceso: string) 
 }
 
 
+async getConteoIdRegistrosDesdeResumenes(idPlanta: string, idProceso: string) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      .innerJoin('rt.categoriaRegistro', 'cr') // relación entre resumen_transaccion y categoria_registro
+      .select('cr.idRegistro', 'idRegistro')
+      .addSelect('COUNT(*)', 'total') // contar cuántas veces aparece ese idRegistro
+      .groupBy('cr.idRegistro')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al contar idRegistro desde resumenes');
+  }
+}
+
+
+
+
+
+
+
+
+
 
 
 async getEnergeticosAgrupadosEntrada(idPlanta: string, idProceso: string) {
