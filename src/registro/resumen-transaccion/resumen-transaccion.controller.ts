@@ -51,7 +51,7 @@ export class ResumenTransaccionController {
     return this.resumenTransaccionService.removeRT(+id);
   }
 
-  // Endpoint para obtener los totales de energeticos agrupados por planta y proceso
+
   @Get('energeticos/agrupados/totales')
   async getEnergeticosAgrupados(
     @Query('idPlanta') idPlanta: string,
@@ -76,7 +76,7 @@ export class ResumenTransaccionController {
     }
   }
 
-  // Endpoint para obtener los totales de energeticos agrupados por entrada
+
 
   @Get('energeticos/agrupados/entrada')
   async getEnergeticosAgrupadosEntrada(
@@ -117,64 +117,76 @@ export class ResumenTransaccionController {
     }
   }
 
-    // Endpoint para obtener teracalorias totales
-    @Get('energeticos/teracalorias')
-  async getTeraCalorias(
-    @Query('idPlanta') idPlanta: string,
-    @Query('idProceso') idProceso: string
-  ) {
-    try {
-      if (!idPlanta || !idProceso) {
-        throw new BadRequestException('Se requieren idPlanta e idProceso');
-      }
-      
-      return this.resumenTransaccionService.getTeraCalorias(
-        idPlanta,
-        idProceso
-      );
-    } catch (error) {
-      throw new BadRequestException(error.message);
+//-------------------------------Usado para dashboard-----START
+@Get('energeticos/teracalorias')
+async getTeraCalorias(
+  @Query('idPlanta') idPlanta: string,
+  @Query('idProceso') idProceso: string
+) {
+  try {
+    if (!idPlanta || !idProceso) {
+      throw new BadRequestException('Se requieren idPlanta e idProceso');
     }
-  }
+    
+    // Convertir en arrays y limpiar valores vacíos
+    const plantas = idPlanta.split(',').filter(Boolean);
+    const procesos = idProceso.split(',').filter(Boolean);
 
-      @Get('energeticos/entrada-salida')
-  async getEnergeticoAgrupadosEntradaSalida(
-    @Query('idPlanta') idPlanta: string,
-    @Query('idProceso') idProceso: string
-  ) {
-    try {
-      if (!idPlanta || !idProceso) {
-        throw new BadRequestException('Se requieren idPlanta e idProceso');
-      }
-      
-      return this.resumenTransaccionService.getEnergeticosAgrupadosEntradaSalida(
-        idPlanta,
-        idProceso
-      );
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    return this.resumenTransaccionService.getTeraCalorias(
+      plantas,
+      procesos
+    );
+  } catch (error) {
+    throw new BadRequestException(error.message);
+  }
+}
+
+@Get('energeticos/entrada-salida')
+async getEnergeticoAgrupadosEntradaSalida(
+  @Query('idPlanta') idPlanta: string,
+  @Query('idProceso') idProceso: string
+) {
+  try {
+    if (!idPlanta || !idProceso) {
+      throw new BadRequestException('Se requieren idPlanta e idProceso');
     }
-  }
+    
+    // Convertir en arrays y limpiar valores vacíos
+    const plantas = idPlanta.split(',').filter(Boolean);
+    const procesos = idProceso.split(',').filter(Boolean);
 
-  @Get('energeticos/conteo-id-registros')
-  async getConteoIdRegistrosDesdeResumenes(
-    @Query('idPlanta') idPlanta: string,
-    @Query('idProceso') idProceso: string
-  ) {
-    try {
-      if (!idPlanta || !idProceso) {
-        throw new BadRequestException('Se requieren idPlanta e idProceso');
-      }
-      
-      return this.resumenTransaccionService.getConteoIdRegistrosDesdeResumenes(
-        idPlanta,
-        idProceso
-      );
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    return this.resumenTransaccionService.getEnergeticosAgrupadosEntradaSalida(
+      plantas,
+      procesos
+    );
+  } catch (error) {
+    throw new BadRequestException(error.message);
+  }
+}
+
+@Get('energeticos/conteo-id-registros')
+async getConteoIdRegistrosDesdeResumenes(
+  @Query('idPlanta') idPlanta: string, // Recibe string (ej: "1,2,3")
+  @Query('idProceso') idProceso: string // Recibe string (ej: "A,B,C")
+) {
+  try {
+    if (!idPlanta || !idProceso) {
+      throw new BadRequestException('Se requieren idPlanta e idProceso');
     }
-  }
 
+    // Convertir a arrays
+    const plantas = idPlanta.split(',').filter(Boolean);
+    const procesos = idProceso.split(',').filter(Boolean);
+
+    return this.resumenTransaccionService.getConteoIdRegistrosDesdeResumenes(
+      plantas,
+      procesos
+    );
+  } catch (error) {
+    throw new BadRequestException(error.message);
+  }
+}
+//-------------------------------Usado para dashboard-----END
 
 
 }

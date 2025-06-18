@@ -174,14 +174,18 @@ async getEnergeticosAgrupadosTotales(idPlanta: string, idProceso: string) {
   }
 }
 
-async getTeraCalorias(idPlanta: string, idProceso: string) {
+
+
+//-------------------------------Usado para dashboard-----START
+
+async getTeraCalorias(idPlantas: string[], idProcesos: string[]) {
   try {
     return this.resumenTransaccionRepo
       .createQueryBuilder('rt')
       .select('SUM(rt.teraCalorias)', 'totalteraCalorias')
-      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
-      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
-      // Agregar filtro para cantidadSalida = 0
+      // Actualizar joins con arrays
+      .innerJoin('rt.planta', 'p', 'p.idPlanta IN (:...idPlantas)', { idPlantas })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso IN (:...idProcesos)', { idProcesos })
       .andWhere('rt.cantidadSalida = 0')
       .getRawMany();
   } catch (error) {
@@ -189,7 +193,10 @@ async getTeraCalorias(idPlanta: string, idProceso: string) {
   }
 }
 
-async getEnergeticosAgrupadosEntradaSalida(idPlanta: string, idProceso: string) {
+async getEnergeticosAgrupadosEntradaSalida(
+  idPlantas: string[], 
+  idProcesos: string[]
+) {
   try {
     return this.resumenTransaccionRepo
       .createQueryBuilder('rt')
@@ -199,10 +206,9 @@ async getEnergeticosAgrupadosEntradaSalida(idPlanta: string, idProceso: string) 
       .addSelect('SUM(rt.cantidadSalida)', 'totalCantidadSalida')
       .innerJoin('rt.energetico', 'e')
       .innerJoin('rt.unidad', 'u')
-      // Agregar joins para planta y proceso
-      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
-      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
-      // Agrupar por los campos requeridos
+      // Actualizar joins con arrays
+      .innerJoin('rt.planta', 'p', 'p.idPlanta IN (:...idPlantas)', { idPlantas })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso IN (:...idProcesos)', { idProcesos })
       .groupBy('e.nombreEnergetico')
       .addGroupBy('u.nombreUnidad')
       .getRawMany();
@@ -212,22 +218,29 @@ async getEnergeticosAgrupadosEntradaSalida(idPlanta: string, idProceso: string) 
 }
 
 
-async getConteoIdRegistrosDesdeResumenes(idPlanta: string, idProceso: string) {
+async getConteoIdRegistrosDesdeResumenes(
+  idPlantas: string[], // Ahora recibe un array
+  idProcesos: string[] // Ahora recibe un array
+) {
   try {
     return this.resumenTransaccionRepo
       .createQueryBuilder('rt')
-      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
-      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
-      .innerJoin('rt.categoriaRegistro', 'cr') // relación entre resumen_transaccion y categoria_registro
+      .innerJoin('rt.planta', 'p', 'p.idPlanta IN (:...idPlantas)', { 
+        idPlantas // Spread operator para arrays
+      })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso IN (:...idProcesos)', { 
+        idProcesos // Spread operator para arrays
+      })
+      .innerJoin('rt.categoriaRegistro', 'cr')
       .select('cr.idRegistro', 'idRegistro')
-      .addSelect('COUNT(*)', 'total') // contar cuántas veces aparece ese idRegistro
+      .addSelect('COUNT(*)', 'total')
       .groupBy('cr.idRegistro')
       .getRawMany();
   } catch (error) {
     throw new BadRequestException('Error al contar idRegistro desde resumenes');
   }
 }
-
+//-------------------------------Usado para dashboard------END--
 
 
 
