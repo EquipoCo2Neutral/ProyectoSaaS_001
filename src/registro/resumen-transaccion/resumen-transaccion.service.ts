@@ -153,7 +153,7 @@ export class ResumenTransaccionService {
 
 
 
-async getEnergeticosAgrupadosTotales(idPlanta: string, idProceso: string) {
+async getEnergeticosAgrupadosTotales(idPlanta: string[], idProceso: string[]) {
   try {
     return this.resumenTransaccionRepo
       .createQueryBuilder('rt')
@@ -163,8 +163,8 @@ async getEnergeticosAgrupadosTotales(idPlanta: string, idProceso: string) {
       .innerJoin('rt.energetico', 'e')
       .innerJoin('rt.unidad', 'u')
       // Agregar joins para planta y proceso
-      .innerJoin('rt.planta', 'p', 'p.idPlanta = :idPlanta', { idPlanta })
-      .innerJoin('rt.proceso', 'pr', 'pr.idProceso = :idProceso', { idProceso })
+      .innerJoin('rt.planta', 'p', 'p.idPlanta IN (:...idPlanta)', { idPlanta })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso IN (:...idProceso)', { idProceso })
       // Agrupar por los campos requeridos
       .groupBy('e.nombreEnergetico')
       .addGroupBy('u.nombreUnidad')
