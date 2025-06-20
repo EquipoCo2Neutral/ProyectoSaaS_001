@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Rol } from '../rol/entities/rol.entity';
 import { Inquilino } from '../inquilino/entities/inquilino.entity';
+import { Persona } from '../persona/entities/persona.entity';
+import { Planta } from '../planta/entities/planta.entity';
 
 @Injectable()
 export class UsuarioService {
@@ -16,6 +18,10 @@ export class UsuarioService {
     private readonly rolRepository: Repository<Rol>,
     @InjectRepository(Inquilino)
     private readonly inquilinoRepository: Repository<Inquilino>,
+    @InjectRepository(Persona)
+    private readonly personaRepository: Repository<Persona>,
+    @InjectRepository(Planta)
+    private readonly plantaRepository: Repository<Planta>,
   ) {}
 
   //para hacer el login
@@ -161,8 +167,32 @@ export class UsuarioService {
   }
 
   async remove(id: string) {
+    // 1️⃣ Verificar que existe el usuario
     const usuario = await this.findOne(id);
-    await this.usuarioRepository.remove(usuario);
-    return 'El usuario ha sido eliminado';
+
+    // 2️⃣ Desasociar todas las plantas asignadas a este usuario
+    await this.plantaRepository
+      .createQueryBuilder()
+      .update()
+      .set({ usuarioId: null }) // Esto desasocia el usuario de la planta
+      .where('usuarioId = :userId', { userId: id })
+      .execute();
+
+    // 3️⃣ Eliminar persona relacionada si existe
+    const persona = await this.personaRepository.findOne({
+      where: { usuario: { usuarioId: id } },
+    });
+    if (persona) {
+      await this.personaRepository.remove(persona);
+    }
+
+    // 4️⃣ Eliminar usuario
+    const resultado = await this.usuarioRepository.remove(usuario);
+
+    return {
+      resultado,
+      message:
+        'El usuario, la persona relacionada y la desasociación de plantas fueron procesadas correctamente',
+    };
   }
 }

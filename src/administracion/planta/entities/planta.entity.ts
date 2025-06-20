@@ -6,6 +6,7 @@ import { ResumenTransaccion } from 'src/registro/resumen-transaccion/entities/re
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -29,8 +30,12 @@ export class Planta {
   @OneToMany(() => Proceso, (proceso) => proceso.planta)
   procesos: Proceso[];
 
-  @ManyToOne(() => Usuario)
+  @ManyToOne(() => Usuario, { nullable: true })
+  @JoinColumn({ name: 'usuarioId' })
   usuario: Usuario;
+
+  @Column({ nullable: true })
+  usuarioId: string | null;
 
   @ManyToOne(() => Inquilino)
   inquilino: Inquilino;

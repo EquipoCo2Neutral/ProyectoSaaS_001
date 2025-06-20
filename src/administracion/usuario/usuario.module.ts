@@ -6,9 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Rol } from '../rol/entities/rol.entity';
 import { Inquilino } from '../inquilino/entities/inquilino.entity';
+import { Persona } from '../persona/entities/persona.entity';
+import { Planta } from '../planta/entities/planta.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Usuario, Rol, Inquilino])],
+  imports: [
+    TypeOrmModule.forFeature([Usuario, Rol, Inquilino, Persona, Planta]),
+  ],
   controllers: [UsuarioController],
   providers: [UsuarioService],
   exports: [UsuarioService],

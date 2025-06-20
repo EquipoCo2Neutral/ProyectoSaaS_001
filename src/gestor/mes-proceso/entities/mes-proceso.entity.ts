@@ -95,6 +95,7 @@ export class MesProceso {
     (resumenTransaccion) => resumenTransaccion.mesProceso,
     {
       cascade: true,
+      onDelete: 'CASCADE',
     },
   )
   resumenTransaccion: ResumenTransaccion[];
