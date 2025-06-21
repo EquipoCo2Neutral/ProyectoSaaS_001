@@ -56,12 +56,13 @@ export class PlantaService {
       where: {
         inquilino: { inquilinoId },
       },
-      relations: {
-        comuna: true,
-        usuario: true,
-        inquilino: true,
-        procesos: true,
-      },
+      relations: [
+        'comuna',
+        'usuario',
+        'usuario.personas',
+        'procesos',
+        'inquilino',
+      ],
     });
 
     return plantas.map((planta) => ({
@@ -70,6 +71,7 @@ export class PlantaService {
       direccion: planta.direccion,
       estado: planta.estado,
       usuarioId: planta.usuario ? planta.usuario.usuarioId : null,
+      usuario: planta.usuario.personas,
       inquilinoId: planta.inquilino.inquilinoId,
       comunaId: planta.comuna.idComuna,
       procesos: planta.procesos.map((proceso) => ({
