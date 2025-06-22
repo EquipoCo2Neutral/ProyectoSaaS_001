@@ -10,6 +10,7 @@ import {
 import { MesProcesoService } from './mes-proceso.service';
 import { CreateMesProcesoDto } from './dto/create-mes-proceso.dto';
 import { UpdateMesProcesoDto } from './dto/update-mes-proceso.dto';
+import { MesProceso } from './entities/mes-proceso.entity';
 
 @Controller('mes-proceso')
 export class MesProcesoController {
@@ -32,7 +33,7 @@ export class MesProcesoController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.mesProcesoService.findOne(+id);
+    return this.mesProcesoService.findOne(id);
   }
 
   @Patch(':id')
@@ -57,5 +58,12 @@ export class MesProcesoController {
   @Delete('mes-anual-descartado/:idProceso')
   async eliminarRegistroAnual(@Param('idProceso') idProceso: string) {
     return this.mesProcesoService.eliminarRegistroAnual(idProceso);
+  }
+
+  @Patch(':idMesProceso/cambiar-estado')
+  async cambiarEstado(
+    @Param('idMesProceso') idMesProceso: string,
+  ): Promise<MesProceso> {
+    return this.mesProcesoService.cambiarEstado(idMesProceso);
   }
 }

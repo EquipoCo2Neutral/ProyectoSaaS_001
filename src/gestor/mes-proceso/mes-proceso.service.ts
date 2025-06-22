@@ -68,8 +68,26 @@ export class MesProcesoService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} mesProceso`;
+  async findOne(id: string) {
+    return this.mesProcesoRepository.findOne({
+      where: { idMesProceso: id },
+      relations: ['proceso', 'proceso', 'mes'],
+    });
+  }
+
+  async cambiarEstado(id: string) {
+    const mesProceso = await this.mesProcesoRepository.findOne({
+      where: { idMesProceso: id },
+    });
+
+    if (!mesProceso) {
+      throw new NotFoundException(`No existe el MesProceso con id ${id}`);
+    }
+
+    // invertir estado
+    mesProceso.estado = !mesProceso.estado;
+
+    return await this.mesProcesoRepository.save(mesProceso);
   }
 
   update(id: number, updateMesProcesoDto: UpdateMesProcesoDto) {

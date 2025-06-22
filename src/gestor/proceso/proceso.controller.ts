@@ -32,8 +32,8 @@ export class ProcesoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.procesoService.findOne(+id);
+  findOneResumen(@Param('id') id: string) {
+    return this.procesoService.findOneResumen(id);
   }
 
   @Patch(':id')
@@ -57,5 +57,10 @@ export class ProcesoController {
     @Body('estado') estado: boolean,
   ) {
     return this.procesoService.updateEstado(idProceso, estado);
+  }
+
+  @Patch(':idProceso/cambiar-estado')
+  async cambiarEstado(@Param('idProceso') idProceso: string): Promise<Proceso> {
+    return this.procesoService.cambiarEstado(idProceso);
   }
 }

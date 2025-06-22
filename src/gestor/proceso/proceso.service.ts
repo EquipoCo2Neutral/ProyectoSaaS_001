@@ -94,8 +94,40 @@ export class ProcesoService {
     return `This action returns all proceso`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} proceso`;
+  async findOneResumen(id: string) {
+    const proceso = await this.procesoRepository.findOne({
+      where: { idProceso: id },
+      relations: ['mesesProceso', 'resumenTransaccion'],
+    });
+
+    if (!proceso) {
+      throw new Error('Proceso no encontrado');
+    }
+
+    // Verificar si todos los meses tienen estado = true
+    const todosMesesCompletados = proceso.mesesProceso.every(
+      (mes) => mes.estado === true,
+    );
+
+    // Inicializar acumuladores
+    let totalEntrada = 0;
+    let totalSalida = 0;
+
+    for (const resumen of proceso.resumenTransaccion) {
+      if (resumen.cantidadEntrada > 0) {
+        totalEntrada += resumen.teraCalorias;
+      } else {
+        totalSalida += resumen.teraCalorias;
+      }
+    }
+
+    return {
+      idProceso: proceso.idProceso,
+      estado: proceso.estado,
+      todosMesesCompletados,
+      totalEntrada,
+      totalSalida,
+    };
   }
 
   update(id: number, updateProcesoDto: UpdateProcesoDto) {
@@ -125,6 +157,21 @@ export class ProcesoService {
     }
 
     proceso.estado = estado;
+    return await this.procesoRepository.save(proceso);
+  }
+
+  async cambiarEstado(id: string) {
+    const proceso = await this.procesoRepository.findOne({
+      where: { idProceso: id },
+    });
+
+    if (!proceso) {
+      throw new NotFoundException(`No existe el Proceso con id ${id}`);
+    }
+
+    // invertir estado
+    proceso.estado = !proceso.estado;
+
     return await this.procesoRepository.save(proceso);
   }
 }
