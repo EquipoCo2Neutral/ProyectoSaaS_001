@@ -35,7 +35,7 @@ export class ProcesoController {
     return this.procesoService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id/resumen')
   findOneResumen(@Param('id') id: string) {
     return this.procesoService.findOneResumen(id);
   }
