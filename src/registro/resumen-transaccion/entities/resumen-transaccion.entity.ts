@@ -35,6 +35,12 @@ export class ResumenTransaccion {
   @JoinColumn({ name: 'idUnidad' })
   unidad: Unidade;
 
+  @ManyToOne(() => Unidade, (uo) => uo.resumenTransaccion, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'idUnidadOriginal' })
+  uOriginal: Unidade;
+
   @ManyToOne(() => MesProceso, (mesProceso) => mesProceso.resumenTransaccion, {
     nullable: false,
   })

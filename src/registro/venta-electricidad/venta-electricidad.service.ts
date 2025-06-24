@@ -111,6 +111,7 @@ export class VentaElectricidadService {
       cantidadEntrada: 0,
       cantidadSalida: createVentaElectricidadDto.cantidadVendida,
       idUnidad: resultado2.unidadGeneral,
+      idUnidadOriginal: createVentaElectricidadDto.idUnidad,
       idMesProceso: createVentaElectricidadDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso,
       idPlanta: mesProceso.proceso.planta.idPlanta,
@@ -314,6 +315,9 @@ export class VentaElectricidadService {
           ? updateVentaElectricidadDto.cantidadVendida
           : ventaElectricidad.cantidadVendida,
         idUnidad: resultado2.unidadGeneral,
+        idUnidadOriginal: updateVentaElectricidadDto.idUnidad
+          ? updateVentaElectricidadDto.idUnidad
+          : ventaElectricidad.unidad.idUnidad,
         idMesProceso: updateVentaElectricidadDto.idMesProceso
           ? updateVentaElectricidadDto.idMesProceso
           : ventaElectricidad.mesProceso.idMesProceso,

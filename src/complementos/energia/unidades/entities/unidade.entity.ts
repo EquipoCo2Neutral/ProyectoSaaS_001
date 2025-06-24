@@ -76,4 +76,9 @@ export class Unidade {
     cascade: true,
   })
   resumenTransaccion: ResumenTransaccion[];
+  
+  @OneToMany(() => ResumenTransaccion, (uo) => uo.uOriginal, {
+    cascade: true,
+  })
+  resumenTransaccionOriginal: ResumenTransaccion[];
 }

@@ -46,6 +46,7 @@ export class ResumenTransaccionService {
       cantidadEntrada,
       cantidadSalida,
       idUnidad,
+      idUnidadOriginal,
       idMesProceso,
       idProceso,
       idPlanta,
@@ -58,6 +59,9 @@ export class ResumenTransaccionService {
       idEnergetico,
     });
     const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
+
+    const uOriginal = await this.unidadeRepo.findOneByOrFail({idUnidad: idUnidadOriginal});
+
     const categoriaRegistro = await this.cRegistroRepo.findOneByOrFail({
       idCategoriaRegistro,
     });
@@ -74,6 +78,7 @@ export class ResumenTransaccionService {
       cantidadEntrada,
       cantidadSalida,
       unidad,
+      uOriginal,
       mesProceso,
       proceso,
       inquilino,
@@ -103,6 +108,7 @@ export class ResumenTransaccionService {
       cantidadEntrada,
       cantidadSalida,
       idUnidad,
+      idUnidadOriginal,
       idMesProceso,
       idProceso,
       idPlanta,
@@ -119,6 +125,9 @@ export class ResumenTransaccionService {
       idEnergetico,
     });
     const unidad = await this.unidadeRepo.findOneByOrFail({ idUnidad });
+
+    const uOriginal = await this.unidadeRepo.findOneByOrFail({idUnidad: idUnidadOriginal});
+
     const categoriaRegistro = await this.cRegistroRepo.findOneByOrFail({
       idCategoriaRegistro,
     });
@@ -135,6 +144,7 @@ export class ResumenTransaccionService {
       cantidadEntrada,
       cantidadSalida,
       unidad,
+      uOriginal,
       mesProceso,
       proceso,
       planta,
@@ -244,7 +254,32 @@ async getConteoIdRegistrosDesdeResumenes(
 
 
 
-
+//--------- Para tabla resumen Transacciones ------------------START
+async getResumenTransaccionPorEnergetico(
+  idPlantas: string[],
+  idProcesos: string[]
+) {
+  try {
+    return this.resumenTransaccionRepo
+      .createQueryBuilder('rt')
+      .innerJoin('rt.planta', 'p', 'p.idPlanta IN (:...idPlantas)', { idPlantas })
+      .innerJoin('rt.proceso', 'pr', 'pr.idProceso IN (:...idProcesos)', { idProcesos })
+      .innerJoin('rt.energetico', 'e')
+      .innerJoin('rt.categoriaRegistro', 'cr')
+      .innerJoin('rt.uOriginal', 'u')
+      .select('e.nombreEnergetico', 'nombreEnergetico')
+      .addSelect('cr.nombreCategoriaRegistro', 'nombreCategoriaRegistro')
+      .addSelect('u.nombreUnidad', 'unidad')
+      .addSelect('rt.cantidadEntrada', 'totalEntrada')
+      .addSelect('rt.cantidadSalida', 'totalSalida')
+      .addSelect('p.nombre', 'Planta')
+      .addSelect('pr.año_proceso', 'Proceso')
+      .getRawMany();
+  } catch (error) {
+    throw new BadRequestException('Error al obtener resumen por energético');
+  }
+}
+//----------- Para tabla resumen Transacciones ------------------END
 
 
 

@@ -116,6 +116,7 @@ export class UsosFinalesService {
       cantidadEntrada: 0,
       cantidadSalida: createUsosFinaleDto.cantidad,
       idUnidad: resultado2.unidadGeneral,
+      idUnidadOriginal: createUsosFinaleDto.idUnidad,
       idMesProceso: createUsosFinaleDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
@@ -306,6 +307,9 @@ export class UsosFinalesService {
           ? updateUsosFinaleDto.cantidad
           : usoFinal.cantidad,
         idUnidad: resultado2.unidadGeneral,
+        idUnidadOriginal: updateUsosFinaleDto.idUnidad
+          ? updateUsosFinaleDto.idUnidad
+          : usoFinal.unidad.idUnidad,
         idMesProceso: updateUsosFinaleDto.idMesProceso
           ? updateUsosFinaleDto.idMesProceso
           : usoFinal.mesProceso.idMesProceso,
