@@ -17,6 +17,10 @@ import { Proceso } from './entities/proceso.entity';
 export class ProcesoController {
   constructor(private readonly procesoService: ProcesoService) {}
 
+  @Get(':idProceso')
+  findByProceso(@Param('idProceso') idProceso: string) {
+    return this.procesoService.findByProceso(idProceso);
+  }
   @Post()
   create(@Body() createProcesoDto: CreateProcesoDto) {
     return this.procesoService.create(createProcesoDto);

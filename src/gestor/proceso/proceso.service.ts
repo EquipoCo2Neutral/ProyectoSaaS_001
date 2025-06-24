@@ -72,6 +72,19 @@ export class ProcesoService {
     };
   }
 
+  async findByProceso(idProceso: string) {
+    const proceso = await this.procesoRepository.findOne({
+      where: { idProceso },
+      relations: [
+        'planta',
+        'planta.usuario',
+        'planta.usuario.personas',
+        'planta.inquilino',
+      ],
+    });
+    return proceso;
+  }
+
   async findByPlanta(idPlanta: string): Promise<Proceso[]> {
     const planta = await this.plantaRepository.findOne({
       where: { idPlanta },

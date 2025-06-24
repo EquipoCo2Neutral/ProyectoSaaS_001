@@ -10,11 +10,9 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 
 @Entity('planta')
-@Unique(['nombre'])
 export class Planta {
   @PrimaryGeneratedColumn('uuid')
   idPlanta: string;
@@ -37,7 +35,8 @@ export class Planta {
   @Column({ nullable: true })
   usuarioId: string | null;
 
-  @ManyToOne(() => Inquilino)
+  @ManyToOne(() => Inquilino, (inquilino) => inquilino.plantas)
+  @JoinColumn({ name: 'inquilinoId' })
   inquilino: Inquilino;
 
   @ManyToOne(() => Comuna)

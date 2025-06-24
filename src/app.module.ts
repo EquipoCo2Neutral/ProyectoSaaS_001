@@ -43,6 +43,7 @@ import { VentaEnergeticoModule } from './registro/venta-energetico/venta-energet
 
 import { ExportacionesModule } from './registro/exportaciones/exportaciones.module';
 import { ResumenTransaccionesModule } from './registro/resumen-transacciones/resumen-transacciones.module';
+import { PdfModule } from './PDF/pdf/pdf.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { ResumenTransaccionesModule } from './registro/resumen-transacciones/res
     VentaEnergeticoModule,
     ExportacionesModule,
     ResumenTransaccionesModule,
+    PdfModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -12,5 +12,6 @@ import { MesProceso } from '../mes-proceso/entities/mes-proceso.entity';
   imports: [TypeOrmModule.forFeature([Proceso, Planta, Mese, MesProceso])],
   controllers: [ProcesoController],
   providers: [ProcesoService],
+  exports: [ProcesoService],
 })
 export class ProcesoModule {}
