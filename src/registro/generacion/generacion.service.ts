@@ -127,6 +127,7 @@ export class GeneracionService {
                     ?  createGeneracionDto.consumoEnergetico ?? 0 // Convierte null/undefined a 0 
                     : 0,
       idUnidad: resultado2.unidadGeneral,
+      idUnidadOriginal: createGeneracionDto.idUnidad_CGB, // Asegúrate de que viene en el DTO
       idMesProceso: createGeneracionDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
@@ -351,6 +352,7 @@ export class GeneracionService {
                     ?  updateGeneracionDto.consumoEnergetico ?? 0 // Convierte null/undefined a 0 
                     : 0,
       idUnidad: resultado2.unidadGeneral,
+      idUnidadOriginal: updateGeneracionDto.idUnidad_CGB, // Asegúrate de que viene en el DTO
       idMesProceso: updateGeneracionDto.idMesProceso,
       idProceso: generacion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
       idPlanta: generacion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO

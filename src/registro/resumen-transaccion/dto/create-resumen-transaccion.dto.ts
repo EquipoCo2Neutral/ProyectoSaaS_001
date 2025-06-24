@@ -22,6 +22,10 @@ export class CreateResumenTransaccionDto {
   idUnidad: number;
 
   @IsNotEmpty()
+  @IsNumber()
+  idUnidadOriginal: number;
+
+  @IsNotEmpty()
   idMesProceso: string;
 
   @IsNotEmpty()

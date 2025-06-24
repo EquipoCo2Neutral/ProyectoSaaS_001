@@ -194,4 +194,36 @@ async getConteoIdRegistrosDesdeResumenes(
 //-------------------------------Usado para dashboard-----END
 
 
+
+/*Para tabla resumen Transacciones */
+@Get('energeticos/tabla-resumen-transacciones')
+async getResumenTransaccionPorEnergetico(
+  @Query('idPlanta') idPlanta: string, // Recibe string (ej: "1,2,3")
+  @Query('idProceso') idProceso: string // Recibe string (ej: "A,B,C")
+) {
+  try {
+    if (!idPlanta || !idProceso) {
+      throw new BadRequestException('Se requieren idPlanta e idProceso');
+    }
+
+    // Convertir a arrays
+    const plantas = idPlanta.split(',').filter(Boolean);
+    const procesos = idProceso.split(',').filter(Boolean);
+
+    const datos = await this.resumenTransaccionService.getResumenTransaccionPorEnergetico(
+      plantas,
+      procesos
+    );
+
+    return {
+      total: datos.length,
+      datos: datos
+    };
+  } catch (error) {
+    throw new BadRequestException(error.message);
+  }
+}
+
+
+
 }

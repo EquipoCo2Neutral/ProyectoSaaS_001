@@ -90,6 +90,7 @@ export class ExportacionesService {
       cantidadEntrada: 0,
       cantidadSalida: createExportacioneDto.cantidad,
       idUnidad: resultado2.unidadGeneral,
+      idUnidadOriginal: createExportacioneDto.idUnidad,
       idMesProceso: createExportacioneDto.idMesProceso,
       idProceso: mesProceso.proceso.idProceso,
       idPlanta: mesProceso.proceso.planta.idPlanta,
@@ -254,6 +255,9 @@ export class ExportacionesService {
           ? updateExportacioneDto.cantidad
           : exportacion.cantidad,
         idUnidad: resultado2.unidadGeneral,
+        idUnidadOriginal: updateExportacioneDto.idUnidad
+          ? updateExportacioneDto.idUnidad
+          : exportacion.unidad.idUnidad,
         idMesProceso: updateExportacioneDto.idMesProceso
           ? updateExportacioneDto.idMesProceso
           : exportacion.mesProceso.idMesProceso,

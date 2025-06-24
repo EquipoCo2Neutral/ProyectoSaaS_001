@@ -30,6 +30,7 @@ export class CreateAdquisicioneDto {
   @IsNumber()
   idUnidad: number;
 
+
   @ValidateIf((o) => o.idTransaccion === 2)
   @IsNotEmpty({ message: 'El pais origen es requerido' })
   idPaisOrigen?: number | null;
