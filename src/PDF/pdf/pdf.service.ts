@@ -333,54 +333,92 @@ export class PdfService {
 
       doc.moveDown(1);
 
-      //---------- Agregar página 4 de energéticos generales---------------------//
-
       //---------- Agregar página 4 de energéticos detallado ---------------------//
 
-      doc.addPage();
-      doc.text('', 50, 70);
+      // 1.  función reutilizable para añadir encabezados
+      const addPageHeader = (doc, isContinuation = false) => {
+        pageNumber++;
 
-      doc
-        .font('Helvetica-Bold')
-        .fontSize(14)
-        .text('Resumen de Energéticos y Movimientos Detallado', {
-          underline: false,
-        });
+        // Logo
+        doc.image(
+          join(process.cwd(), '/img/Logo1.png'),
+          doc.page.width - 100,
+          5,
+          { fit: [45, 45], align: 'center' },
+        );
 
-      doc.moveDown(1);
+        // Título planta y año
+        doc
+          .font('Helvetica-Bold')
+          .fontSize(12)
+          .text(`${proceso.planta.nombre} - ${proceso.año_proceso}`, 50, 30);
 
-      // Tabla de energéticos detallado
-      const tableEnergeticosDetallado = {
-        headers: ['Energético', 'Categoría', 'Entrada', 'Salida', 'Unidad'],
-        rows: [
-          // Fila invisible para dejar espacio arriba
+        // Línea divisoria
+        doc
+          .moveTo(50, 55)
+          .lineTo(doc.page.width - 50, 55)
+          .stroke();
 
-          ...resumenDetallado.map((item) => [
-            item.nombreEnergetico ?? 'N/D',
-            item.nombreCategoriaRegistro ?? 'N/D',
-            Number(item.totalEntrada ?? 0).toLocaleString('es-CL'),
-            Number(item.totalSalida ?? 0).toLocaleString('es-CL'),
-            item.unidad?.split(' ')[0] ?? 'N/A',
-          ]),
-        ],
+        // Título de sección
+        doc.y = 70;
+        const title = isContinuation
+          ? 'Resumen de Energéticos y Movimientos Detallado (continuación)'
+          : 'Resumen de Energéticos y Movimientos Detallado';
+
+        doc
+          .font('Helvetica-Bold')
+          .fontSize(14)
+          .text(title, { underline: false });
+
+        doc.moveDown(1);
       };
 
-      doc.table(tableEnergeticosDetallado, {
-        columnsSize: [150, 150, 70, 70, 80],
-        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
-        prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
-        width: doc.page.width - 100,
-        x: 50,
-        padding: 5,
-        columnSpacing: 5,
+      // 2. Función para generar la tabla con paginación controlada
+      const generateDetailedTable = (doc) => {
+        const rowsPerPage = 30;
+        let currentRow = 0;
+        let currentPage = 0;
 
-        // 👇 Esta es la clave
-        addPage: (data) => {
-          const { doc } = data;
-          doc.addPage();
-          doc.text('', 50, 70); // posición del cursor debajo del header
-        },
-      });
+        while (currentRow < resumenDetallado.length) {
+          if (currentPage > 0) {
+            doc.addPage();
+            doc.text('', 50, 70);
+          }
+
+          addPageHeader(doc, currentPage > 0);
+
+          const pageRows = resumenDetallado.slice(
+            currentRow,
+            currentRow + rowsPerPage,
+          );
+          const tableData = {
+            headers: ['Energético', 'Categoría', 'Entrada', 'Salida', 'Unidad'],
+            rows: pageRows.map((item) => [
+              item.nombreEnergetico ?? 'N/D',
+              item.nombreCategoriaRegistro ?? 'N/D',
+              Number(item.totalEntrada ?? 0).toLocaleString('es-CL'),
+              Number(item.totalSalida ?? 0).toLocaleString('es-CL'),
+              item.unidad?.split(' ')[0] ?? 'N/A',
+            ]),
+          };
+
+          doc.table(tableData, {
+            columnsSize: [150, 150, 70, 70, 80],
+            prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+            prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
+            width: doc.page.width - 100,
+            x: 50,
+            padding: 5,
+          });
+
+          currentRow += rowsPerPage;
+          currentPage++;
+        }
+      };
+
+      doc.addPage();
+      addPageHeader(doc);
+      generateDetailedTable(doc);
 
       // Finalizar documento
       const buffers = [];
