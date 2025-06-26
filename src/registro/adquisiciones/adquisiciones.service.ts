@@ -67,7 +67,6 @@ export class AdquisicionesService {
     const resultado2 = await conversorTcal(ejemploDatos);
     console.timeEnd('conversorTcal');
 
-
     if (!resultado2) {
       throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
@@ -110,7 +109,6 @@ export class AdquisicionesService {
       }
     }
     console.timeEnd('validaciones');
-
 
     console.time('resumenTransaccion');
     const resumenTransaccion = await this.resumenTransaccionService.createRT({

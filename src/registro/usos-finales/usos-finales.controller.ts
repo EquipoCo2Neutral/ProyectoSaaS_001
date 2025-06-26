@@ -10,7 +10,10 @@ import {
 import { UsosFinalesService } from './usos-finales.service';
 import { CreateUsosFinaleDto } from './dto/create-usos-finale.dto';
 import { UpdateUsosFinaleDto } from './dto/update-usos-finale.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.GESTOR)
 @Controller('usos-finales')
 export class UsosFinalesController {
   constructor(private readonly usosFinalesService: UsosFinalesService) {}

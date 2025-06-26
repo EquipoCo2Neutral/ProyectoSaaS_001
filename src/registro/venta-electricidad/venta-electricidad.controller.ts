@@ -1,11 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { VentaElectricidadService } from './venta-electricidad.service';
 import { CreateVentaElectricidadDto } from './dto/create-venta-electricidad.dto';
 import { UpdateVentaElectricidadDto } from './dto/update-venta-electricidad.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.GESTOR)
 @Controller('venta-electricidad')
 export class VentaElectricidadController {
-  constructor(private readonly ventaElectricidadService: VentaElectricidadService) {}
+  constructor(
+    private readonly ventaElectricidadService: VentaElectricidadService,
+  ) {}
 
   @Post()
   create(@Body() createVentaElectricidadDto: CreateVentaElectricidadDto) {
@@ -23,8 +36,14 @@ export class VentaElectricidadController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVentaElectricidadDto: UpdateVentaElectricidadDto) {
-    return this.ventaElectricidadService.update(+id, updateVentaElectricidadDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateVentaElectricidadDto: UpdateVentaElectricidadDto,
+  ) {
+    return this.ventaElectricidadService.update(
+      +id,
+      updateVentaElectricidadDto,
+    );
   }
 
   @Delete(':id')

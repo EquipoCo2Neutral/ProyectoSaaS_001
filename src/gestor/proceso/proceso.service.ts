@@ -77,6 +77,8 @@ export class ProcesoService {
       where: { idProceso },
       relations: [
         'planta',
+        'planta.comuna',
+        'planta.comuna.region',
         'planta.usuario',
         'planta.usuario.personas',
         'planta.inquilino',

@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { GeneracionService } from './generacion.service';
 import { CreateGeneracionDto } from './dto/create-generacion.dto';
 import { UpdateGeneracionDto } from './dto/update-generacion.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.GESTOR)
 @Controller('generacion')
 export class GeneracionController {
   constructor(private readonly generacionService: GeneracionService) {}
@@ -23,7 +34,10 @@ export class GeneracionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGeneracionDto: UpdateGeneracionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateGeneracionDto: UpdateGeneracionDto,
+  ) {
     return this.generacionService.update(+id, updateGeneracionDto);
   }
 

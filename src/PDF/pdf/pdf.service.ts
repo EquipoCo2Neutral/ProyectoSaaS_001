@@ -28,6 +28,38 @@ export class PdfService {
         [proceso.planta.idPlanta],
         [idProceso],
       );
+    //obtener datos de teracalorias totales
+    const teraCalorias = await this.resumenTransaccionService.getTeraCalorias(
+      [proceso.planta.idPlanta],
+      [idProceso],
+    );
+    //obtener todos los movimientos de energéticos
+
+    const movimientos =
+      await this.resumenTransaccionService.getResumenTransaccionPorEnergetico(
+        [proceso.planta.idPlanta],
+        [idProceso],
+      );
+
+    //obtener la cantidad de energéticos
+
+    const energeticos =
+      await this.resumenTransaccionService.getEnergeticosAgrupadosTotales(
+        [proceso.planta.idPlanta],
+        [idProceso],
+      );
+
+    const energeticosSalidaYEntrada =
+      await this.resumenTransaccionService.getEnergeticosAgrupadosEntradaSalida(
+        [proceso.planta.idPlanta],
+        [idProceso],
+      );
+
+    const resumenDetallado =
+      await this.resumenTransaccionService.getResumenTransaccionPorEnergetico(
+        [proceso.planta.idPlanta],
+        [idProceso],
+      );
 
     const pdfBuffer: Buffer = await new Promise((resolve) => {
       const doc = new PDFDocument({
@@ -54,7 +86,7 @@ export class PdfService {
           doc
             .font('Helvetica-Bold')
             .fontSize(12)
-            .text(`${proceso.planta.nombre} - ${proceso.año_proceso}`, 50, 20);
+            .text(`${proceso.planta.nombre} - ${proceso.año_proceso}`, 50, 30);
 
           // Línea divisoria
           doc
@@ -79,7 +111,7 @@ export class PdfService {
         }
       });
 
-      // Agregar página de portada
+      //---------- Agregar página 1 de portada---------------------//
       doc.addPage();
 
       // Logo centrado
@@ -128,24 +160,21 @@ export class PdfService {
         .font('Helvetica')
         .fontSize(14)
         .text(`Emitido el ${fechaFormateada}`, { align: 'center' });
+      doc.moveDown();
+
+      //---------- Agregar página 2 de información---------------------//
+
+      doc.addPage();
+      doc.text('', 50, 70);
 
       // Página de resumen energético
-      doc.addPage();
-
-      // Título de sección
-      doc
-        .font('Helvetica-Bold')
-        .fontSize(18)
-        .text('Resumen de Registros Energéticos', { align: 'center' });
-
-      doc.moveDown(1);
-
       // Descripción
+      doc.moveDown(1);
       doc
         .font('Helvetica')
         .fontSize(12)
         .text(
-          'Este documento representa un resumen de todas las actividades energéticas de la empresa en el periodo seleccionado.',
+          'Este documento representa un resumen de todas las actividades energéticas de la empresa en el periodo y planta seleccionado.',
           {
             align: 'justify',
             lineGap: 5,
@@ -154,11 +183,44 @@ export class PdfService {
 
       doc.moveDown(2);
 
-      // Subtítulo
+      // Tabla N°1
       doc
         .font('Helvetica-Bold')
         .fontSize(14)
-        .text('Resumen de Registros', { underline: true });
+        .text('Información de la planta', { underline: false });
+
+      doc.moveDown(1);
+
+      const table2 = {
+        headers: ['categoria', ''],
+        rows: [
+          ['Empresa', proceso.planta.inquilino.nombreInquilino],
+          ['Nombre Planta', proceso.planta.nombre],
+          ['Región', proceso.planta.comuna.region.nombre],
+          ['Comuna', proceso.planta.comuna.nombre],
+          ['Dirección', proceso.planta.direccion],
+          [
+            'Gestor Asignado',
+            proceso.planta.usuario.personas[0].nombre +
+              ' ' +
+              proceso.planta.usuario.personas[0].primerApellido,
+          ],
+        ],
+      };
+
+      doc.table(table2, {
+        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+        prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
+        width: doc.page.width - 100,
+        x: 50,
+      });
+
+      doc.moveDown(1);
+      //Tabla N°2
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(14)
+        .text('Resumen de Movimientos', { underline: false });
 
       doc.moveDown(1);
 
@@ -172,7 +234,7 @@ export class PdfService {
           },
         );
 
-      doc.moveDown(2);
+      doc.moveDown(1);
 
       // Mapear los tipos de registro
       const tiposRegistro = {
@@ -205,6 +267,119 @@ export class PdfService {
         prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
         width: doc.page.width - 100,
         x: 50,
+      });
+
+      //Tabla N°3
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(14)
+        .text('Resumen General', { underline: false });
+
+      doc.moveDown(1);
+
+      const table3 = {
+        headers: ['', 'Cantidad'],
+        rows: [
+          ['Cantidad de Movimientos', movimientos.length ?? 'No disponible'],
+          ['Cantidad de Energéticos', energeticos.length ?? 'No disponible'],
+          [
+            'Teracalorias',
+            teraCalorias[0]?.totalteraCalorias ?? 'No disponible',
+          ],
+        ],
+      };
+
+      doc.table(table3, {
+        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+        prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
+        width: doc.page.width - 100,
+        x: 50,
+      });
+
+      doc.moveDown(1);
+
+      //---------- Agregar página 3 de energéticos generales---------------------//
+
+      doc.addPage();
+      doc.text('', 50, 70);
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(14)
+        .text('Resumen de Energéticos General', { underline: false });
+
+      doc.moveDown(1);
+
+      // Construir tabla de energéticos generales
+
+      const tableEnergeticos = {
+        headers: ['Energético', 'Entrada', 'Salida', 'Unidad'],
+        rows: energeticosSalidaYEntrada.map((item) => [
+          item.nombreEnergetico,
+          item.totalCantidadEntrada,
+          item.totalCantidadSalida,
+          item.unidad?.split(' ')[0] ?? 'N/A',
+        ]),
+      };
+
+      doc.table(tableEnergeticos, {
+        columnsSize: [200, 150, 75, 75],
+
+        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+        prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
+        width: doc.page.width - 100,
+        x: 50,
+      });
+
+      doc.moveDown(1);
+
+      //---------- Agregar página 4 de energéticos generales---------------------//
+
+      //---------- Agregar página 4 de energéticos detallado ---------------------//
+
+      doc.addPage();
+      doc.text('', 50, 70);
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(14)
+        .text('Resumen de Energéticos y Movimientos Detallado', {
+          underline: false,
+        });
+
+      doc.moveDown(1);
+
+      // Tabla de energéticos detallado
+      const tableEnergeticosDetallado = {
+        headers: ['Energético', 'Categoría', 'Entrada', 'Salida', 'Unidad'],
+        rows: [
+          // Fila invisible para dejar espacio arriba
+
+          ...resumenDetallado.map((item) => [
+            item.nombreEnergetico ?? 'N/D',
+            item.nombreCategoriaRegistro ?? 'N/D',
+            Number(item.totalEntrada ?? 0).toLocaleString('es-CL'),
+            Number(item.totalSalida ?? 0).toLocaleString('es-CL'),
+            item.unidad?.split(' ')[0] ?? 'N/A',
+          ]),
+        ],
+      };
+
+      doc.table(tableEnergeticosDetallado, {
+        columnsSize: [150, 150, 70, 70, 80],
+        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+        prepareRow: (row, i) => doc.font('Helvetica').fontSize(10),
+        width: doc.page.width - 100,
+        x: 50,
+        padding: 5,
+        columnSpacing: 5,
+
+        // 👇 Esta es la clave
+        addPage: (data) => {
+          const { doc } = data;
+          doc.addPage();
+          doc.text('', 50, 70); // posición del cursor debajo del header
+        },
       });
 
       // Finalizar documento

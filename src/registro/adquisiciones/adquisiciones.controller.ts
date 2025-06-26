@@ -10,7 +10,10 @@ import {
 import { AdquisicionesService } from './adquisiciones.service';
 import { CreateAdquisicioneDto } from './dto/create-adquisicione.dto';
 import { UpdateAdquisicioneDto } from './dto/update-adquisicione.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.GESTOR)
 @Controller('adquisiciones')
 export class AdquisicionesController {
   constructor(private readonly adquisicionesService: AdquisicionesService) {}

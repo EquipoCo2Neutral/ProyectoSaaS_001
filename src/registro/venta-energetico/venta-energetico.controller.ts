@@ -1,11 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { VentaEnergeticoService } from './venta-energetico.service';
 import { CreateVentaEnergeticoDto } from './dto/create-venta-energetico.dto';
 import { UpdateVentaEnergeticoDto } from './dto/update-venta-energetico.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.GESTOR)
 @Controller('venta-energetico')
 export class VentaEnergeticoController {
-  constructor(private readonly ventaEnergeticoService: VentaEnergeticoService) {}
+  constructor(
+    private readonly ventaEnergeticoService: VentaEnergeticoService,
+  ) {}
 
   @Post()
   create(@Body() createVentaEnergeticoDto: CreateVentaEnergeticoDto) {
@@ -23,7 +36,10 @@ export class VentaEnergeticoController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVentaEnergeticoDto: UpdateVentaEnergeticoDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateVentaEnergeticoDto: UpdateVentaEnergeticoDto,
+  ) {
     return this.ventaEnergeticoService.update(+id, updateVentaEnergeticoDto);
   }
 
