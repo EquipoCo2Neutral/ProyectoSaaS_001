@@ -215,12 +215,7 @@ export class PlantaService {
 
     for (const proceso of planta.procesos) {
       for (const mes of proceso.mesesProceso) {
-        // 👇 PRIMERO borra resumenTransaccion que depende de mesProceso
-        await this.resumenTransaccionRepository.delete({
-          mesProceso: { idMesProceso: mes.idMesProceso },
-        });
-
-        // 👇 Luego borra registros energéticos del mes
+        //1. Elimina primero registros
         await this.adquisicionRepository.delete({
           mesProceso: { idMesProceso: mes.idMesProceso },
         });
@@ -243,34 +238,39 @@ export class PlantaService {
           mesProceso: { idMesProceso: mes.idMesProceso },
         });
 
-        // 👇 Finalmente borra el mes
+        //2. Luego borra los resumenTransaccion relacionados al mesProceso
+        await this.resumenTransaccionRepository.delete({
+          mesProceso: { idMesProceso: mes.idMesProceso },
+        });
+
+        //3. Finalmente borra el mesProceso
         await this.mesProcesoRepository.delete({
           idMesProceso: mes.idMesProceso,
         });
       }
 
-      // 👇 Luego borra resumenTransaccion directamente relacionado al proceso
+      //4.Borra resumenTransaccion relacionados directamente al proceso
       await this.resumenTransaccionRepository.delete({
         proceso: { idProceso: proceso.idProceso },
       });
 
-      // 👇 Luego borra el proceso
+      //5. Borra el proceso
       await this.procesoRepository.delete({ idProceso: proceso.idProceso });
     }
 
-    // 👇 Finalmente borra resumenTransaccion relacionados directamente con la planta (si existiera alguno)
+    //6. Borra resumenTransaccion relacionados directamente con la planta
     await this.resumenTransaccionRepository.delete({
       planta: { idPlanta: planta.idPlanta },
     });
 
-    // 👇 Y finalmente borra la planta
+    // 7. Borra la planta
     const resultado = await this.plantaRepository.delete({
       idPlanta: planta.idPlanta,
     });
 
     return {
       resultado,
-      message: "'La planta y todos sus datos asociados han sido eliminados'",
+      message: 'La planta y todos sus datos asociados han sido eliminados',
     };
   }
 

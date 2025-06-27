@@ -21,7 +21,7 @@ export class VentaElectricidad {
   //desde el front
   @Column({ nullable: false })
   idDestinoVenta: number;
-  @Column({ nullable: true })
+  @Column({ type: 'boolean', nullable: true })
   ventaMercadoSpot: boolean;
   @Column('float', { nullable: false })
   cantidadVendida: number;

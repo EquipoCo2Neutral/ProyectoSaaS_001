@@ -13,9 +13,8 @@ export class CreateVentaElectricidadDto {
   idDestinoVenta: number;
 
   @ValidateIf((o) => o.idDestinoVenta === 1)
-  @IsNotEmpty()
   @IsBoolean()
-  ventaMercadoSpot: boolean;
+  ventaMercadoSpot?: boolean;
 
   @ValidateIf((o) => o.idDestinoVenta === 4)
   empresaDestino: string;
