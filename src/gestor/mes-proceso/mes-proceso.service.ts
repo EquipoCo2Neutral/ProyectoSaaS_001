@@ -71,7 +71,7 @@ export class MesProcesoService {
   async findOne(id: string) {
     return this.mesProcesoRepository.findOne({
       where: { idMesProceso: id },
-      relations: ['proceso', 'proceso', 'mes'],
+      relations: ['proceso', 'proceso', 'mes', 'proceso.planta'],
     });
   }
 
