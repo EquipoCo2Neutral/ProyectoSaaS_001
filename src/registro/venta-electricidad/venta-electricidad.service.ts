@@ -166,9 +166,18 @@ export class VentaElectricidadService {
     return ventaElectricidad;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, inquilinoId: string) {
     const ventaElectricidad = await this.ventaElectricidadRepository.findOne({
-      where: { idVentaElectricidad: id },
+      where: {
+        idVentaElectricidad: id,
+        mesProceso: {
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
       relations: {
         mesProceso: true,
         unidad: true,
@@ -178,7 +187,9 @@ export class VentaElectricidadService {
       },
     });
     if (!ventaElectricidad) {
-      throw new NotFoundException('Venta de electricidad no encontrada');
+      throw new NotFoundException(
+        `Venta de electricidad con ID ${id} no encontrada o no pertenece al inquilinos`,
+      );
     }
     return ventaElectricidad;
   }

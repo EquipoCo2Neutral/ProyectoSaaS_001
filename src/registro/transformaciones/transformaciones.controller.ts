@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { TransformacionesService } from './transformaciones.service';
 import { CreateTransformacioneDto } from './dto/create-transformacione.dto';
@@ -31,8 +32,9 @@ export class TransformacionesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transformacionesService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.transformacionesService.findOne(+id, inquilinoId);
   }
 
   @Patch(':id')

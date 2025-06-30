@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { UsosFinalesService } from './usos-finales.service';
 import { CreateUsosFinaleDto } from './dto/create-usos-finale.dto';
@@ -29,8 +30,9 @@ export class UsosFinalesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usosFinalesService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.usosFinalesService.findOne(+id, inquilinoId);
   }
 
   @Patch(':id')

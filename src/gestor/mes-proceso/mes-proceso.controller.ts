@@ -6,12 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { MesProcesoService } from './mes-proceso.service';
 import { CreateMesProcesoDto } from './dto/create-mes-proceso.dto';
 import { UpdateMesProcesoDto } from './dto/update-mes-proceso.dto';
 import { MesProceso } from './entities/mes-proceso.entity';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
+@Auth(Role.GESTOR)
 @Controller('mes-proceso')
 export class MesProcesoController {
   constructor(private readonly mesProcesoService: MesProcesoService) {}
@@ -32,8 +36,9 @@ export class MesProcesoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mesProcesoService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.mesProcesoService.findOne(id, inquilinoId);
   }
 
   @Patch(':id')

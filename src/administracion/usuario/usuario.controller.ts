@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
@@ -15,7 +16,6 @@ import { GetUsuarioDto } from './dto/get-usuario.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/rol.enum';
 
-//@Auth(Role.ADMIN_SAAS)
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
@@ -24,13 +24,21 @@ export class UsuarioController {
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
   }
+  @Auth(Role.ADMIN_INQUILINO)
+  // Sin rolId
+  @Get(':inquilinoId')
+  findAll(@Param('inquilinoId') inquilinoId: string) {
+    return this.usuarioService.findAll(0, inquilinoId);
+  }
 
-  @Get()
-  findAll(@Query() query: GetUsuarioDto) {
-    const rol = query.rolId ? query.rolId : null;
-    const inquilino = query.inquilinoId ? query.inquilinoId : null;
-
-    return this.usuarioService.findAll(rol, inquilino);
+  @Auth(Role.ADMIN_INQUILINO)
+  // Con rolId
+  @Get(':inquilinoId/:rolId')
+  findAllConRol(
+    @Param('inquilinoId') inquilinoId: string,
+    @Param('rolId', ParseIntPipe) rolId: number,
+  ) {
+    return this.usuarioService.findAll(rolId, inquilinoId);
   }
 
   @Get(':id')

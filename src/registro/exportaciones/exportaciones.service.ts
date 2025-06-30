@@ -130,9 +130,18 @@ export class ExportacionesService {
     return exportaciones;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, inquilinoId: string) {
     const exportacion = await this.exportacionRepository.findOne({
-      where: { idExportacion: id },
+      where: {
+        idExportacion: id,
+        mesProceso: {
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
       relations: {
         mesProceso: true,
         energetico: true,
@@ -141,7 +150,9 @@ export class ExportacionesService {
       },
     });
     if (!exportacion) {
-      throw new NotFoundException('Exportacion no encontrada');
+      throw new NotFoundException(
+        `Exportacion con ID ${id} no encontrada o no pertenece al inquilino`,
+      );
     }
     return exportacion;
   }

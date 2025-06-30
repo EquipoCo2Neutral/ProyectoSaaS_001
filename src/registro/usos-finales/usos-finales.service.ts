@@ -93,7 +93,6 @@ export class UsosFinalesService {
       }
     }
 
-
     // proceso resumen
     //extraer tcal y unidadGeneral
     const ejemploDatos = {
@@ -124,7 +123,6 @@ export class UsosFinalesService {
       cantidadGeneral: resultado2.cantidadGeneral,
       teraCalorias: resultado2.cantidadTcal,
     });
-
 
     const usoFinal = this.usoFinaleRepository.create({
       resumenTransaccion: resumenTransaccion,
@@ -170,9 +168,18 @@ export class UsosFinalesService {
     return usoFinal;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, inquilinoId: string) {
     const usoFinal = await this.usoFinaleRepository.findOne({
-      where: { idUsoFinal: id },
+      where: {
+        idUsoFinal: id,
+        mesProceso: {
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
 
       relations: [
         'mesProceso',
@@ -183,7 +190,9 @@ export class UsosFinalesService {
       ],
     });
     if (!usoFinal) {
-      throw new NotFoundException('Uso Final no encontrado');
+      throw new NotFoundException(
+        `Uso Final con ID ${id} no encontrada o no pertenece al inquilino`,
+      );
     }
 
     return usoFinal;

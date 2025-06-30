@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { ExportacionesService } from './exportaciones.service';
 import { CreateExportacioneDto } from './dto/create-exportacione.dto';
@@ -29,8 +30,9 @@ export class ExportacionesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.exportacionesService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.exportacionesService.findOne(+id, inquilinoId);
   }
 
   @Patch(':id')

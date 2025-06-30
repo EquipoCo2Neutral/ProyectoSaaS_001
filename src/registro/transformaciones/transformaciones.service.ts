@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTransformacioneDto } from './dto/create-transformacione.dto';
 import { UpdateTransformacioneDto } from './dto/update-transformacione.dto';
 import { Transformacione } from './entities/transformacione.entity';
@@ -83,7 +87,7 @@ export class TransformacionesService {
       throw new BadRequestException('No se pudo calcular la conversión a Tcal');
     }
 
-        // asignar valores
+    // asignar valores
     const resumenTransaccion = await this.resumenTransaccionService.createRT({
       idEnergetico: createTransformacioneDto.idEnergetico,
       idCategoriaRegistro: 10, // Si aplica
@@ -131,11 +135,35 @@ export class TransformacionesService {
     return transformacion;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, inquilinoId: string) {
     const transformacion = await this.transformacionRepository.findOne({
-      where: { idTransformacion: id },
-      relations: ['mesProceso','mesProceso.proceso','mesProceso.proceso.planta', 'mesProceso.proceso.planta.inquilino', 'energetico', 'unidad', 'energeticoProducido','resumenTransaccion'],
+      where: {
+        idTransformacion: id,
+        mesProceso: {
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
+      relations: [
+        'mesProceso',
+        'mesProceso.proceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
+        'energetico',
+        'unidad',
+        'energeticoProducido',
+        'resumenTransaccion',
+      ],
     });
+
+    if (!transformacion) {
+      throw new NotFoundException(
+        `transformación con ID ${id} no encontrada o no pertenece al inquilino`,
+      );
+    }
     return transformacion;
   }
 
@@ -201,7 +229,6 @@ export class TransformacionesService {
       transformacion.unidad = unidad;
     }
 
-
     // proceso resumen
     //extraer tcal y unidadGeneral
     const ejemploDatos = {
@@ -209,8 +236,12 @@ export class TransformacionesService {
         updateTransformacioneDto.idEnergetico ??
         transformacion.energetico.idEnergetico ??
         0,
-      idUnidad: updateTransformacioneDto.idUnidad ?? transformacion.unidad.idUnidad ?? 0,
-      cantidad: updateTransformacioneDto.cantidad ?? transformacion.cantidad ?? null,
+      idUnidad:
+        updateTransformacioneDto.idUnidad ??
+        transformacion.unidad.idUnidad ??
+        0,
+      cantidad:
+        updateTransformacioneDto.cantidad ?? transformacion.cantidad ?? null,
       poderCalorifico: null,
       humedad: null,
     };
@@ -228,7 +259,7 @@ export class TransformacionesService {
         idEnergetico: updateTransformacioneDto.idEnergetico
           ? updateTransformacioneDto.idEnergetico
           : transformacion.energetico.idEnergetico,
-        idCategoriaRegistro:10, // Si aplica
+        idCategoriaRegistro: 10, // Si aplica
         cantidadEntrada: 0,
         cantidadSalida: updateTransformacioneDto.cantidad
           ? updateTransformacioneDto.cantidad
@@ -242,7 +273,8 @@ export class TransformacionesService {
           : transformacion.mesProceso.idMesProceso,
         idProceso: transformacion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
         idPlanta: transformacion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
-        inquilinoId: transformacion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+        inquilinoId:
+          transformacion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
         cantidadGeneral: resultado2.cantidadGeneral,
         teraCalorias: resultado2.cantidadTcal,
       },

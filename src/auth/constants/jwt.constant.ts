@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 export const jwtConstants = {
-  secret: 'PalabraSecretaCAMBIAR_AGREGAR_A_ENV',
+  secret: process.env.JWT_SECRET,
 };

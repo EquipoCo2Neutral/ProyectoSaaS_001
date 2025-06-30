@@ -166,31 +166,57 @@ export class AdquisicionesService {
     };
   }
 
-  async findAll(id: string): Promise<Adquisicione[]> {
+  async findAll(
+    idMesProceso: string,
+    inquilinoId: string,
+  ): Promise<Adquisicione[]> {
     const adquisiciones = await this.adquisicioneRepository.find({
-      where: { mesProceso: { idMesProceso: id } },
+      where: {
+        mesProceso: {
+          idMesProceso,
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
       relations: [
         'mesProceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
         'transaccion',
         'grupoEnergetico',
         'energetico',
         'unidad',
       ],
     });
+
     if (!adquisiciones || adquisiciones.length === 0) {
       throw new NotFoundException(
-        `No se encontraron adquisiciones para el mes de proceso con ID ${id}`,
+        `No se encontraron adquisiciones para el mes de proceso con ID ${idMesProceso}`,
       );
     }
 
     return adquisiciones;
   }
 
-  async findOne(id: number): Promise<Adquisicione> {
+  async findOne(id: number, inquilinoId: string): Promise<Adquisicione> {
     const adquisicion = await this.adquisicioneRepository.findOne({
-      where: { idAdquisicion: id },
+      where: {
+        idAdquisicion: id,
+        mesProceso: {
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
       relations: [
         'mesProceso',
+        'mesProceso.proceso.planta',
+        'mesProceso.proceso.planta.inquilino',
         'transaccion',
         'grupoEnergetico',
         'energetico',
@@ -200,7 +226,9 @@ export class AdquisicionesService {
     });
 
     if (!adquisicion) {
-      throw new NotFoundException(`Adquisición con ID ${id} no encontrada`);
+      throw new NotFoundException(
+        `Adquisición con ID ${id} no encontrada o no pertenece al inquilino`,
+      );
     }
 
     return adquisicion;

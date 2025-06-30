@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMesProcesoDto } from './dto/create-mes-proceso.dto';
 import { UpdateMesProcesoDto } from './dto/update-mes-proceso.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -68,11 +72,35 @@ export class MesProcesoService {
     });
   }
 
-  async findOne(id: string) {
-    return this.mesProcesoRepository.findOne({
-      where: { idMesProceso: id },
-      relations: ['proceso', 'proceso', 'mes', 'proceso.planta'],
+  async findOne(id: string, inquilinoId: string) {
+    const mesProceso = await this.mesProcesoRepository.findOne({
+      where: {
+        idMesProceso: id,
+        proceso: {
+          planta: {
+            inquilino: { inquilinoId: inquilinoId },
+          },
+        },
+      },
+      relations: [
+        'proceso',
+        'proceso',
+        'mes',
+        'proceso.planta',
+        'proceso.planta.inquilino',
+      ],
     });
+
+    if (!mesProceso) {
+      throw new NotFoundException('MesProceso no encontrado');
+    }
+
+    // Si quieres distinguir 404 vs 403:
+    if (mesProceso.proceso.planta.inquilino.inquilinoId !== inquilinoId) {
+      throw new ForbiddenException('No tienes acceso a este recurso');
+    }
+
+    return mesProceso;
   }
 
   async cambiarEstado(id: string) {

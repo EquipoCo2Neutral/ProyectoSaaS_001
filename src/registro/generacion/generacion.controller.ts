@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { GeneracionService } from './generacion.service';
 import { CreateGeneracionDto } from './dto/create-generacion.dto';
@@ -29,8 +30,9 @@ export class GeneracionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.generacionService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.generacionService.findOne(+id, inquilinoId);
   }
 
   @Patch(':id')

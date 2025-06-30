@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { VentaElectricidadService } from './venta-electricidad.service';
 import { CreateVentaElectricidadDto } from './dto/create-venta-electricidad.dto';
@@ -31,8 +32,9 @@ export class VentaElectricidadController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ventaElectricidadService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.ventaElectricidadService.findOne(+id, inquilinoId);
   }
 
   @Patch(':id')

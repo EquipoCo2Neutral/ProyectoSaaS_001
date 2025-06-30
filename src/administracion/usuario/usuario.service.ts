@@ -73,7 +73,7 @@ export class UsuarioService {
   //  deban mostrar los adminstradores de ese inquilino; aca podemos obtener los usuariosId
   //  para buscar en tabla persona los datos de los usuarios con rol admin y mostrarlos)
 
-  async findAll(rolId: number | null, inquilinoId: string | null) {
+  async findAll(rolId: number, inquilinoId: string) {
     const options: FindManyOptions<Usuario> = {
       relations: {
         rol: true,

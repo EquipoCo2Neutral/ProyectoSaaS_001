@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGeneracionDto } from './dto/create-generacion.dto';
 import { UpdateGeneracionDto } from './dto/update-generacion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -78,54 +82,57 @@ export class GeneracionService {
       }
     }
 
-        // proceso resumen
-        //extraer tcal y unidadGeneral
+    // proceso resumen
+    //extraer tcal y unidadGeneral
     // 1. Definir condición para tecnologías 1,2,3,5
-    const isTecnologiaStandard = [1, 2, 3, 5].includes(createGeneracionDto.idTecnologia);
+    const isTecnologiaStandard = [1, 2, 3, 5].includes(
+      createGeneracionDto.idTecnologia,
+    );
 
     const ejemploDatos = {
-      idEnergetico: isTecnologiaStandard 
-        ? 43 
-        : createGeneracionDto.idTecnologia === 4 
-          ? createGeneracionDto.idEnergetico ?? 0  // Convierte null/undefined a 0
+      idEnergetico: isTecnologiaStandard
+        ? 43
+        : createGeneracionDto.idTecnologia === 4
+          ? (createGeneracionDto.idEnergetico ?? 0) // Convierte null/undefined a 0
           : 0,
-      
-      idUnidad: isTecnologiaStandard 
-        ? createGeneracionDto.idUnidad_CGB 
-        : createGeneracionDto.idTecnologia === 4 
-          ? createGeneracionDto.idUnidad_Ce ?? 0
+
+      idUnidad: isTecnologiaStandard
+        ? createGeneracionDto.idUnidad_CGB
+        : createGeneracionDto.idTecnologia === 4
+          ? (createGeneracionDto.idUnidad_Ce ?? 0)
           : 0,
-      
-      cantidad: isTecnologiaStandard 
-        ? createGeneracionDto.cantidadGeneradaBruta ?? 0  // Convierte null/undefined a 0
-        : createGeneracionDto.idTecnologia === 4 
-          ? createGeneracionDto.consumoEnergetico ?? 0  // Convierte null/undefined a 0
+
+      cantidad: isTecnologiaStandard
+        ? (createGeneracionDto.cantidadGeneradaBruta ?? 0) // Convierte null/undefined a 0
+        : createGeneracionDto.idTecnologia === 4
+          ? (createGeneracionDto.consumoEnergetico ?? 0) // Convierte null/undefined a 0
           : 0,
-      
-      poderCalorifico: 0,  // Usa número en vez de null
-      humedad: 0,         // Usa número en vez de null
+
+      poderCalorifico: 0, // Usa número en vez de null
+      humedad: 0, // Usa número en vez de null
     };
-    
+
     // realizar conversion a Tcal
     const resultado2 = await conversorTcal(ejemploDatos);
-      if (!resultado2) {
-        throw new BadRequestException('No se pudo calcular la conversión a Tcal');
-      }
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
 
     // asignar valores
     const resumenTransaccion = await this.resumenTransaccionService.createRT({
-      idEnergetico: isTecnologiaStandard 
-                    ? 43 
-                    : createGeneracionDto.idTecnologia === 4 
-                      ? createGeneracionDto.idEnergetico ?? 0  // Convierte null/undefined a 0
-                      : 0,
-      idCategoriaRegistro: createGeneracionDto.idTecnologia +4 , // Si aplica
-      cantidadEntrada: isTecnologiaStandard 
-                    ? createGeneracionDto.cantidadGeneradaBruta
-                    : 0,
-      cantidadSalida: createGeneracionDto.idTecnologia === 4 
-                    ?  createGeneracionDto.consumoEnergetico ?? 0 // Convierte null/undefined a 0 
-                    : 0,
+      idEnergetico: isTecnologiaStandard
+        ? 43
+        : createGeneracionDto.idTecnologia === 4
+          ? (createGeneracionDto.idEnergetico ?? 0) // Convierte null/undefined a 0
+          : 0,
+      idCategoriaRegistro: createGeneracionDto.idTecnologia + 4, // Si aplica
+      cantidadEntrada: isTecnologiaStandard
+        ? createGeneracionDto.cantidadGeneradaBruta
+        : 0,
+      cantidadSalida:
+        createGeneracionDto.idTecnologia === 4
+          ? (createGeneracionDto.consumoEnergetico ?? 0) // Convierte null/undefined a 0
+          : 0,
       idUnidad: resultado2.unidadGeneral,
       idUnidadOriginal: createGeneracionDto.idUnidad_CGB, // Asegúrate de que viene en el DTO
       idMesProceso: createGeneracionDto.idMesProceso,
@@ -195,9 +202,18 @@ export class GeneracionService {
     return generacion;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, inquilinoId: string) {
     const generacion = await this.generacionRepository.findOne({
-      where: { idGeneracion: id },
+      where: {
+        idGeneracion: id,
+        mesProceso: {
+          proceso: {
+            planta: {
+              inquilino: { inquilinoId: inquilinoId },
+            },
+          },
+        },
+      },
       relations: [
         'mesProceso',
         'energetico',
@@ -208,7 +224,9 @@ export class GeneracionService {
       ],
     });
     if (!generacion) {
-      throw new NotFoundException(`Generacion con ID ${id} no encontrada`);
+      throw new NotFoundException(
+        `Generacion con ID ${id} no encontrada o no pertenece al inquilino`,
+      );
     }
     return generacion;
   }
@@ -300,66 +318,72 @@ export class GeneracionService {
       }
     }
 
-        // proceso resumen
-        //extraer tcal y unidadGeneral
+    // proceso resumen
+    //extraer tcal y unidadGeneral
     // 1. Definir condición para tecnologías 1,2,3,5
-    const idTecnologias = updateGeneracionDto.idTecnologia ?? generacion.idTecnologia;
+    const idTecnologias =
+      updateGeneracionDto.idTecnologia ?? generacion.idTecnologia;
     const isTecnologiaStandard = [1, 2, 3, 5].includes(idTecnologias);
 
     const ejemploDatos = {
-      idEnergetico: isTecnologiaStandard 
-        ? 43 
-        : updateGeneracionDto.idTecnologia === 4 
-          ? updateGeneracionDto.idEnergetico ?? 0  // Convierte null/undefined a 0
+      idEnergetico: isTecnologiaStandard
+        ? 43
+        : updateGeneracionDto.idTecnologia === 4
+          ? (updateGeneracionDto.idEnergetico ?? 0) // Convierte null/undefined a 0
           : 0,
-      
-      idUnidad: isTecnologiaStandard 
-        ? updateGeneracionDto.idUnidad_CGB ?? 0 
-        : updateGeneracionDto.idTecnologia === 4 
-          ? updateGeneracionDto.idUnidad_Ce ?? 0
+
+      idUnidad: isTecnologiaStandard
+        ? (updateGeneracionDto.idUnidad_CGB ?? 0)
+        : updateGeneracionDto.idTecnologia === 4
+          ? (updateGeneracionDto.idUnidad_Ce ?? 0)
           : 0,
-      
-      cantidad: isTecnologiaStandard 
-        ? updateGeneracionDto.cantidadGeneradaBruta ?? 0  // Convierte null/undefined a 0
-        : updateGeneracionDto.idTecnologia === 4 
-          ? updateGeneracionDto.consumoEnergetico ?? 0  // Convierte null/undefined a 0
+
+      cantidad: isTecnologiaStandard
+        ? (updateGeneracionDto.cantidadGeneradaBruta ?? 0) // Convierte null/undefined a 0
+        : updateGeneracionDto.idTecnologia === 4
+          ? (updateGeneracionDto.consumoEnergetico ?? 0) // Convierte null/undefined a 0
           : 0,
-      
-      poderCalorifico: 0,  // Usa número en vez de null
-      humedad: 0,         // Usa número en vez de null
+
+      poderCalorifico: 0, // Usa número en vez de null
+      humedad: 0, // Usa número en vez de null
     };
-    
+
     // realizar conversion a Tcal
     const resultado2 = await conversorTcal(ejemploDatos);
-      if (!resultado2) {
-        throw new BadRequestException('No se pudo calcular la conversión a Tcal');
-      }
+    if (!resultado2) {
+      throw new BadRequestException('No se pudo calcular la conversión a Tcal');
+    }
 
     // asignar valores
-    const resumenTransaccion = await this.resumenTransaccionService.updateRT(generacion.resumenTransaccion.idResumenTransaccion, {
-      idEnergetico: isTecnologiaStandard 
-                    ? 43 
-                    : updateGeneracionDto.idTecnologia === 4 
-                      ? updateGeneracionDto.idEnergetico ?? 0  // Convierte null/undefined a 0
-                      : 0,
-      idCategoriaRegistro: updateGeneracionDto.idTecnologia !== undefined
-                            ? updateGeneracionDto.idTecnologia + 10
-                            : generacion.idTecnologia + 10, // Si aplica
-      cantidadEntrada: isTecnologiaStandard 
-                    ? updateGeneracionDto.cantidadGeneradaBruta
-                    : 0,
-      cantidadSalida: updateGeneracionDto.idTecnologia === 4 
-                    ?  updateGeneracionDto.consumoEnergetico ?? 0 // Convierte null/undefined a 0 
-                    : 0,
-      idUnidad: resultado2.unidadGeneral,
-      idUnidadOriginal: updateGeneracionDto.idUnidad_CGB, // Asegúrate de que viene en el DTO
-      idMesProceso: updateGeneracionDto.idMesProceso,
-      idProceso: generacion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
-      idPlanta: generacion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
-      inquilinoId: generacion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
-      cantidadGeneral: resultado2.cantidadGeneral,
-      teraCalorias: resultado2.cantidadTcal,
-    });
+    const resumenTransaccion = await this.resumenTransaccionService.updateRT(
+      generacion.resumenTransaccion.idResumenTransaccion,
+      {
+        idEnergetico: isTecnologiaStandard
+          ? 43
+          : updateGeneracionDto.idTecnologia === 4
+            ? (updateGeneracionDto.idEnergetico ?? 0) // Convierte null/undefined a 0
+            : 0,
+        idCategoriaRegistro:
+          updateGeneracionDto.idTecnologia !== undefined
+            ? updateGeneracionDto.idTecnologia + 10
+            : generacion.idTecnologia + 10, // Si aplica
+        cantidadEntrada: isTecnologiaStandard
+          ? updateGeneracionDto.cantidadGeneradaBruta
+          : 0,
+        cantidadSalida:
+          updateGeneracionDto.idTecnologia === 4
+            ? (updateGeneracionDto.consumoEnergetico ?? 0) // Convierte null/undefined a 0
+            : 0,
+        idUnidad: resultado2.unidadGeneral,
+        idUnidadOriginal: updateGeneracionDto.idUnidad_CGB, // Asegúrate de que viene en el DTO
+        idMesProceso: updateGeneracionDto.idMesProceso,
+        idProceso: generacion.mesProceso.proceso.idProceso, // Asegúrate de que viene en el DTO
+        idPlanta: generacion.mesProceso.proceso.planta.idPlanta, // Asegúrate de que viene en el DTO
+        inquilinoId: generacion.mesProceso.proceso.planta.inquilino.inquilinoId, // Asegúrate de que viene en el DTO
+        cantidadGeneral: resultado2.cantidadGeneral,
+        teraCalorias: resultado2.cantidadTcal,
+      },
+    );
 
     const resultado = await this.generacionRepository.save(generacion);
 

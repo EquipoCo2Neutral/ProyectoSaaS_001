@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { AdquisicionesService } from './adquisiciones.service';
 import { CreateAdquisicioneDto } from './dto/create-adquisicione.dto';
@@ -24,13 +25,15 @@ export class AdquisicionesController {
   }
 
   @Get('/listar/:id')
-  findAll(@Param('id') id: string) {
-    return this.adquisicionesService.findAll(id);
+  findAll(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.adquisicionesService.findAll(id, inquilinoId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.adquisicionesService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.adquisicionesService.findOne(+id, inquilinoId);
   }
 
   @Patch(':id')
