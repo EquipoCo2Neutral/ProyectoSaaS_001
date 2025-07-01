@@ -29,12 +29,15 @@ export class PlantaController {
     return this.plantaService.findAll();
   }
 
+  //para validar que pertenezca al inquilino->vista admin inquilino
+  @Auth(Role.ADMIN_INQUILINO, Role.GESTOR)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.plantaService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.plantaService.findOne(id, inquilinoId);
   }
 
-  //para validar que pertenezca al inquilino
+  //para validar que pertenezca al inquilino->vista gestor
   @Auth(Role.GESTOR)
   @Get(':id/validacion')
   findOneValidacion(@Param('id') id: string, @Request() req) {
@@ -42,9 +45,15 @@ export class PlantaController {
     return this.plantaService.findOneValidacion(id, inquilinoId);
   }
 
+  @Auth(Role.ADMIN_INQUILINO)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlantaDto: UpdatePlantaDto) {
-    return this.plantaService.update(id, updatePlantaDto);
+  update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() updatePlantaDto: UpdatePlantaDto,
+  ) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.plantaService.update(id, inquilinoId, updatePlantaDto);
   }
 
   @Delete(':id')

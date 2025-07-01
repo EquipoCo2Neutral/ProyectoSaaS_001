@@ -145,9 +145,12 @@ export class PlantaService {
     return planta;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, inquilinoId: string) {
     const planta = await this.plantaRepository.findOne({
-      where: { idPlanta: id },
+      where: {
+        idPlanta: id,
+        inquilino: { inquilinoId: inquilinoId },
+      },
       relations: [
         'usuario',
         'inquilino',
@@ -163,11 +166,19 @@ export class PlantaService {
       throw new NotFoundException(errors);
     }
 
+    if (planta.inquilino.inquilinoId !== inquilinoId) {
+      throw new ForbiddenException('No tienes acceso a este recurso');
+    }
+
     return planta;
   }
 
-  async update(id: string, updatePlantaDto: UpdatePlantaDto) {
-    const planta = await this.findOne(id);
+  async update(
+    id: string,
+    inquilinoId: string,
+    updatePlantaDto: UpdatePlantaDto,
+  ) {
+    const planta = await this.findOne(id, inquilinoId);
     Object.assign(planta, updatePlantaDto);
 
     if (updatePlantaDto.usuarioId) {
