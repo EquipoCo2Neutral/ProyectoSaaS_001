@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -107,6 +108,26 @@ export class ProcesoService {
 
   findAll() {
     return `This action returns all proceso`;
+  }
+
+  async findOne(id: string, inquilinoId: string) {
+    const proceso = await this.procesoRepository.findOne({
+      where: {
+        idProceso: id,
+        planta: {
+          inquilino: { inquilinoId: inquilinoId },
+        },
+      },
+      relations: ['planta', 'planta.inquilino'],
+    });
+    if (!proceso) {
+      throw new NotFoundException('Proceso no encontrado');
+    }
+
+    if (proceso.planta.inquilino.inquilinoId !== inquilinoId) {
+      throw new ForbiddenException('No tienes acceso a este recurso');
+    }
+    return proceso;
   }
 
   async findOneResumen(id: string) {

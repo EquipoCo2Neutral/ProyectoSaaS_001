@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   NotFoundException,
+  Request,
 } from '@nestjs/common';
 import { PlantaService } from './planta.service';
 import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
 @Controller('planta')
 export class PlantaController {
@@ -31,6 +34,14 @@ export class PlantaController {
     return this.plantaService.findOne(id);
   }
 
+  //para validar que pertenezca al inquilino
+  @Auth(Role.GESTOR)
+  @Get(':id/validacion')
+  findOneValidacion(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.plantaService.findOneValidacion(id, inquilinoId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePlantaDto: UpdatePlantaDto) {
     return this.plantaService.update(id, updatePlantaDto);
@@ -45,7 +56,7 @@ export class PlantaController {
   findByInquilino(@Param('inquilinoId') inquilinoId: string) {
     return this.plantaService.findByInquilino(inquilinoId);
   }
-  
+
   @Get('usuario/:correo')
   async obtenerPlantaPorUsuario(@Param('correo') correo: string) {
     const planta = await this.plantaService.findByUsuario(correo);

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
 import { Planta } from './entities/planta.entity';
@@ -120,6 +124,25 @@ export class PlantaService {
 
   async findAll() {
     return await this.plantaRepository.find();
+  }
+
+  async findOneValidacion(id: string, inquilinoId: string) {
+    const planta = await this.plantaRepository.findOne({
+      where: {
+        idPlanta: id,
+        inquilino: { inquilinoId: inquilinoId },
+      },
+      relations: ['inquilino'],
+    });
+
+    if (!planta) {
+      throw new NotFoundException('Planta no encontrada');
+    }
+
+    if (planta.inquilino.inquilinoId !== inquilinoId) {
+      throw new ForbiddenException('No tienes acceso a este recurso');
+    }
+    return planta;
   }
 
   async findOne(id: string) {

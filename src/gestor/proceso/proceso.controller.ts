@@ -7,16 +7,20 @@ import {
   Param,
   Delete,
   Put,
+  Request,
 } from '@nestjs/common';
 import { ProcesoService } from './proceso.service';
 import { CreateProcesoDto } from './dto/create-proceso.dto';
 import { UpdateProcesoDto } from './dto/update-proceso.dto';
 import { Proceso } from './entities/proceso.entity';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
 @Controller('proceso')
 export class ProcesoController {
   constructor(private readonly procesoService: ProcesoService) {}
 
+  //para resumen
   @Get(':idProceso')
   findByProceso(@Param('idProceso') idProceso: string) {
     return this.procesoService.findByProceso(idProceso);
@@ -35,6 +39,13 @@ export class ProcesoController {
     return this.procesoService.findAll();
   }
 
+  //para validacion de que pertenece al inquilino
+  @Auth(Role.GESTOR)
+  @Get(':id/validacion')
+  findOne(@Param('id') id: string, @Request() req) {
+    const inquilinoId = req.user.inquilinoId;
+    return this.procesoService.findOne(id, inquilinoId);
+  }
   @Get(':id/resumen')
   findOneResumen(@Param('id') id: string) {
     return this.procesoService.findOneResumen(id);

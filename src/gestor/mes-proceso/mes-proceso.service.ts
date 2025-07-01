@@ -84,7 +84,6 @@ export class MesProcesoService {
       },
       relations: [
         'proceso',
-        'proceso',
         'mes',
         'proceso.planta',
         'proceso.planta.inquilino',
@@ -95,7 +94,6 @@ export class MesProcesoService {
       throw new NotFoundException('MesProceso no encontrado');
     }
 
-    // Si quieres distinguir 404 vs 403:
     if (mesProceso.proceso.planta.inquilino.inquilinoId !== inquilinoId) {
       throw new ForbiddenException('No tienes acceso a este recurso');
     }
